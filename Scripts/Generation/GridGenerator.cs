@@ -78,6 +78,7 @@ public partial class GridGenerator : GridMap
 
         // Initialise //
         _roomManager = new(_random);
+        _random.Seed = 5333481107181938514;
         GD.Print(_random.Seed);
 
         // Generation //
@@ -275,24 +276,30 @@ public partial class GridGenerator : GridMap
             {
                 foreach (NeighbourInfo neighbour in adjNeighbours)
                 {
+                    Vector3I floorPos = neighbour.Position + Vector3I.Down;
+
                     if (neighbour.ItemIdx != ItemManager.ItemId.Empty)
-                    {                        
-                        BuildColumn
-                        (
-                            neighbour.Position + Vector3I.Down,
-                            height,
-                            _itemManager.GetMixedId(neighbour.ItemIdx, _roomManager.WallId, out bool reversed),
-                            new Basis
+                    {
+                        if (GetCellItem(neighbour.Position + neighbour.Direction) == (int)ItemManager.ItemId.Empty) // Empty on both sides
+                        {
+                            BuildColumn
                             (
-                                // Rotation From Global-Z To Direction Of Neighbour //
-                                Vector3I.Up,
-                                Vector3.Forward.SignedAngleTo
+                                floorPos,
+                                height,
+                                _itemManager.GetMixedId(neighbour.ItemIdx, _roomManager.WallId, out bool reversed),
+                                new Basis
                                 (
-                                    new Vector3(neighbour.Direction.X, neighbour.Direction.Y, neighbour.Direction.Z),
-                                    Vector3.Up
-                                ) + (Mathf.Pi * (reversed ? 0.5f : -0.5f))
-                            )
-                        );
+                                    // Rotation From Global-Z To Direction Of Neighbour //
+                                    Vector3I.Up,
+                                    Vector3.Forward.SignedAngleTo
+                                    (
+                                        new Vector3(neighbour.Direction.X, neighbour.Direction.Y, neighbour.Direction.Z),
+                                        Vector3.Up
+                                    ) + (Mathf.Pi * (reversed ? 0.5f : -0.5f))
+                                )
+                            );
+                        }
+                        else { BuildColumn(floorPos, height, _roomManager.WallId); } // Replace existing column (mainly for corners that stick into other rooms)
                     }
                 }
             }
