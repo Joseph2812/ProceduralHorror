@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=3 format=3]
+
+[ext_resource type="Resource" uid="uid://c0e87daumnlqw" path="res://Rooms/InteriorItems/TestItem.tres" id="1_37xl7"]
+[ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="2_llg1b"]
+
+[resource]
+script = ExtResource("2_llg1b")
+FloorId = 3
+WallId = 4
+CeilingId = 0
+ItemPool = Array[Resource]([ExtResource("1_37xl7")])

@@ -1,0 +1,176 @@
+[gd_scene load_steps=41 format=3 uid="uid://kdpm54cye3kw"]
+
+[ext_resource type="Texture2D" uid="uid://cbvx3kb1gppqp" path="res://Textures/Cube_White-Orange.png" id="1_2hbu0"]
+[ext_resource type="Texture2D" uid="uid://dv7eqtmp82qln" path="res://Textures/Cube_White-Red.png" id="2_xbw75"]
+[ext_resource type="Texture2D" uid="uid://u3xw7k6x23ok" path="res://Textures/Cube_White-Green.png" id="3_th4i4"]
+[ext_resource type="Texture2D" uid="uid://bhdgknwplc6et" path="res://Textures/Cube_White-Blue.png" id="4_s6ik4"]
+[ext_resource type="Texture2D" uid="uid://dr0cjlwuh6s" path="res://Textures/Cube_Orange-Red.png" id="5_jdoey"]
+[ext_resource type="Texture2D" uid="uid://bqxuu0e3syysv" path="res://Textures/Cube_Orange-Green.png" id="6_f8a14"]
+[ext_resource type="Texture2D" uid="uid://so6xlgsi208g" path="res://Textures/Cube_Orange-Blue.png" id="7_r6we2"]
+[ext_resource type="Texture2D" uid="uid://bmolsastrhgbb" path="res://Textures/Cube_Red-Green.png" id="8_c7b4b"]
+[ext_resource type="Texture2D" uid="uid://dn7qjqxjxobtr" path="res://Textures/Cube_Red-Blue.png" id="9_nylr3"]
+[ext_resource type="Texture2D" uid="uid://dbm2y7f6iqbqt" path="res://Textures/Cube_Green-Blue.png" id="10_hmphq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8jnb0"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_xcnec"]
+material = SubResource("StandardMaterial3D_8jnb0")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ih15e"]
+albedo_color = Color(1, 0.27451, 0, 1)
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_mll75"]
+material = SubResource("StandardMaterial3D_ih15e")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o7jdl"]
+albedo_color = Color(1, 0, 0, 1)
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_u1nng"]
+material = SubResource("StandardMaterial3D_o7jdl")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k553s"]
+albedo_color = Color(0, 1, 0, 1)
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_y081k"]
+material = SubResource("StandardMaterial3D_k553s")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x6red"]
+albedo_color = Color(0, 0, 1, 1)
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_1irma"]
+material = SubResource("StandardMaterial3D_x6red")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_50a4f"]
+albedo_texture = ExtResource("1_2hbu0")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_6afuh"]
+material = SubResource("StandardMaterial3D_50a4f")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dtaax"]
+albedo_texture = ExtResource("2_xbw75")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_x8gn7"]
+material = SubResource("StandardMaterial3D_dtaax")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ygj1l"]
+albedo_texture = ExtResource("3_th4i4")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_skjqf"]
+material = SubResource("StandardMaterial3D_ygj1l")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qq11j"]
+albedo_texture = ExtResource("4_s6ik4")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_mj1wy"]
+material = SubResource("StandardMaterial3D_qq11j")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4668t"]
+albedo_texture = ExtResource("5_jdoey")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_4x7bi"]
+material = SubResource("StandardMaterial3D_4668t")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vquva"]
+albedo_texture = ExtResource("6_f8a14")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_qj3vd"]
+material = SubResource("StandardMaterial3D_vquva")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fkrc3"]
+albedo_texture = ExtResource("7_r6we2")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_qmffu"]
+material = SubResource("StandardMaterial3D_fkrc3")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o3ae2"]
+albedo_texture = ExtResource("8_c7b4b")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_7j1y0"]
+material = SubResource("StandardMaterial3D_o3ae2")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_03nab"]
+albedo_texture = ExtResource("9_nylr3")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_4003c"]
+material = SubResource("StandardMaterial3D_03nab")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xkr5h"]
+albedo_texture = ExtResource("10_hmphq")
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_4hp7n"]
+material = SubResource("StandardMaterial3D_xkr5h")
+
+[node name="MeshLibrary_Source" type="Node3D"]
+
+[node name="Cube_White" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_xcnec")
+
+[node name="Cube_Orange" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+mesh = SubResource("BoxMesh_mll75")
+
+[node name="Cube_Red" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+mesh = SubResource("BoxMesh_u1nng")
+
+[node name="Cube_Green" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0)
+mesh = SubResource("BoxMesh_y081k")
+
+[node name="Cube_Blue" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
+mesh = SubResource("BoxMesh_1irma")
+
+[node name="Cube_White-Orange" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
+mesh = SubResource("BoxMesh_6afuh")
+
+[node name="Cube_White-Red" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+mesh = SubResource("BoxMesh_x8gn7")
+
+[node name="Cube_White-Green" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+mesh = SubResource("BoxMesh_skjqf")
+
+[node name="Cube_White-Blue" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
+mesh = SubResource("BoxMesh_mj1wy")
+
+[node name="Cube_Orange-Red" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
+mesh = SubResource("BoxMesh_4x7bi")
+
+[node name="Cube_Orange-Green" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 3)
+mesh = SubResource("BoxMesh_qj3vd")
+
+[node name="Cube_Orange-Blue" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 4)
+mesh = SubResource("BoxMesh_qmffu")
+
+[node name="Cube_Red-Green" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
+mesh = SubResource("BoxMesh_7j1y0")
+
+[node name="Cube_Red-Blue" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 3)
+mesh = SubResource("BoxMesh_4003c")
+
+[node name="Cube_Green-Blue" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 2)
+mesh = SubResource("BoxMesh_4hp7n")

@@ -1,0 +1,40 @@
+[gd_scene load_steps=7 format=3 uid="uid://dkb26p62dp7mh"]
+
+[ext_resource type="Script" path="res://Scripts/CameraController.cs" id="1_f47qg"]
+[ext_resource type="MeshLibrary" uid="uid://d17xtqeia5d7u" path="res://MeshLibrary.tres" id="1_s6mo0"]
+[ext_resource type="Script" path="res://Scripts/Generation/GridGenerator.cs" id="3_hfaxr"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_4uo1o"]
+sky_material = SubResource("ProceduralSkyMaterial_8ys5x")
+
+[sub_resource type="Environment" id="Environment_4irpt"]
+background_mode = 2
+sky = SubResource("Sky_4uo1o")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_4irpt")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 30, 0)
+current = true
+fov = 90.0
+size = 150.0
+script = ExtResource("1_f47qg")
+
+[node name="GridMap" type="GridMap" parent="."]
+mesh_library = ExtResource("1_s6mo0")
+cell_size = Vector3(1, 1, 1)
+script = ExtResource("3_hfaxr")
+metadata/_editor_floor_ = Vector3(0, 0, 0)
