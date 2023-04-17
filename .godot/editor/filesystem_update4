@@ -1,7 +1,0 @@
-res://Scenes/Main.tscn
-res://MeshLibrary.tres
-res://Scripts/InteriorObject.cs
-res://Scenes/MeshLibrary_Source.tscn
-res://Rooms/InteriorItems/TestItem.tres
-res://Rooms/TestRoom2.tres
-res://Rooms/TestRoom.tres
