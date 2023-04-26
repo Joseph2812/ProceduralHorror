@@ -429,15 +429,19 @@ public partial class GridGenerator : GridMap
 
         // Add Paths To Occupied Positions //
         HashSet<Vector3I> occupiedPosS = new();
-        long frontOfDoorId = GetAStarId(posToId, idToPos, frontOfDoorPos, ref currentId);
+        long insideOfDoorId = GetAStarId(posToId, idToPos, frontOfDoorPos, ref currentId);
 
-        foreach ((Vector3I doorPos, HashSet<Vector3I> _) in doorPos_openFloorPosS)
+        foreach ((Vector3I otherDoorPos, HashSet<Vector3I> _) in doorPos_openFloorPosS)
         {
-            NeighbourInfo.GetFirstEmptyNeighbour(GetPlanarAdjacentNeighbours(doorPos), out NeighbourInfo emptyNeighbour);
+            NeighbourInfo.GetFirstEmptyNeighbour(GetPlanarAdjacentNeighbours(otherDoorPos), out NeighbourInfo emptyNeighbour);
+
+            Vector3I insideOfOtherDoorPos = otherDoorPos - emptyNeighbour.Direction;
+            if (!openFloorPosS.Contains(insideOfOtherDoorPos)) { insideOfOtherDoorPos -= emptyNeighbour.Direction; } // Due to inner corner corrections, there can sometimes be 2 thick walls.
+
             long[] path = aStar.GetIdPath
             (
-                frontOfDoorId,
-                GetAStarId(posToId, idToPos, doorPos - emptyNeighbour.Direction, ref currentId)
+                insideOfDoorId,
+                GetAStarId(posToId, idToPos, insideOfOtherDoorPos, ref currentId)
             );
             foreach (long id in path) { occupiedPosS.Add(idToPos[id]); }
         }
