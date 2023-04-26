@@ -29,13 +29,7 @@ public class RoomManager
         _selectedRoom = _rooms[0];
     }
 
-    public void SelectRandomRoom()
-    {
-        _selectedRoom = _rooms[_random.RandiRange(0, _rooms.Length - 1)];
-    }
+    public void SelectRandomRoom() { _selectedRoom = _rooms[_random.RandiRange(0, _rooms.Length - 1)]; }
 
-    public ItemManager.ItemId GetRandomInteriorItem(float normalisedDistanceFromCentre)
-    {
-        return ItemManager.ItemId.Empty;
-    }
+    public InteriorObject GetRandomInteriorObject() => _selectedRoom.ObjectPool[_random.RandiRange(0, _selectedRoom.ObjectPool.Length - 1)];
 }

@@ -1,5 +1,6 @@
-[gd_resource type="Resource" load_steps=2 format=3 uid="uid://bpju66cdrfiaw"]
+[gd_resource type="Resource" load_steps=3 format=3]
 
+[ext_resource type="Resource" uid="uid://mcobo4c5kuad" path="res://Rooms/InteriorObjects/TestObject.tres" id="1_y2u56"]
 [ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="2_f03o2"]
 
 [resource]
@@ -7,4 +8,4 @@ script = ExtResource("2_f03o2")
 FloorId = 2
 WallId = 3
 CeilingId = 0
-ObjectPool = null
+ObjectPool = Array[Resource]([ExtResource("1_y2u56")])

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://mcobo4c5kuad"]
+
+[ext_resource type="PackedScene" uid="uid://blchhurwdyy22" path="res://Models/Drawer.glb" id="1_e37hi"]
+[ext_resource type="Script" path="res://Scripts/Generation/InteriorObject.cs" id="1_t1kqi"]
+
+[resource]
+script = ExtResource("1_t1kqi")
+Scene = ExtResource("1_e37hi")
+Rarity = 1.0
+WeightToCentre = 0.0
+Exact = true

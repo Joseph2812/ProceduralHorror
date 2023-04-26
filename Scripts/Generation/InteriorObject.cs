@@ -9,18 +9,21 @@ public partial class InteriorObject : Resource
     public PackedScene Scene { get; private set; }
 
     /// <summary>
-    /// Likelihood of appearing on a cell, relative to the edge of a room.
+    /// Likelihood of <c>Scene</c> appearing in a cell.
     /// </summary>
     [Export(PropertyHint.Range, "0, 1")]
-    public float WeightToEdge { get; private set; }
+    public float Rarity { get; private set; }
 
     /// <summary>
-    /// Distance outward from weighted position that this scene can be placed on (0 = only the closest cell the weight value is on).
+    /// Likelihood of <c>Scene</c> appearing in a cell depending on its proxmity to the centre, from 0 (edge) to 1 (centre).
     /// </summary>
-    public int WeightInfluence { get; private set; }
+    [Export(PropertyHint.Range, "0, 1")]
+    public float WeightToCentre { get; private set; }
 
     /// <summary>
-    /// Amount that can appear in one room.
+    /// If true, <c>Scene</c> will have a chance to appear in a cell only if <c>WeightToCentre</c> is equal to normalised distance.<para></para>
+    /// Mainly only useful for <c>WeightToCentre</c> = 0 or 1, as inbetween values aren't guaranteed to appear among the cells.
     /// </summary>
-    public int MaxCount { get; private set; }
+    [Export]
+    public bool Exact { get; private set; }
 }

@@ -5,7 +5,7 @@ namespace Scripts;
 
 public partial class CameraController : Camera3D
 {
-    private const float Speed = 0.1f;
+    private const float Speed = 10f;
     private const float MouseSensitivity = 0.02f;
 
     private Viewport _viewport;
@@ -30,7 +30,7 @@ public partial class CameraController : Camera3D
             Input.GetActionStrength("move_back") - Input.GetActionStrength("move_forward")
         ).Normalized();
 
-        Translate(input * Speed);
+        Translate(input * Speed * (float)delta);
     }
 
     public override void _UnhandledInput(InputEvent @event)
