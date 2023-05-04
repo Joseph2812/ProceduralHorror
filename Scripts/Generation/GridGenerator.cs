@@ -20,15 +20,24 @@ public partial class GridGenerator : GridMap
 
     private struct NeighbourInfo
     {
-        public Vector3I Position;
-        public Vector3I Direction;
-        public ItemManager.ItemId ItemIdx;
+        public Vector3I Position     { get; private set; }
+        public Vector3I Direction    { get; private set; }
+        public ItemManager.Id ItemId { get; private set; }
+        public bool Empty            { get; private set; }
 
-        public static bool GetFirstFilledNeighbour(NeighbourInfo[] neighbours, out NeighbourInfo filledNeighbour)
+        public NeighbourInfo(Vector3I position, Vector3I direction, int itemIdx)
+        {
+            Position = position;
+            Direction = direction;
+            ItemId = (ItemManager.Id)itemIdx;
+            Empty = (ItemId == ItemManager.Id.Empty);
+        }
+
+        public static bool GetFirstFilled(NeighbourInfo[] neighbours, out NeighbourInfo filledNeighbour)
         {
             foreach (NeighbourInfo neighbour in neighbours)
             {
-                if (neighbour.ItemIdx != ItemManager.ItemId.Empty)
+                if (!neighbour.Empty)
                 {
                     filledNeighbour = neighbour;
                     return true;
@@ -38,11 +47,11 @@ public partial class GridGenerator : GridMap
             return false;
         }
 
-        public static bool GetFirstEmptyNeighbour(NeighbourInfo[] neighbours, out NeighbourInfo emptyNeighbour)
+        public static bool GetFirstEmpty(NeighbourInfo[] neighbours, out NeighbourInfo emptyNeighbour)
         {
             foreach (NeighbourInfo neighbour in neighbours)
             {
-                if (neighbour.ItemIdx == ItemManager.ItemId.Empty)
+                if (neighbour.Empty)
                 {
                     emptyNeighbour = neighbour;
                     return true;
@@ -52,12 +61,12 @@ public partial class GridGenerator : GridMap
             return false;
         }
 
-        public static int GetEmptyNeighbourCount(NeighbourInfo[] neighbours)
+        public static int GetEmptyCount(NeighbourInfo[] neighbours)
         {
             int count = 0;
             foreach (NeighbourInfo neighbour in neighbours)
             {
-                if (neighbour.ItemIdx == ItemManager.ItemId.Empty) { count++; }
+                if (neighbour.Empty) { count++; }
             }
             return count;
         }
@@ -66,25 +75,23 @@ public partial class GridGenerator : GridMap
     private RandomNumberGenerator _random = new();
     private ItemManager _itemManager = new();
     private RoomManager _roomManager;
+    private readonly Vector3 _interiorNodeOffset = new Vector3(0.5f, 1f, 0.5f);
+
     private Vector3I[] _adjacentDirections =
     {
         Vector3I.Left,
-        Vector3I.Right,
         Vector3I.Forward,
+        Vector3I.Right,
         Vector3I.Back
     };
-    private Vector3I[] _interiorDirections =
+    private Vector3I[] _diagonalDirections =
     {
-        Vector3I.Left,
-        Vector3I.Right,
-        Vector3I.Forward,
-        Vector3I.Back,
-        new Vector3I(-1, 0, -1), // South West
-        new Vector3I(1, 0, 1),   // North East
-        new Vector3I(-1, 0, 1),  // North West
-        new Vector3I(1, 0, -1)   // South East
+        new Vector3I(-1, 0, -1), // North West (North = -Z)
+        new Vector3I(1, 0, -1),  // North East
+        new Vector3I(1, 0, 1),   // South East
+        new Vector3I(-1, 0, 1)   // South West
     };
-    private readonly Vector3 _interiorObjOffset = new Vector3(0.5f, 1f, 0.5f);
+    private Vector3I[] _allDirections; // Adjacent + Diagonal
 
     public override void _Ready()
     {
@@ -92,6 +99,12 @@ public partial class GridGenerator : GridMap
 
         // Initialise //
         _roomManager = new(_random);
+
+        _allDirections = new Vector3I[_adjacentDirections.Length + _diagonalDirections.Length];
+        _adjacentDirections.CopyTo(_allDirections, 0);
+        _diagonalDirections.CopyTo(_allDirections, _adjacentDirections.Length);
+
+        _random.Seed = 12078937130395744715;
         GD.Print(_random.Seed);
 
         // Generation //
@@ -110,7 +123,7 @@ public partial class GridGenerator : GridMap
                 HashSet<Vector3I> floorPosS = GenerateFloor(doorPos, out Vector3I startDir);
                 if (floorPosS == null) { continue; }
 
-                BuildColumn(doorPos, 2, ItemManager.ItemId.Empty); // Clear for doorway
+                BuildColumn(doorPos, 2, ItemManager.Id.Empty); // Clear for doorway
 
                 List<(Vector3I, bool)> potentialDoorPosS = GenerateWallsAndCeiling(floorPosS, prevOpenFloorPosS, out HashSet<Vector3I> openFloorPosS);
                 HashSet<(Vector3I, HashSet<Vector3I>)> newDoorPos_openFloorPosS = GenerateDoors(potentialDoorPosS, openFloorPosS);         
@@ -134,14 +147,15 @@ public partial class GridGenerator : GridMap
         _itemManager = null;
         _roomManager = null;
         _adjacentDirections = null;
-        _interiorDirections = null;
+        _diagonalDirections = null;
+        _allDirections = null;
     }
 
     /// <returns><c>HashSet</c> of floor positions.</returns>
     private HashSet<Vector3I> GenerateFloor(Vector3I originPos, out Vector3I startDir)
     {
         // Get Initial Direction //
-        if (!NeighbourInfo.GetFirstEmptyNeighbour(GetPlanarAdjacentNeighbours(originPos), out NeighbourInfo emptyNeighbour))
+        if (!NeighbourInfo.GetFirstEmpty(GetNeighbours(originPos, _adjacentDirections), out NeighbourInfo emptyNeighbour))
         {
             startDir = Vector3I.Zero;
             return null;
@@ -226,10 +240,10 @@ public partial class GridGenerator : GridMap
 
         foreach (Vector3I cellPos in floorPosS)
         {
-            NeighbourInfo[] adjNeighbours = GetPlanarAdjacentNeighbours(cellPos);
-            int emptyCount = NeighbourInfo.GetEmptyNeighbourCount(adjNeighbours);
+            NeighbourInfo[] adjNeighbours = GetNeighbours(cellPos, _adjacentDirections);
+            int emptyCount = NeighbourInfo.GetEmptyCount(adjNeighbours);
 
-            if (NeighbourInfo.GetFirstEmptyNeighbour(adjNeighbours, out NeighbourInfo emptyNeighbour))
+            if (NeighbourInfo.GetFirstEmpty(adjNeighbours, out NeighbourInfo emptyNeighbour))
             {
                 BuildColumn(cellPos, height, _roomManager.WallId);
 
@@ -250,43 +264,25 @@ public partial class GridGenerator : GridMap
         foreach (Vector3I cellPos in openFloorPosS)
         {
             Vector3I upperPos = cellPos + Vector3I.Up;
-            NeighbourInfo[] adjNeighbours = GetPlanarAdjacentNeighbours(upperPos);
-            NeighbourInfo[] diaNeighbours = GetPlanarDiagonalNeighbours(upperPos);
-            int adjEmptyCount = NeighbourInfo.GetEmptyNeighbourCount(adjNeighbours);
+            NeighbourInfo[] adjNeighbours = GetNeighbours(upperPos, _adjacentDirections);
+            NeighbourInfo[] diaNeighbours = GetNeighbours(upperPos, _diagonalDirections);
 
-            if
-            (   // Is an inner corner
-                (
-                    NeighbourInfo.GetEmptyNeighbourCount(diaNeighbours) >= 3 &&
-                    // Empty adjacent neighbours are NOT opposite each other
-                    !(
-                        (adjNeighbours[0].ItemIdx == ItemManager.ItemId.Empty && adjNeighbours[2].ItemIdx == ItemManager.ItemId.Empty) ||
-                        (adjNeighbours[1].ItemIdx == ItemManager.ItemId.Empty && adjNeighbours[3].ItemIdx == ItemManager.ItemId.Empty)
-                    )
-                ) ||
+            bool leftFilled    = !adjNeighbours[0].Empty,
+                 forwardFilled = !adjNeighbours[1].Empty,
+                 rightFilled   = !adjNeighbours[2].Empty,
+                 backFilled    = !adjNeighbours[3].Empty;
 
-                // A specific diagonal arrangement needs to filled to ensure minimum 1 item thickness
-                (
-                    adjEmptyCount == 1 &&
-                    (
-                        (
-                            adjNeighbours[0].ItemIdx == ItemManager.ItemId.Empty &&
-                            (diaNeighbours[1].ItemIdx == ItemManager.ItemId.Empty || diaNeighbours[2].ItemIdx == ItemManager.ItemId.Empty)
-                        ) ||
-                        (
-                            adjNeighbours[1].ItemIdx == ItemManager.ItemId.Empty &&
-                            (diaNeighbours[2].ItemIdx == ItemManager.ItemId.Empty || diaNeighbours[3].ItemIdx == ItemManager.ItemId.Empty)
-                        ) ||
-                        (
-                            adjNeighbours[2].ItemIdx == ItemManager.ItemId.Empty &&
-                            (diaNeighbours[3].ItemIdx == ItemManager.ItemId.Empty || diaNeighbours[0].ItemIdx == ItemManager.ItemId.Empty)
-                        ) ||
-                        (
-                            adjNeighbours[3].ItemIdx == ItemManager.ItemId.Empty &&
-                            (diaNeighbours[0].ItemIdx == ItemManager.ItemId.Empty || diaNeighbours[1].ItemIdx == ItemManager.ItemId.Empty)
-                        )
-                    )
-                )
+            bool nwEmpty = diaNeighbours[0].Empty,
+                 neEmpty = diaNeighbours[1].Empty,
+                 seEmpty = diaNeighbours[2].Empty,
+                 swEmpty = diaNeighbours[3].Empty;
+
+            if // Is an inner corner
+            (   
+                (leftFilled    && nwEmpty && forwardFilled) ||
+                (forwardFilled && neEmpty && rightFilled)   ||
+                (rightFilled   && seEmpty && backFilled)    ||
+                (backFilled    && swEmpty && leftFilled)
             )
             {
                 BuildColumn(cellPos, height, _roomManager.WallId);
@@ -299,19 +295,19 @@ public partial class GridGenerator : GridMap
                     Vector3I neighbourfloorPos = neighbour.Position + Vector3I.Down;
                     Vector3I neighbourFloorAheadPos = neighbourfloorPos + neighbour.Direction;
 
-                    if (neighbour.ItemIdx != ItemManager.ItemId.Empty)
+                    if (!neighbour.Empty)
                     {
                         if // Walls empty on both sides AND has floor item
                         (
-                            GetCellItem(neighbour.Position + neighbour.Direction) == (int)ItemManager.ItemId.Empty &&
-                            GetCellItem(neighbourFloorAheadPos) != (int)ItemManager.ItemId.Empty
+                            GetCellItem(neighbour.Position + neighbour.Direction) == (int)ItemManager.Id.Empty &&
+                            GetCellItem(neighbourFloorAheadPos)                   != (int)ItemManager.Id.Empty
                         ) 
                         {
                             BuildColumn
                             (
                                 neighbourfloorPos,
                                 height,
-                                _itemManager.GetMixedId(neighbour.ItemIdx, _roomManager.WallId, out bool reversed),
+                                _itemManager.GetMixedId(neighbour.ItemId, _roomManager.WallId, out bool reversed),
                                 GetIndexOfRotationAroundY
                                 (
                                     Vector3.Forward,
@@ -326,8 +322,8 @@ public partial class GridGenerator : GridMap
                             if // Make sure walls are either side of the neighbour (avoid double width doors), and isn't from the previous room's floor
                             (
                                 !prevOpenFloorPosS.Contains(neighbourFloorAheadPos) &&
-                                GetCellItem(neighbour.Position + perpDir) != (int)ItemManager.ItemId.Empty &&
-                                GetCellItem(neighbour.Position - perpDir) != (int)ItemManager.ItemId.Empty
+                                GetCellItem(neighbour.Position + perpDir) != (int)ItemManager.Id.Empty &&
+                                GetCellItem(neighbour.Position - perpDir) != (int)ItemManager.Id.Empty
                             )
                             { potentialDoorPos_connecteds.Add((neighbourfloorPos, true)); }
                         }
@@ -340,7 +336,7 @@ public partial class GridGenerator : GridMap
         return potentialDoorPos_connecteds;
     }
 
-    /// <returns><c>HashSet</c> of door positions paired with the <c>HashSet</c> for the current open floor positions.</returns>
+    /// <returns><c>HashSet</c> of door positions paired with the <c>HashSet</c> containing the open floor positions.</returns>
     private HashSet<(Vector3I, HashSet<Vector3I>)> GenerateDoors(List<(Vector3I, bool)> potentialDoorPos_connecteds, HashSet<Vector3I> openFloorPosS)
     {
         HashSet<(Vector3I, HashSet<Vector3I>)> doorPos_openFloorPosS = new();
@@ -353,18 +349,18 @@ public partial class GridGenerator : GridMap
             // Create Random Doorway //
             (Vector3I doorPos, bool connected) = potentialDoorPos_connecteds[_random.RandiRange(0, potentialDoorPos_connecteds.Count - 1)];
 
-            if (connected) { BuildColumn(doorPos, 2, ItemManager.ItemId.Empty); }
+            if (connected) { BuildColumn(doorPos, 2, ItemManager.Id.Empty); }
             else           { doorPos_openFloorPosS.Add((doorPos, openFloorPosS)); }
 
             potentialDoorPos_connecteds.Remove((doorPos, connected));
 
             // Remove Adjacent Potential Doorway Positions (doors shouldn't be created right next to each other) //
-            NeighbourInfo[] adjNeighbours = GetPlanarAdjacentNeighbours(doorPos);
+            NeighbourInfo[] adjNeighbours = GetNeighbours(doorPos, _adjacentDirections);
             foreach (NeighbourInfo neighbour in adjNeighbours)
             {
-                if (neighbour.ItemIdx != ItemManager.ItemId.Empty)
+                if (!neighbour.Empty)
                 {
-                    potentialDoorPos_connecteds.RemoveAll(item => item.Item1 == neighbour.Position);
+                    potentialDoorPos_connecteds.RemoveAll(pos_connected => pos_connected.Item1 == neighbour.Position);
                 }
             }
         }
@@ -389,17 +385,17 @@ public partial class GridGenerator : GridMap
             i++;
 
             // Find The Directional Proximities //
-            cellProximities[i] = new int[_interiorDirections.Length];
+            cellProximities[i] = new int[_allDirections.Length];
             Vector3I upperPos = floorPos + Vector3I.Up;
 
-            for (int j = 0; j < _interiorDirections.Length; j++)
+            for (int j = 0; j < _allDirections.Length; j++)
             {
-                Vector3I dir = _interiorDirections[j];
+                Vector3I dir = _allDirections[j];
                 Vector3I move = dir;
                 int dist = 0;
 
                 // Is next cell empty and within room bounds
-                while (GetCellItem(upperPos + move) == (int)ItemManager.ItemId.Empty && openFloorPosS.Contains(floorPos + move))
+                while (GetCellItem(upperPos + move) == (int)ItemManager.Id.Empty && openFloorPosS.Contains(floorPos + move))
                 {
                     move = (++dist + 1) * dir;
                 }
@@ -433,28 +429,26 @@ public partial class GridGenerator : GridMap
 
         foreach ((Vector3I otherDoorPos, HashSet<Vector3I> _) in doorPos_openFloorPosS)
         {
-            NeighbourInfo.GetFirstEmptyNeighbour(GetPlanarAdjacentNeighbours(otherDoorPos), out NeighbourInfo emptyNeighbour);
-
-            Vector3I insideOfOtherDoorPos = otherDoorPos - emptyNeighbour.Direction;
-            if (!openFloorPosS.Contains(insideOfOtherDoorPos)) { insideOfOtherDoorPos -= emptyNeighbour.Direction; } // Due to inner corner corrections, there can sometimes be 2 thick walls.
-
+            NeighbourInfo.GetFirstEmpty(GetNeighbours(otherDoorPos, _adjacentDirections), out NeighbourInfo emptyNeighbour);
             long[] path = aStar.GetIdPath
             (
                 insideOfDoorId,
-                GetAStarId(posToId, idToPos, insideOfOtherDoorPos, ref currentId)
+                GetAStarId(posToId, idToPos, otherDoorPos - emptyNeighbour.Direction, ref currentId)
             );
             foreach (long id in path) { occupiedPosS.Add(idToPos[id]); }
+
+            //if (path.Length == 0) { SetCellItem(otherDoorPos + Vector3I.Up * 5, (int)ItemManager.Id.WhiteBlue); } // Use to debug problems
         }
 
-        // Proximity Indexes //
-        const int Left      = 0;
-        const int Right     = 1;
-        const int Forward   = 2;
-        const int Back      = 3;
-        const int SouthWest = 4;
-        const int NorthEast = 5;
-        const int NorthWest = 6;
-        const int SouthEast = 7;
+        // All Direction Indexes //
+        const int Left    = 0;
+        const int Right   = 1;
+        const int Forward = 2;
+        const int Back    = 3;
+        const int NW      = 4;
+        const int NE      = 5;
+        const int SE      = 6;
+        const int SW      = 7;
 
         // Place Objects On Floor Cells //
         i = -1;
@@ -466,16 +460,25 @@ public partial class GridGenerator : GridMap
             int[] cellProx = cellProximities[i];
 
             // Invalid Placements //
+            bool leftEmpty    = cellProx[Left]    > 0,
+                 forwardEmpty = cellProx[Right]   > 0,
+                 rightEmpty   = cellProx[Forward] > 0,
+                 backEmpty    = cellProx[Back]    > 0,
+                 nwFilled     = cellProx[NW]     == 0,
+                 neFilled     = cellProx[NE]     == 0,
+                 seFilled     = cellProx[SE]     == 0,
+                 swFilled     = cellProx[SW]     == 0;
+
             if
             (   // Checks for being in a 1 width corridor
-                ( (cellProx[Left] == 0 && cellProx[Right] == 0) && (cellProx[Forward] > 0 && cellProx[Back] > 0) ) || // EnclosedX & OpenZ
-                ( (cellProx[Forward] == 0 && cellProx[Back] == 0) && (cellProx[Left] > 0 && cellProx[Right] > 0) ) || // EnclosedZ & OpenX
+                ( (!leftEmpty    && !rightEmpty) && (forwardEmpty && backEmpty) )  || // EnclosedX & OpenZ
+                ( (!forwardEmpty && !backEmpty)  && (leftEmpty    && rightEmpty) ) || // EnclosedZ & OpenX
 
                 // Checks for two walls with a gap in the middle, in each orientation
-                (cellProx[Left] > 0    && cellProx[SouthWest] == 0 && cellProx[NorthWest] == 0) || // Rotation 0
-                (cellProx[Back] > 0    && cellProx[NorthWest] == 0 && cellProx[NorthEast] == 0) || // Rotation 90
-                (cellProx[Right] > 0   && cellProx[NorthEast] == 0 && cellProx[SouthEast] == 0) || // Rotation 180
-                (cellProx[Forward] > 0 && cellProx[SouthEast] == 0 && cellProx[SouthWest] == 0)    // Rotation 270
+                (leftEmpty    && swFilled && nwFilled) || // CW Rotation 0
+                (forwardEmpty && nwFilled && neFilled) || // CW Rotation 90
+                (rightEmpty   && neFilled && seFilled) || // CW Rotation 180
+                (backEmpty    && seFilled && swFilled)    // CW Rotation 270
             )
             { continue; }
 
@@ -493,14 +496,14 @@ public partial class GridGenerator : GridMap
             switch (minProx_index.Item2)
             {
                 case Left:
-                case SouthWest:
-                case NorthWest:
+                case SW:
+                case NW:
                     rot = Mathf.Pi * 0.5f;
                     break;
 
                 case Right:
-                case SouthEast:
-                case NorthEast:
+                case SE:
+                case NE:
                     rot = Mathf.Pi * -0.5f;
                     break;
 
@@ -520,25 +523,25 @@ public partial class GridGenerator : GridMap
                 {
                     if (obj.WeightToCentre == minProx_index.Item1 && _random.Randf() <= obj.Rarity)
                     {
-                        CreateInteriorObject(obj.Scene, floorPos, rot);
+                        CreateInteriorNode(obj.Scene, floorPos, rot);
                         break;
                     }
                 }
                 else if (_random.Randf() <= obj.Rarity * GetProximityProbability(obj.WeightToCentre, minProx_index.Item1))
                 {
-                    CreateInteriorObject(obj.Scene, floorPos, rot);
+                    CreateInteriorNode(obj.Scene, floorPos, rot);
                     break;
                 }
             }
         }
     }
 
-    private void CreateInteriorObject(PackedScene scene, Vector3 floorPos, float rotation)
+    private void CreateInteriorNode(PackedScene scene, Vector3 floorPos, float rotation)
     {
         Node3D node = scene.Instantiate<Node3D>();
 
         AddChild(node);
-        node.GlobalPosition = floorPos + _interiorObjOffset;
+        node.GlobalPosition = floorPos + _interiorNodeOffset;
         node.GlobalRotation = new Vector3(0f, rotation, 0f);
     }
 
@@ -567,97 +570,20 @@ public partial class GridGenerator : GridMap
     private float GetProximityProbability(float weight, float normalisedProx) => (weight * normalisedProx) + ((1 - weight) * (1 - normalisedProx));
 
     /// <summary>
-    /// Get neighbouring cells on each adjacent side, on the y-plane.
+    /// Get neighbouring cells at each given direction.
     /// </summary>
     /// <param name="centrePos">Position to find neighbours from.</param>
-    /// <returns><c>NeighbourInfo[4] {Left, Forward, Right, Back}</c></returns>
-    private NeighbourInfo[] GetPlanarAdjacentNeighbours(Vector3I centrePos)
+    /// <returns><c>NeighbourInfo[]</c> in the same order as the <c>directions</c></returns>
+    private NeighbourInfo[] GetNeighbours(Vector3I centrePos, Vector3I[] directions)
     {
-        NeighbourInfo[] neighbours = new NeighbourInfo[4];
-        Vector3I pos;
-
-        pos = centrePos + Vector3I.Left;
-        neighbours[0] = new NeighbourInfo
+        NeighbourInfo[] neighbours = new NeighbourInfo[directions.Length];    
+        for (int i = 0; i < neighbours.Length; i++)
         {
-            Position = pos,
-            Direction = Vector3I.Left,
-            ItemIdx = (ItemManager.ItemId)GetCellItem(pos)
-        };
+            Vector3I dir = directions[i];
+            Vector3I pos = centrePos + dir;
 
-        pos = centrePos + Vector3I.Forward;
-        neighbours[1] = new NeighbourInfo
-        {
-            Position = pos,
-            Direction = Vector3I.Forward,
-            ItemIdx = (ItemManager.ItemId)GetCellItem(pos)
-        };
-
-        pos = centrePos + Vector3I.Right;
-        neighbours[2] = new NeighbourInfo
-        {
-            Position = pos,
-            Direction = Vector3I.Right,
-            ItemIdx = (ItemManager.ItemId)GetCellItem(pos)
-        };
-
-        pos = centrePos + Vector3I.Back;
-        neighbours[3] = new NeighbourInfo
-        {
-            Position = pos,
-            Direction = Vector3I.Back,
-            ItemIdx = (ItemManager.ItemId)GetCellItem(pos)
-        };
-
-        return neighbours;
-    }
-    ///
-    /// <summary>
-    /// Get neighbouring cells on each diagonal side (corners), on the y-plane.
-    /// </summary>
-    /// <param name="centrePos">Position to find neighbours from.</param>
-    /// <returns><c>NeighbourInfo[4] {NorthWest, NorthEast, SouthEast, SouthWest}</c></returns>
-    private NeighbourInfo[] GetPlanarDiagonalNeighbours(Vector3I centrePos)
-    {
-        NeighbourInfo[] neighbours = new NeighbourInfo[4];
-        Vector3I dir;
-        Vector3I pos;
-
-        dir = new Vector3I(-1, 0, 1); // North West
-        pos = centrePos + dir;
-        neighbours[0] = new NeighbourInfo
-        {
-            Position = pos,
-            Direction = dir,
-            ItemIdx = (ItemManager.ItemId)GetCellItem(pos)
-        };
-
-        dir = new Vector3I(1, 0, 1); // North East
-        pos = centrePos + dir;
-        neighbours[1] = new NeighbourInfo
-        {
-            Position = pos,
-            Direction = dir,
-            ItemIdx = (ItemManager.ItemId)GetCellItem(pos)
-        };
-
-        dir = new Vector3I(1, 0, -1); // South East
-        pos = centrePos + dir;
-        neighbours[2] = new NeighbourInfo
-        {
-            Position = pos,
-            Direction = dir,
-            ItemIdx = (ItemManager.ItemId)GetCellItem(pos)
-        };
-
-        dir = new Vector3I(-1, 0, -1); // South West
-        pos = centrePos + dir;
-        neighbours[3] = new NeighbourInfo
-        {
-            Position = pos,
-            Direction = dir,
-            ItemIdx = (ItemManager.ItemId)GetCellItem(pos)
-        };
-
+            neighbours[i] = new NeighbourInfo(pos, dir, GetCellItem(pos));
+        }
         return neighbours;
     }
 
@@ -692,7 +618,7 @@ public partial class GridGenerator : GridMap
             for (int x = -outerWidth; x <= outerWidth; x++)
             {
                 Vector3I pos = startPos + (direction * z) + (perpDir * x);
-                if (GetCellItem(pos) != (int)ItemManager.ItemId.Empty)
+                if (GetCellItem(pos) != (int)ItemManager.Id.Empty)
                 {
                     return true;
                 }
@@ -710,7 +636,7 @@ public partial class GridGenerator : GridMap
             for (int x = -outerWidth; x <= outerWidth; x++)
             {
                 Vector3I pos = startPos + (direction * z) + (perpDir * x);
-                if (GetCellItem(pos) != (int)ItemManager.ItemId.Empty && !setToExclude.Contains(pos))
+                if (GetCellItem(pos) != (int)ItemManager.Id.Empty && !setToExclude.Contains(pos))
                 {
                     return true;
                 }
@@ -725,7 +651,7 @@ public partial class GridGenerator : GridMap
     /// <param name="floorPos">Column will be built ONE above (global-y) this position.</param>
     /// <param name="height">Number of cells from the <c>floorPos</c>.</param>
     /// <param name="itemId">Item to set in each cell.</param>
-    private void BuildColumn(Vector3I floorPos, int height, ItemManager.ItemId itemId)
+    private void BuildColumn(Vector3I floorPos, int height, ItemManager.Id itemId)
     {
         for (int y = 1; y <= height; y++)
         {
@@ -734,7 +660,7 @@ public partial class GridGenerator : GridMap
     }
     ///
     /// <param name="orientation">Rotation to apply to each cell, later approximated as discrete indexes.</param>
-    private void BuildColumn(Vector3I floorPos, int height, ItemManager.ItemId itemId, int orientation)
+    private void BuildColumn(Vector3I floorPos, int height, ItemManager.Id itemId, int orientation)
     {
         for (int y = 1; y <= height; y++)
         {

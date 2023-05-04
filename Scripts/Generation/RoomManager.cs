@@ -7,9 +7,9 @@ public class RoomManager
 {
     private const string RoomsDirectory = "res://Rooms";
 
-    public ItemManager.ItemId FloorId => _selectedRoom.FloorId;
-    public ItemManager.ItemId WallId => _selectedRoom.WallId;
-    public ItemManager.ItemId CeilingId => _selectedRoom.CeilingId;
+    public ItemManager.Id FloorId => _selectedRoom.FloorId;
+    public ItemManager.Id WallId => _selectedRoom.WallId;
+    public ItemManager.Id CeilingId => _selectedRoom.CeilingId;
 
     private RandomNumberGenerator _random;
     private Room[] _rooms;

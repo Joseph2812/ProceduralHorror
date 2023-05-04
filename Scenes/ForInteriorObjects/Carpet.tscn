@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=9 format=3 uid="uid://04384ocs25wn"]
 
 [ext_resource type="Texture2D" uid="uid://cdbag5gyxxhtx" path="res://Textures/Fabric/Fabric_Colour.jpg" id="1_h5gto"]
 [ext_resource type="Texture2D" uid="uid://dvt0lhy0gdgmy" path="res://Textures/Fabric/Fabric_AO.jpg" id="2_tc72b"]

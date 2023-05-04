@@ -1,6 +1,6 @@
 [gd_resource type="Resource" load_steps=3 format=3 uid="uid://68rts66k7q2y"]
 
-[ext_resource type="PackedScene" uid="uid://bxt8tmbw2xs1c" path="res://Scenes/ForInteriorObjects/Carpet.tscn" id="1_pkyio"]
+[ext_resource type="PackedScene" uid="uid://04384ocs25wn" path="res://Scenes/ForInteriorObjects/Carpet.tscn" id="1_pkyio"]
 [ext_resource type="Script" path="res://Scripts/Generation/InteriorObject.cs" id="2_v5c14"]
 
 [resource]
