@@ -18,7 +18,6 @@ public class RoomManager
     public RoomManager(RandomNumberGenerator random)
     {
         _random = random;
-
         string[] filenames = DirAccess.GetFilesAt(RoomsDirectory);
 
         _rooms = new Room[filenames.Length];

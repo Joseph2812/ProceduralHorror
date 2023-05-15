@@ -37,25 +37,26 @@ public class ItemManager
         public override int GetHashCode((Id, Id) obj) => ((int)obj.Item1) ^ ((int)obj.Item2);
     }
 
-    private readonly Dictionary<(Id, Id), Id> _mixedItems = new(new MixedItemIdComparer());
+    private readonly Dictionary<(Id, Id), Id> _mixedItems = new(new MixedItemIdComparer())
+    {
+        [(Id.White, Id.Orange)] = Id.WhiteOrange,
+        [(Id.White, Id.Red)]    = Id.WhiteRed,
+        [(Id.White, Id.Green)]  = Id.WhiteGreen,
+        [(Id.White, Id.Blue)]   = Id.WhiteBlue,
+
+        [(Id.Orange, Id.Red)]   = Id.OrangeRed,
+        [(Id.Orange, Id.Green)] = Id.OrangeGreen,
+        [(Id.Orange, Id.Blue)]  = Id.OrangeBlue,
+
+        [(Id.Red, Id.Green)] = Id.RedGreen,
+        [(Id.Red, Id.Blue)]  = Id.RedBlue,
+
+        [(Id.Green, Id.Blue)] = Id.GreenBlue
+    };
     private readonly Dictionary<Id, (Id, Id)> _reverseMixedItems = new();
 
     public ItemManager()
     {
-        _mixedItems.Add((Id.White, Id.Orange), Id.WhiteOrange);
-        _mixedItems.Add((Id.White, Id.Red), Id.WhiteRed);
-        _mixedItems.Add((Id.White, Id.Green), Id.WhiteGreen);
-        _mixedItems.Add((Id.White, Id.Blue), Id.WhiteBlue);
-
-        _mixedItems.Add((Id.Orange, Id.Red), Id.OrangeRed);
-        _mixedItems.Add((Id.Orange, Id.Green), Id.OrangeGreen);
-        _mixedItems.Add((Id.Orange, Id.Blue), Id.OrangeBlue);
-
-        _mixedItems.Add((Id.Red, Id.Green), Id.RedGreen);
-        _mixedItems.Add((Id.Red, Id.Blue), Id.RedBlue);
-
-        _mixedItems.Add((Id.Green, Id.Blue), Id.GreenBlue);
-
         // Create Reverse Lookup //
         foreach (KeyValuePair<(Id, Id), Id> pair in _mixedItems)
         {
@@ -63,16 +64,26 @@ public class ItemManager
         }
     }
 
-    public Id GetMixedId(Id id1, Id id2, out bool reversed)
-    {
-        reversed = false;
-        if (_mixedItems.TryGetValue((id1, id2), out Id mixedId))
+    /// <summary>
+    /// Find the mixed equivalent of two item IDs, and whether it matches the order in the stored dictionary (<paramref name="mixedId"/> = <paramref name="id2"/> on failure).
+    /// </summary>
+    /// <param name="id1">1st item ID.</param>
+    /// <param name="id2">2nd item ID (<paramref name="mixedId"/> set as this if it fails).</param>
+    /// <param name="mixedId">The id mix between <paramref name="id1"/> and <paramref name="id2"/>, if it fails it's just <paramref name="id2"/>.</param>
+    /// <param name="reversed">Reversed if it doesn't match the order stored in the dictionary.</param>
+    /// <returns>Whether it was a success (failure if one the IDs is already mixed, or IDs are the same).</returns>
+    public bool GetMixedId(Id id1, Id id2, out Id mixedId, out bool reversed)
+    {      
+        if (_mixedItems.TryGetValue((id1, id2), out mixedId))
         {
-            (Id storedId1, Id _) = _reverseMixedItems[mixedId];
-
-            reversed = id1 != storedId1;
-            return mixedId;
+            reversed = id1 != _reverseMixedItems[mixedId].Item1;
+            return true;
         }
-        else { return id1; }
+        else
+        {
+            mixedId = id2;
+            reversed = false;
+            return false;
+        }
     }
 }
