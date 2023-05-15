@@ -13,10 +13,12 @@ public partial class GridGenerator : GridMap
     private const int MaximumLength           = 10; // Max length of extrusion
     private const int MaximumHeight           = 5;  // Max height of a room (including ceiling)
     private const int MaximumDoorways         = 5;  // Max number of doorways it can generate
-    private const int MaximumInteriorRetries  = 1;  // Max number of times to keep attempting to place an interior object in a cell
+    private const int MaximumInteriorRetries  = 1;  // Max number of times to keep attempting to place an interior object in a cell  
 
     private const int MinimumOuterWidth = 1; // Minimum width: (1 * 2) + 1 = 3
     private const int MinimumLength     = 3;
+
+    private const string InteriorObjectParentName = "InteriorObjects";
 
     private enum OrthDir
     {
@@ -101,6 +103,7 @@ public partial class GridGenerator : GridMap
     private RandomNumberGenerator _random = new();
     private ItemManager _itemManager = new();
     private RoomManager _roomManager;
+    private Node _interiorNodeParent;
     private readonly Vector3 _interiorNodeOffset = new Vector3(0.5f, 1f, 0.5f);
 
     private Vector3I[] _orthogonalDirs =
@@ -126,6 +129,9 @@ public partial class GridGenerator : GridMap
         // Initialise //
         _roomManager = new(_random);
 
+        _interiorNodeParent = new Node3D { Name = InteriorObjectParentName };
+        AddChild(_interiorNodeParent);
+
         _allDirs = new Vector3I[_orthogonalDirs.Length + _diagonalDirs.Length];
         _orthogonalDirs.CopyTo(_allDirs, 0);
         _diagonalDirs.CopyTo(_allDirs, _orthogonalDirs.Length);
@@ -133,7 +139,20 @@ public partial class GridGenerator : GridMap
         //_random.Seed = 3695801886041264631;
         GD.Print(_random.Seed);
 
-        // Generation //
+        bool success = false;
+        while (!success) { success = StartGeneration(); }
+
+        // Free Unused Objects //
+        _random.Dispose();
+        _itemManager = null;
+        _roomManager = null;
+        _orthogonalDirs = null;
+        _diagonalDirs = null;
+        _allDirs = null;
+    }
+
+    private bool StartGeneration()
+    {
         HashSet<Vector3I> prevDoorPosS = new(new Vector3I[] { Vector3I.Zero });
         HashSet<Vector3I> allDoorPosS = new();
         int roomCount = 0;
@@ -147,7 +166,7 @@ public partial class GridGenerator : GridMap
                 {
                     doorPosS.Clear();
                     break;
-                }              
+                }
                 _roomManager.SelectRandomRoom();
 
                 HashSet<Vector3I> floorPosS = GenerateFloor(doorPos, out Vector3I startDir);
@@ -174,26 +193,33 @@ public partial class GridGenerator : GridMap
             }
             prevDoorPosS = doorPosS;
         }
-        if (roomCount < MaximumRoomCount) { GD.Print($"Maximum room count wasn't reached. Current: {roomCount}"); }
+
+        if (roomCount < MaximumRoomCount)
+        {
+            GD.Print($"Maximum room count wasn't reached. Current: {roomCount}. Retrying...");
+
+            Clear();
+            _interiorNodeParent.Free();
+            _interiorNodeParent = new Node3D { Name = InteriorObjectParentName };
+            AddChild(_interiorNodeParent);
+
+            return false;
+        }
 
         // Fill Any Doors Open To The VOID or leading into a wall (due to corners) //
         foreach (Vector3I pos in allDoorPosS)
         {
-            if 
+            if
             (
                 NeighbourInfo.GetFirstEmpty(GetNeighbours(pos, _orthogonalDirs), out _) ||
                 NeighbourInfo.GetFirstEmpty(GetNeighbours(pos, _diagonalDirs), out _)
             )
-            { BuildColumn(pos, 2, ItemManager.Id.White); }   
+            {
+                Vector3I aboveDoor = pos + (Vector3I.Up * 3);
+                BuildColumn(pos, 2, (ItemManager.Id)GetCellItem(aboveDoor), GetCellItemOrientation(aboveDoor));
+            }
         }
-
-        // Free Unused Objects //
-        _random.Dispose();
-        _itemManager = null;
-        _roomManager = null;
-        _orthogonalDirs = null;
-        _diagonalDirs = null;
-        _allDirs = null;
+        return true;
     }
 
     /// <returns><c>HashSet</c> of floor positions.</returns>
@@ -621,7 +647,7 @@ public partial class GridGenerator : GridMap
     {
         Node3D node = scene.Instantiate<Node3D>();
 
-        AddChild(node);
+        _interiorNodeParent.AddChild(node);
         node.GlobalPosition = floorPos + _interiorNodeOffset;
         node.GlobalRotation = new Vector3(0f, rotationY, 0f);
     }
