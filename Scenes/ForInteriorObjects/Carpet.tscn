@@ -26,7 +26,7 @@ subsurf_scatter_texture = ExtResource("6_kr77e")
 [sub_resource type="BoxMesh" id="BoxMesh_vy0r7"]
 lightmap_size_hint = Vector2i(14, 11)
 material = SubResource("StandardMaterial3D_wklar")
-size = Vector3(1, 0.02, 1)
+size = Vector3(3, 0.02, 2)
 
 [node name="Carpet" type="MeshInstance3D"]
 mesh = SubResource("BoxMesh_vy0r7")

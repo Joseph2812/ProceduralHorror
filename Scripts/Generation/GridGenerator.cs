@@ -104,7 +104,7 @@ public partial class GridGenerator : GridMap
     private ItemManager _itemManager = new();
     private RoomManager _roomManager;
     private Node _interiorNodeParent;
-    private readonly Vector3 _interiorNodeOffset = new Vector3(0.5f, 1f, 0.5f);
+    private readonly Vector3 _interiorNodeOffset = new Vector3(0f, 1f, 0f);
 
     private Vector3I[] _orthogonalDirs =
     {
@@ -136,7 +136,7 @@ public partial class GridGenerator : GridMap
         _orthogonalDirs.CopyTo(_allDirs, 0);
         _diagonalDirs.CopyTo(_allDirs, _orthogonalDirs.Length);
 
-        //_random.Seed = 3695801886041264631;
+        //_random.Seed = 13224076068604078681;
         GD.Print(_random.Seed);
 
         bool success = false;
@@ -206,7 +206,7 @@ public partial class GridGenerator : GridMap
             return false;
         }
 
-        // Fill Any Doors Open To The VOID or leading into a wall (due to corners) //
+        // Fill Any Doors Open To The VOID Or Leading Into A Wall (due to corners) //
         foreach (Vector3I pos in allDoorPosS)
         {
             if
@@ -378,10 +378,11 @@ public partial class GridGenerator : GridMap
                         );
                     }
                 }
-                else if // Only needs mixing if it's next to another room
+                else if 
                 (
-                    !floorPosS.Contains(neighbourFloorAheadPos) &&
-                    GetCellItem(neighbourFloorAheadPos) != (int)ItemManager.Id.Empty            
+                    !floorPosS.Contains(neighbourFloorAheadPos) &&                                    // Different room
+                    GetCellItem(neighbourFloorAheadPos)               != (int)ItemManager.Id.Empty && // Floor on other side
+                    GetCellItem(neighbourFloorAheadPos + Vector3I.Up) == (int)ItemManager.Id.Empty    // Corners excluded
                 )
                 {
                     (ItemManager.Id mixedId, int orientation) = GetMixedIdWithOrientation
@@ -465,17 +466,15 @@ public partial class GridGenerator : GridMap
         long uniqueId = 0;
 
         SetProximitiesAndAStar(floorPosS, allCellProximities, normaliseVals, aStar, posToId, idToPos, ref uniqueId);
-        HashSet<Vector3I> pathPosS = GetAStarPathPositionsBtwDoors(floorPosS, doorPosS, originDoorAheadPos, aStar, posToId, idToPos, ref uniqueId);
+        HashSet<Vector3I> occupiedPosS = GetAStarPathPositionsBtwDoors(floorPosS, doorPosS, originDoorAheadPos, aStar, posToId, idToPos, ref uniqueId);
 
         // Attempt To Place Interior Nodes //
-        HashSet<Vector3I> occupiedPosS = new();
         int i = -1;
-
         foreach (Vector3I floorPos in floorPosS)
         {
             i++;
 
-            if (pathPosS.Contains(floorPos)) { continue; }
+            if (occupiedPosS.Contains(floorPos)) { continue; }
             int[] cellProximities = allCellProximities[i];
 
             bool leftEmpty    = cellProximities[(int)AllDir.Left]    > 0,
@@ -503,7 +502,7 @@ public partial class GridGenerator : GridMap
 
             // Place Random Node Based On Minimum Normalised Proximity //
             (float minNormalisedProx, int minIdx) = GetMinimumNormalisedProximityWithIndex(floorPos, cellProximities, normaliseVals, occupiedPosS);
-            PlaceRandomInteriorNode(floorPos, occupiedPosS, minNormalisedProx, GetRotationYFromIndex(minIdx));
+            PlaceRandomInteriorNode(floorPos, floorPosS, occupiedPosS, minNormalisedProx, GetRotationYFromIndex(minIdx));
         }
     }
     private void SetProximitiesAndAStar(HashSet<Vector3I> floorPosS, int[][] allCellProximities, float[] normaliseVals, AStar3D aStar, Dictionary<Vector3I, long> posToId, Dictionary<long, Vector3I> idToPos, ref long uniqueId)
@@ -626,30 +625,38 @@ public partial class GridGenerator : GridMap
             default: return 0f;
         }
     }
-    private void PlaceRandomInteriorNode(Vector3I floorPos, HashSet<Vector3I> occupiedPosS, float minNormalisedProx, float rotationY)
+    private void PlaceRandomInteriorNode(Vector3I floorPos, HashSet<Vector3I> floorPosS,  HashSet<Vector3I> occupiedPosS, float minNormalisedProx, float rotationY)
     {
         for (int j = 0; j < MaximumInteriorRetries; j++)
         {
             InteriorObject obj = _roomManager.GetRandomInteriorObject();
+            HashSet<Vector3I> clearancePosS = obj.GetClearancePositions(floorPos, rotationY);
+
             if
             (
-                ( obj.Exact && obj.WeightToCentre == minNormalisedProx && _random.Randf() < obj.Rarity) ||
-                (!obj.Exact && _random.Randf() < obj.Rarity * GetProximityProbability(obj.WeightToCentre, minNormalisedProx))
+                !clearancePosS.Overlaps(occupiedPosS)                                              && // Not intersecting occupied space
+                (clearancePosS.IsProperSubsetOf(floorPosS) || clearancePosS.IsSubsetOf(floorPosS)) && // All inside floor space
+                (
+                    ( obj.Exact && obj.WeightToCentre == minNormalisedProx && _random.Randf() < obj.Rarity) ||
+                    (!obj.Exact && _random.Randf() < obj.Rarity * GetProximityProbability(obj.WeightToCentre, minNormalisedProx))
+                )
             )
             {
-                CreateInteriorNode(obj.Scene, floorPos, rotationY);
+                CreateInteriorNode(obj.Scene, floorPos + obj.GetOffset(rotationY), rotationY);
                 occupiedPosS.Add(floorPos);
+                occupiedPosS.UnionWith(clearancePosS);
+
                 break;
             }
         }
     }
-    private void CreateInteriorNode(PackedScene scene, Vector3 floorPos, float rotationY)
+    private void CreateInteriorNode(PackedScene scene, Vector3 position, float rotationY)
     {
         Node3D node = scene.Instantiate<Node3D>();
+        node.Position = position + Vector3.Up;
+        node.Rotation = new Vector3(0f, rotationY, 0f);
 
         _interiorNodeParent.AddChild(node);
-        node.GlobalPosition = floorPos + _interiorNodeOffset;
-        node.GlobalRotation = new Vector3(0f, rotationY, 0f);
     }
 
     /// <summary>
