@@ -33,20 +33,11 @@ public partial class InteriorObject : Resource
     [ExportGroup("Placement")]
 
     /// <summary>
-    /// Offset applied to <c>Scene</c> so the north-west corner of it lines up with the origin.
-    /// </summary>
-    [Export]
-    private Vector3 _offset;
-
-    /// <summary>
     /// Used to mark what relative positions it will take up when placed. (0, 0, 0) is already checked by <c>GridGenerator</c> so it isn't needed.<para/>
     /// Godot doesn't support exporting Vector3I[] :(
     /// </summary>
     [Export]
     private Vector3[] _clearancePositions = Array.Empty<Vector3>();
-
-    /// <returns>Offset rotated by <paramref name="rotationY"/> in radians.</returns>
-    public Vector3 GetOffset(float rotationY) => _offset.Rotated(Vector3I.Up, rotationY).Abs();
 
     /// <summary>
     /// Gets the positions that <c>Scene</c> would take up (or want clear) for being placed at <paramref name="originPos"/> with a <paramref name="rotationY"/> in radians.

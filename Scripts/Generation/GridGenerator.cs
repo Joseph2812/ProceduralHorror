@@ -1,3 +1,5 @@
+//#define ENABLE_CEILING
+
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -13,12 +15,12 @@ public partial class GridGenerator : GridMap
     private const int MaximumLength           = 10; // Max length of extrusion
     private const int MaximumHeight           = 5;  // Max height of a room (including ceiling)
     private const int MaximumDoorways         = 5;  // Max number of doorways it can generate
-    private const int MaximumInteriorRetries  = 1;  // Max number of times to keep attempting to place an interior object in a cell  
+    private const int MaximumInteriorRetries  = 3;  // Max number of times to keep attempting to place an interior object in a cell  
 
     private const int MinimumOuterWidth = 1; // Minimum width: (1 * 2) + 1 = 3
     private const int MinimumLength     = 3;
 
-    private const string InteriorObjectParentName = "InteriorObjects";
+    private const string InteriorObjectParentName = "InteriorNodes";
 
     private enum OrthDir
     {
@@ -104,7 +106,7 @@ public partial class GridGenerator : GridMap
     private ItemManager _itemManager = new();
     private RoomManager _roomManager;
     private Node _interiorNodeParent;
-    private readonly Vector3 _interiorNodeOffset = new Vector3(0f, 1f, 0f);
+    private readonly Vector3 _interiorNodeOffset = new Vector3(0.5f, 1f, 0.5f);
 
     private Vector3I[] _orthogonalDirs =
     {
@@ -136,7 +138,7 @@ public partial class GridGenerator : GridMap
         _orthogonalDirs.CopyTo(_allDirs, 0);
         _diagonalDirs.CopyTo(_allDirs, _orthogonalDirs.Length);
 
-        //_random.Seed = 13224076068604078681;
+        //_random.Seed = 17907068228413148056;
         GD.Print(_random.Seed);
 
         bool success = false;
@@ -329,8 +331,9 @@ public partial class GridGenerator : GridMap
                 { potentialDoorPosS.Add(floorPos); }
             }
 
-            // Ceiling
-            //SetCellItem(floorPos + (Vector3I.Up * (height)), (int)ItemManager.Id.White);
+#if ENABLE_CEILING
+            SetCellItem(floorPos + (Vector3I.Up * height), (int)ItemManager.Id.White);
+#endif
         }      
         return potentialDoorPosS;
     }
@@ -642,7 +645,7 @@ public partial class GridGenerator : GridMap
                 )
             )
             {
-                CreateInteriorNode(obj.Scene, floorPos + obj.GetOffset(rotationY), rotationY);
+                CreateInteriorNode(obj.Scene, floorPos, rotationY);
                 occupiedPosS.Add(floorPos);
                 occupiedPosS.UnionWith(clearancePosS);
 
@@ -653,8 +656,8 @@ public partial class GridGenerator : GridMap
     private void CreateInteriorNode(PackedScene scene, Vector3 position, float rotationY)
     {
         Node3D node = scene.Instantiate<Node3D>();
-        node.Position = position + Vector3.Up;
-        node.Rotation = new Vector3(0f, rotationY, 0f);
+        node.Position = position + _interiorNodeOffset;
+        node.Rotation = rotationY * Vector3.Up;
 
         _interiorNodeParent.AddChild(node);
     }
