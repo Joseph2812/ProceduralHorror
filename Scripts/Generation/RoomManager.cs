@@ -11,13 +11,11 @@ public class RoomManager
     public ItemManager.Id WallId => _selectedRoom.WallId;
     public ItemManager.Id CeilingId => _selectedRoom.CeilingId;
 
-    private RandomNumberGenerator _random;
     private Room[] _rooms;
     private Room _selectedRoom;
 
-    public RoomManager(RandomNumberGenerator random)
+    public RoomManager()
     {
-        _random = random;
         string[] filenames = DirAccess.GetFilesAt(RoomsDirectory);
 
         _rooms = new Room[filenames.Length];
@@ -28,7 +26,7 @@ public class RoomManager
         _selectedRoom = _rooms[0];
     }
 
-    public void SelectRandomRoom() { _selectedRoom = _rooms[_random.RandiRange(0, _rooms.Length - 1)]; }
+    public void SelectRandomRoom() { _selectedRoom = _rooms[GridGenerator.Inst.Rng.RandiRange(0, _rooms.Length - 1)]; }
 
-    public InteriorObject GetRandomInteriorObject() => _selectedRoom.ObjectPool[_random.RandiRange(0, _selectedRoom.ObjectPool.Length - 1)];
+    public InteriorObject GetRandomInteriorObject() => _selectedRoom.ObjectPool[GridGenerator.Inst.Rng.RandiRange(0, _selectedRoom.ObjectPool.Length - 1)];
 }

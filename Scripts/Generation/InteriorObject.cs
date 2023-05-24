@@ -9,11 +9,10 @@ public partial class InteriorObject : Resource
     [Export]
     public PackedScene Scene { get; private set; }
 
-    [ExportGroup("Probability")]
-
     /// <summary>
     /// Likelihood of <c>Scene</c> appearing in a cell.
     /// </summary>
+    [ExportGroup("Probability")]
     [Export(PropertyHint.Range, "0, 1")]
     public float Rarity { get; private set; }
 
@@ -30,10 +29,21 @@ public partial class InteriorObject : Resource
     [Export]
     public bool Exact { get; private set; }
 
-    [ExportGroup("Placement")]
+    /// <summary>
+    /// Minimum height <c>Scene</c> needs to be at/above for it to be placed.
+    /// </summary>
+    [ExportGroup("Constraints")]
+    [Export]
+    public int MinimumHeight { get; private set; }
 
     /// <summary>
-    /// Used to mark what relative positions it will take up when placed. (0, 0, 0) is already checked by <c>GridGenerator</c> so it isn't needed.<para/>
+    /// Maximum height <c>Scene</c> needs to be at/below for it to be placed.
+    /// </summary>
+    [Export]
+    public int MaximumHeight { get; private set; }
+
+    /// <summary>
+    /// Used to mark what relative positions it will take up when placed. (0, 0, 0) will already be added for any <c>Scene</c>.<para/>
     /// Godot doesn't support exporting Vector3I[] :(
     /// </summary>
     [Export]
@@ -47,11 +57,13 @@ public partial class InteriorObject : Resource
     /// <returns><c>Hashset</c> of positions that mark its requirement for placement.</returns>
     public HashSet<Vector3I> GetClearancePositions(Vector3I originPos, float rotationY)
     {
-        HashSet<Vector3I> clearancePosS = new();
+        HashSet<Vector3I> clearancePosS = new() { originPos };
         foreach (Vector3 relativePos in _clearancePositions)
         {
-            clearancePosS.Add(originPos + (Vector3I)relativePos.Rotated(Vector3I.Up, rotationY));
+            clearancePosS.Add(originPos + GetRotatedPosition(relativePos, rotationY));
         }
         return clearancePosS;
     }
+
+    protected Vector3I GetRotatedPosition(Vector3 relativePos, float rotationY) => (Vector3I)relativePos.Rotated(Vector3.Up, rotationY);
 }

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=3 format=3]
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://l7a8ccggtsuy"]
 
 [ext_resource type="Resource" uid="uid://mcobo4c5kuad" path="res://Rooms/InteriorObjects/TestObject.tres" id="1_y2u56"]
 [ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="2_f03o2"]

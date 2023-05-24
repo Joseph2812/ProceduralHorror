@@ -9,5 +9,6 @@ Scene = ExtResource("1_oyni8")
 Rarity = 1.0
 WeightToCentre = 0.0
 Exact = true
-_offset = Vector3(0.5, 0, 0.5)
+MinimumHeight = 0
+MaximumHeight = 0
 _clearancePositions = PackedVector3Array(0, 0, 1)
