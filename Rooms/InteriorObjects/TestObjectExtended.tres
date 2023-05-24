@@ -6,8 +6,8 @@
 
 [resource]
 script = ExtResource("3_7brel")
-_extensions = [ExtResource("2_t53dd")]
-_placementPositions = PackedVector3Array(1, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, -1)
+_extensions = [[ExtResource("2_t53dd")]]
+_placementPositions = Array[PackedVector3Array]([PackedVector3Array(-1, 0, 2, 1, 0, 0, -3, 0, 0)])
 Scene = ExtResource("1_p468c")
 Rarity = 1.0
 WeightToCentre = 0.0
