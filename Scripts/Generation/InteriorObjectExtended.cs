@@ -2,11 +2,14 @@ using Godot;
 using Godot.Collections;
 using System;
 using System.Collections.Generic;
+using Scripts.Extensions;
 
 namespace Scripts.Generation;
 
 public partial class InteriorObjectExtended : InteriorObject
 {
+    private const float ChanceToSkip = 0.5f;
+
     /// <summary>
     /// Other <c>InteriorObject</c>s that pairs with this <c>InteriorObject</c> (meant to generate together). 
     /// </summary>
@@ -25,7 +28,9 @@ public partial class InteriorObjectExtended : InteriorObject
         {
             for (int j = 0; j < _placementPositions.Count; j++)
             {
-                Vector3I nextPos = originPos + GetRotatedPosition(_placementPositions[i][j], rotationY);
+                if (MapGenerator.Inst.Rng.Randf() < ChanceToSkip) { continue; }
+
+                Vector3I nextPos = originPos + ((Vector3I)_placementPositions[i][j]).RotatedY(rotationY);
 
                 InteriorObject randomObj = _extensions[i][MapGenerator.Inst.Rng.RandiRange(0, _extensions[i].Count - 1)];
                 HashSet<Vector3I> clearancePositions = randomObj.GetClearancePositions(nextPos, rotationY);

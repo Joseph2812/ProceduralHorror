@@ -1,6 +1,7 @@
 //#define ENABLE_CEILING
 
 using Godot;
+using Scripts.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -284,7 +285,7 @@ public partial class MapGenerator : GridMap
         originPos += direction; // Shift one away from the door
         for (int i = 0; i < iterations; i++)
         {
-            Vector3I perpDir = GetPerpendicularVector(direction);
+            Vector3I perpDir = direction.RotatedY(Mathf.Pi * -0.5f);
             int outerWidth = 0;
             int length = 0;
 
@@ -757,9 +758,6 @@ public partial class MapGenerator : GridMap
         return neighbours;
     }
 
-    /// <returns>Perpendicular vector on the y-plane (90 degrees clockwise).</returns>
-    private Vector3I GetPerpendicularVector(Vector3I direction) => new(direction.Z, 0, -direction.X);
-
     /// <returns>Orthogonal index from rotating around the global y-axis.</returns>
     private int GetIndexOfRotationAroundY(Vector3 from, Vector3I to, float angleOffset = 0f)
     {
@@ -783,7 +781,7 @@ public partial class MapGenerator : GridMap
     /// <returns>If the area of cells contains any items.</returns>
     private bool AreaContainsItems(Vector3I startPos, Vector3I direction, int outerWidth, int length)
     {
-        Vector3I perpDir = GetPerpendicularVector(direction);
+        Vector3I perpDir = direction.RotatedY(Mathf.Pi * -0.5f);
         for (int z = 0; z < length; z++)
         {
             for (int x = -outerWidth; x <= outerWidth; x++)
@@ -801,7 +799,7 @@ public partial class MapGenerator : GridMap
     /// <param name="setToExclude">Set of cells to ignore if they are detected in the area.</param>
     private bool AreaContainsItems(Vector3I startPos, Vector3I direction, int outerWidth, int length, HashSet<Vector3I> setToExclude)
     {
-        Vector3I perpDir = GetPerpendicularVector(direction);
+        Vector3I perpDir = direction.RotatedY(Mathf.Pi * -0.5f);
         for (int z = 0; z < length; z++)
         {
             for (int x = -outerWidth; x <= outerWidth; x++)

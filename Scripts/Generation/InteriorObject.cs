@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using Scripts.Extensions;
 
 namespace Scripts.Generation;
 
@@ -58,12 +59,10 @@ public partial class InteriorObject : Resource
     public HashSet<Vector3I> GetClearancePositions(Vector3I originPos, float rotationY)
     {
         HashSet<Vector3I> clearancePosS = new() { originPos };
-        foreach (Vector3 relativePos in _clearancePositions)
+        foreach (Vector3I relativePos in _clearancePositions)
         {
-            clearancePosS.Add(originPos + GetRotatedPosition(relativePos, rotationY));
+            clearancePosS.Add(originPos + relativePos.RotatedY(rotationY));
         }
         return clearancePosS;
     }
-
-    protected Vector3I GetRotatedPosition(Vector3 relativePos, float rotationY) => (Vector3I)relativePos.Rotated(Vector3.Up, rotationY);
 }
