@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Scripts.Generation;
 
-public partial class GridGenerator : GridMap
+public partial class MapGenerator : GridMap
 {
     private const int MaximumRoomCount        = 30; // Max where generation will stop
     private const int MaximumIterations       = 5;  // Max number of times to randomly extrude a room
@@ -105,7 +105,7 @@ public partial class GridGenerator : GridMap
         }
     }
 
-    public static GridGenerator Inst { get; private set; }
+    public static MapGenerator Inst { get; private set; }
 
     public RandomNumberGenerator Rng { get; private set; } = new();
 
@@ -138,7 +138,7 @@ public partial class GridGenerator : GridMap
     private Node _interiorNodeParent;
     private readonly Vector3 _interiorNodeOffset = new Vector3(0.5f, 0f, 0.5f);
 
-    public GridGenerator() { Inst = this; }
+    public MapGenerator() { Inst = this; }
 
     public override async void _Ready()
     {
@@ -712,8 +712,8 @@ public partial class GridGenerator : GridMap
                 IsPlacementValid(clearancePosS) &&
                 heightLevel >= obj.MinimumHeight && heightLevel <= obj.MaximumHeight &&
                 (
-                    ( obj.Exact && obj.WeightToCentre == minNormalisedProx && Rng.Randf() < obj.Rarity) ||
-                    (!obj.Exact && Rng.Randf() < obj.Rarity * GetProximityProbability(obj.WeightToCentre, minNormalisedProx))
+                    ( obj.Exact && obj.WeightToCentre == minNormalisedProx) ||
+                    (!obj.Exact && Rng.Randf() < GetProximityProbability(obj.WeightToCentre, minNormalisedProx))
                 )
             )
             {

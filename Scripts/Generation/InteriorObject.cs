@@ -13,8 +13,8 @@ public partial class InteriorObject : Resource
     /// Likelihood of <c>Scene</c> appearing in a cell.
     /// </summary>
     [ExportGroup("Probability")]
-    [Export(PropertyHint.Range, "0, 1")]
-    public float Rarity { get; private set; }
+    [Export]
+    public int WeightOfAppearance { get; private set; }
 
     /// <summary>
     /// Likelihood of <c>Scene</c> appearing in a cell depending on its proxmity to the centre, from 0 (edge) to 1 (centre).

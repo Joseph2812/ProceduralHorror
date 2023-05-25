@@ -1,8 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://dkb26p62dp7mh"]
+[gd_scene load_steps=7 format=3 uid="uid://dduxddcquhrp1"]
 
 [ext_resource type="Script" path="res://Scripts/CameraController.cs" id="1_f47qg"]
 [ext_resource type="MeshLibrary" uid="uid://d17xtqeia5d7u" path="res://MeshLibrary.tres" id="1_s6mo0"]
-[ext_resource type="Script" path="res://Scripts/Generation/GridGenerator.cs" id="3_hfaxr"]
+[ext_resource type="Script" path="res://Scripts/Generation/MapGenerator.cs" id="3_xb8fi"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -36,5 +36,5 @@ script = ExtResource("1_f47qg")
 [node name="GridMap" type="GridMap" parent="."]
 mesh_library = ExtResource("1_s6mo0")
 cell_size = Vector3(1, 1, 1)
-script = ExtResource("3_hfaxr")
+script = ExtResource("3_xb8fi")
 metadata/_editor_floor_ = Vector3(0, 0, 0)

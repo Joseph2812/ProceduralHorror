@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using Scripts.Extensions;
 
 namespace Scripts.Generation;
 
@@ -26,7 +27,7 @@ public class RoomManager
         _selectedRoom = _rooms[0];
     }
 
-    public void SelectRandomRoom() { _selectedRoom = _rooms[GridGenerator.Inst.Rng.RandiRange(0, _rooms.Length - 1)]; }
+    public void SelectRandomRoom() { _selectedRoom = _rooms[MapGenerator.Inst.Rng.RandiRange(0, _rooms.Length - 1)]; }
 
-    public InteriorObject GetRandomInteriorObject() => _selectedRoom.ObjectPool[GridGenerator.Inst.Rng.RandiRange(0, _selectedRoom.ObjectPool.Length - 1)];
+    public InteriorObject GetRandomInteriorObject() => _selectedRoom.ObjectPool.GetRandomElementByWeight(x => x.WeightOfAppearance);
 }

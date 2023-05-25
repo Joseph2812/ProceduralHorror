@@ -27,11 +27,11 @@ public partial class InteriorObjectExtended : InteriorObject
             {
                 Vector3I nextPos = originPos + GetRotatedPosition(_placementPositions[i][j], rotationY);
 
-                InteriorObject randomObj = _extensions[i][GridGenerator.Inst.Rng.RandiRange(0, _extensions[i].Count - 1)];
+                InteriorObject randomObj = _extensions[i][MapGenerator.Inst.Rng.RandiRange(0, _extensions[i].Count - 1)];
                 HashSet<Vector3I> clearancePositions = randomObj.GetClearancePositions(nextPos, rotationY);
 
-                if (!GridGenerator.Inst.IsPlacementValid(clearancePositions)) { continue; }
-                GridGenerator.Inst.CreateInteriorNode(randomObj.Scene, nextPos, rotationY, clearancePositions);
+                if (!MapGenerator.Inst.IsPlacementValid(clearancePositions)) { continue; }
+                MapGenerator.Inst.CreateInteriorNode(randomObj.Scene, nextPos, rotationY, clearancePositions);
 
                 if (randomObj is InteriorObjectExtended extendedObj) { extendedObj.CreateExtensionsRecursively(nextPos, rotationY); }
             }

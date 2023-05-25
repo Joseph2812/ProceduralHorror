@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("2_v5c14")
 Scene = ExtResource("1_pkyio")
-Rarity = 1.0
+WeightOfAppearance = 3
 WeightToCentre = 1.0
 Exact = false
 MinimumHeight = 0
