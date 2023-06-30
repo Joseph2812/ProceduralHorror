@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c34pn11dg4oh7"]
+
+[ext_resource type="PackedScene" uid="uid://onaxhl1ut8ed" path="res://Models/Placeholders/Trashcan/Trashcan.fbx" id="1_bk0fl"]
+
+[node name="Trashcan" instance=ExtResource("1_bk0fl")]
+
+[node name="RootNode" parent="." index="0"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0.5, 0.5, 0.5)

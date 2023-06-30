@@ -1,0 +1,28 @@
+[gd_scene load_steps=9 format=3 uid="uid://d3f30v2j8v8b2"]
+
+[ext_resource type="ArrayMesh" uid="uid://dthbpd0avdgwr" path="res://Models/Placeholders/Microwave/Microwave.obj" id="1_hjlyg"]
+[ext_resource type="Texture2D" uid="uid://du6nrhbr1lwib" path="res://Models/Placeholders/Microwave/Mat_Base_Color.png" id="2_y6252"]
+[ext_resource type="Texture2D" uid="uid://d0fqyhmgf38tx" path="res://Models/Placeholders/Microwave/Mat_Mixed_AO.png" id="3_i628f"]
+[ext_resource type="Texture2D" uid="uid://ixbvdfqcxqf5" path="res://Models/Placeholders/Microwave/Mat_Height.png" id="4_252pd"]
+[ext_resource type="Texture2D" uid="uid://cqbywxu4gblig" path="res://Models/Placeholders/Microwave/Mat_Metallic.png" id="5_7ijn3"]
+[ext_resource type="Texture2D" uid="uid://5kd3ep7b2wvi" path="res://Models/Placeholders/Microwave/Mat_Normal_DirectX.png" id="6_tp3oi"]
+[ext_resource type="Texture2D" uid="uid://cdttd1kdq5oke" path="res://Models/Placeholders/Microwave/Mat_Roughness.png" id="7_hygn0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5fgnx"]
+albedo_texture = ExtResource("2_y6252")
+metallic = 1.0
+metallic_texture = ExtResource("5_7ijn3")
+roughness_texture = ExtResource("7_hygn0")
+normal_enabled = true
+normal_texture = ExtResource("6_tp3oi")
+anisotropy_flowmap = ExtResource("3_i628f")
+ao_enabled = true
+ao_texture = ExtResource("3_i628f")
+heightmap_texture = ExtResource("4_252pd")
+
+[node name="Microwave" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0.5, 0.252589, 0.5)
+mesh = ExtResource("1_hjlyg")
+surface_material_override/0 = SubResource("StandardMaterial3D_5fgnx")

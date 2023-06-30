@@ -1,0 +1,14 @@
+[gd_resource type="StandardMaterial3D" load_steps=5 format=3 uid="uid://4nlacgu2jkyf"]
+
+[ext_resource type="Texture2D" uid="uid://o5qmxt665fwe" path="res://Models/Placeholders/WashingMachine/Mat.1_Base_Color.png" id="1_bywo3"]
+[ext_resource type="Texture2D" uid="uid://cawuslrwsgar2" path="res://Models/Placeholders/WashingMachine/Mat.1_Metallic.png" id="2_nfepq"]
+[ext_resource type="Texture2D" uid="uid://b1vsmi6fhb2vh" path="res://Models/Placeholders/WashingMachine/Mat.1_Normal.png" id="3_604x0"]
+[ext_resource type="Texture2D" uid="uid://hdelftj5qmq0" path="res://Models/Placeholders/WashingMachine/Mat.1_Roughness.png" id="4_lttpu"]
+
+[resource]
+albedo_texture = ExtResource("1_bywo3")
+metallic = 1.0
+metallic_texture = ExtResource("2_nfepq")
+roughness_texture = ExtResource("4_lttpu")
+normal_enabled = true
+normal_texture = ExtResource("3_604x0")

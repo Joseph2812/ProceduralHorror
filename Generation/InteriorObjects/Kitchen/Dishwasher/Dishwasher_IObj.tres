@@ -1,0 +1,20 @@
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://dy0hhthn0y3f6"]
+
+[ext_resource type="PackedScene" uid="uid://dijdn8o1pln6q" path="res://Scenes/ForInteriorObjects/Placeholders/Dishwasher.tscn" id="1_l1s7u"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_ld0qb"]
+
+[resource]
+script = ExtResource("2_ld0qb")
+Scene = ExtResource("1_l1s7u")
+WeightOfPlacement = 5
+WeightToCentre = 0.0
+Exact = true
+OnlyCeiling = false
+MinimumHeight = 1
+MaximumHeight = 1
+_maximumCountBtwRooms = 0
+_neighbourConditionsText = "forward1"
+_clearancePositions = PackedVector3Array(0, 1, 0)
+_semiClearancePositions = PackedVector3Array(0, 0, 1, 0, 1, 1)
+_minimumRotationalYOffset = 0.0
+_maximumRotationalYOffset = 0.0

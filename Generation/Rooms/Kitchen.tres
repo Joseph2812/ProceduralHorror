@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://cog8r41rnwpvd"]
+
+[ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="2_d2lfa"]
+
+[resource]
+script = ExtResource("2_d2lfa")
+FloorId = 1
+WallId = 7
+CeilingId = 0
+ChanceOfEmptyCell = 0.0
+_interiorObjectPaths = PackedStringArray("res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/CounterWithCabinet_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Dishwasher/Dishwasher_IObj.tres", "res://Generation/InteriorObjects/Kitchen/FluorescentLamp/FluorescentLamp_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Fridge/Fridge_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Oven/Oven_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Trashcan/Trashcan_IObj.tres", "res://Generation/InteriorObjects/Kitchen/WashingMachine/WashingMachine_IObj.tres")

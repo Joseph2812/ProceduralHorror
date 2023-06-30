@@ -1,46 +1,50 @@
-//#define ENABLE_CEILING
+#define ENABLE_CEILING
 
 using Godot;
-using Scripts.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Scripts.Extensions;
 
 namespace Scripts.Generation;
 
 public partial class MapGenerator : GridMap
 {
     private const int MaximumRoomCount        = 30; // Max where generation will stop
-    private const int MaximumIterations       = 5;  // Max number of times to randomly extrude a room
+    private const int MaximumIterations       = 4;  // Max number of times to randomly extrude a room
     private const int MaximumExtrusionRetries = 50; // Max number of times to keep randomly sizing extrusions until it fits or runs out
     private const int MaximumOuterWidth       = 5;  // Max outer width of extrusion (applied separately to either side of a doorway)
     private const int MaximumLength           = 10; // Max length of extrusion
     private const int MaximumHeight           = 5;  // Max height of a room (including ceiling)
-    private const int MaximumDoorways         = 5;  // Max number of doorways it can generate
-    private const int MaximumInteriorRetries  = 3;  // Max number of times to keep attempting to place an interior object in a cell  
+    private const int MaximumDoorways         = 5;  // Max number of doorways it can generate 
 
     private const int MinimumOuterWidth = 1; // Minimum width: (1 * 2) + 1 = 3
     private const int MinimumLength     = 3;
 
-    private const int MillisecondsBtwSteps = 500; // Slows down generation by adding this delay between steps
+    private const int MillisecondsBtwSteps = 250; // Slows down generation by adding this delay between steps
 
-    private const string InteriorObjectParentName = "InteriorNodes";
-
-    private enum OrthDir
+    public enum OrthDir
     {
         Left,
         Forward,
         Right,
         Back
     }
-    private enum DiagDir
+    public enum DiagDir
     {
         NW,
         NE,
         SE,
         SW
     }
-    private enum AllDir
+
+    /// <summary>
+    /// Directions:<br/>
+    /// | NW   | Forward | NE    |<br/>
+    /// | Left | Centre  | Right |<br/>
+    /// | SW   | Back    | SE    |<para/>
+    /// </summary>
+    public enum All3x3Dir
     {
         Left,
         Forward,
@@ -52,92 +56,70 @@ public partial class MapGenerator : GridMap
         SW
     }
 
-    private struct NeighbourInfo
+    /// <summary>
+    /// <inheritdoc cref="All3x3Dir"/>
+    /// 
+    /// Relative to cell's y:<br/>
+    /// 0) y - 1<br/>
+    /// 1) y<br/>
+    /// 2) y + 1
+    /// </summary>
+    public enum All3x3x3Dir
     {
-        public Vector3I Position     { get; private set; }
-        public Vector3I Direction    { get; private set; }
-        public ItemManager.Id ItemId { get; private set; }
-        public bool Empty            { get; private set; }
+        Left0,
+        Forward0,
+        Right0,
+        Back0,
+        NW0,
+        NE0,
+        SE0,
+        SW0,
 
-        public NeighbourInfo(Vector3I position, Vector3I direction, int itemIdx)
-        {
-            Position = position;
-            Direction = direction;
-            ItemId = (ItemManager.Id)itemIdx;
-            Empty = (ItemId == ItemManager.Id.Empty);
-        }
+        Left1,
+        Forward1,
+        Right1,
+        Back1,
+        NW1,
+        NE1,
+        SE1,
+        SW1,
 
-        public static bool GetFirstFilled(NeighbourInfo[] neighbours, out NeighbourInfo filledNeighbour)
-        {
-            foreach (NeighbourInfo neighbour in neighbours)
-            {
-                if (!neighbour.Empty)
-                {
-                    filledNeighbour = neighbour;
-                    return true;
-                }
-            }
-            filledNeighbour = new NeighbourInfo();
-            return false;
-        }
-
-        public static bool GetFirstEmpty(NeighbourInfo[] neighbours, out NeighbourInfo emptyNeighbour)
-        {
-            foreach (NeighbourInfo neighbour in neighbours)
-            {
-                if (neighbour.Empty)
-                {
-                    emptyNeighbour = neighbour;
-                    return true;
-                }
-            }
-            emptyNeighbour = new NeighbourInfo();
-            return false;
-        }
-
-        public static int GetEmptyCount(NeighbourInfo[] neighbours)
-        {
-            int count = 0;
-            foreach (NeighbourInfo neighbour in neighbours)
-            {
-                if (neighbour.Empty) { count++; }
-            }
-            return count;
-        }
+        Left2,
+        Forward2,
+        Right2,
+        Back2,
+        NW2,
+        NE2,
+        SE2,
+        SW2
     }
 
     public static MapGenerator Inst { get; private set; }
 
     public RandomNumberGenerator Rng { get; private set; } = new();
 
-    private ItemManager _itemManager = new();
-    private RoomManager _roomManager;
-
     // Directions //
-    private Vector3I[] _orthogonalDirs =
+    public Vector3I[] OrthogonalDirs { get; private set; } =
     {
         Vector3I.Left,
         Vector3I.Forward,
         Vector3I.Right,
         Vector3I.Back
     };
-    private Vector3I[] _diagonalDirs =
+    public Vector3I[] DiagonalDirs { get; private set; } =
     {
         new Vector3I(-1, 0, -1), // North West (North = -Z)
         new Vector3I(1, 0, -1),  // North East
         new Vector3I(1, 0, 1),   // South East
         new Vector3I(-1, 0, 1)   // South West
     };
-    private Vector3I[] _allDirs; // Orthogonal + Diagonal
-
-    // Cached Positions Per Room //
-    private HashSet<Vector3I> _currentFloorPosS;
-    private HashSet<Vector3I> _currentEmptyPosS;
-    private HashSet<Vector3I> _currentOccupiedPosS;
+    public Vector3I[] All3x3Dirs { get; private set; } // Orthogonal + Diagonal
+    public Vector3I[] All3x3x3Dirs { get; private set; } // _all3x3Dirs x3 along y
     //
 
-    private Node _interiorNodeParent;
-    private readonly Vector3 _interiorNodeOffset = new Vector3(0.5f, 0f, 0.5f);
+    private ItemManager _itemManager = new();
+    private RoomManager _roomManager = new();
+    private HashSet<Vector3I> _floorPosS;
 
     public MapGenerator() { Inst = this; }
 
@@ -146,16 +128,23 @@ public partial class MapGenerator : GridMap
         base._Ready();
 
         // Initialise //
-        _roomManager = new();
-
         _interiorNodeParent = new Node3D { Name = InteriorObjectParentName };
         AddChild(_interiorNodeParent);
 
-        _allDirs = new Vector3I[_orthogonalDirs.Length + _diagonalDirs.Length];
-        _orthogonalDirs.CopyTo(_allDirs, 0);
-        _diagonalDirs.CopyTo(_allDirs, _orthogonalDirs.Length);
+        // Setting Directions //
+        int orthDiagLength = OrthogonalDirs.Length + DiagonalDirs.Length;
 
-        //Rng.Seed = 17907068228413148056;
+        All3x3Dirs = new Vector3I[orthDiagLength];
+        OrthogonalDirs.CopyTo(All3x3Dirs, 0);
+        DiagonalDirs.CopyTo(All3x3Dirs, OrthogonalDirs.Length);
+
+        All3x3x3Dirs = new Vector3I[orthDiagLength * 3];
+        for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i]                           = All3x3Dirs[i] + Vector3I.Down; }
+        for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i + All3x3Dirs.Length]       = All3x3Dirs[i]; }
+        for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i + (All3x3Dirs.Length * 2)] = All3x3Dirs[i] + Vector3I.Up; }
+        //
+
+        //Rng.Seed = 8205665769902400944;
         GD.Print(Rng.Seed);
 
         bool success = false;
@@ -164,31 +153,35 @@ public partial class MapGenerator : GridMap
         // Free Unused Objects //
         Rng.Dispose();
 
+        OrthogonalDirs = null;
+        DiagonalDirs = null;
+        All3x3Dirs = null;
+        All3x3x3Dirs = null;
+
         _itemManager = null;
         _roomManager = null;
 
-        _orthogonalDirs = null;
-        _diagonalDirs = null;
-        _allDirs = null;
-
-        _currentFloorPosS = null;
-        _currentEmptyPosS = null;
-        _currentOccupiedPosS = null;
+        _floorPosS = null;
+        _emptyPosS = null;
+        _potentialPos_floorIdx_heightLvl_S = null;
     }
 
-    public bool IsPlacementValid(HashSet<Vector3I> clearancePosS)
+    /// <summary>
+    /// Get neighbouring cells on the <see cref="GridMap"/> at each given direction.
+    /// </summary>
+    /// <param name="centrePos">Position to get the neighbours from.</param>
+    /// <returns><see cref="NeighbourInfo"/>[] in the same order as the <paramref name="directions"/>.</returns>
+    public NeighbourInfo[] GetNeighbours(Vector3I centrePos, Vector3I[] directions)
     {
-        return !clearancePosS.Overlaps(_currentOccupiedPosS) &&                                                    // Not intersecting occupied space
-               (clearancePosS.IsProperSubsetOf(_currentEmptyPosS) || clearancePosS.IsSubsetOf(_currentEmptyPosS)); // All inside free space
-    }
-    public void CreateInteriorNode(PackedScene scene, Vector3I position, float rotationY, HashSet<Vector3I> clearancePosS)
-    {
-        Node3D node = scene.Instantiate<Node3D>();
-        node.Position = position + _interiorNodeOffset;
-        node.Rotation = rotationY * Vector3.Up;
+        NeighbourInfo[] neighbours = new NeighbourInfo[directions.Length];
+        for (int i = 0; i < neighbours.Length; i++)
+        {
+            Vector3I dir = directions[i];
+            Vector3I pos = centrePos + dir;
 
-        _interiorNodeParent.AddChild(node);
-        _currentOccupiedPosS.UnionWith(clearancePosS);
+            neighbours[i] = new NeighbourInfo(pos, dir, GetCellItem(pos));
+        }
+        return neighbours;
     }
 
     private async Task<bool> StartGeneration()
@@ -209,10 +202,10 @@ public partial class MapGenerator : GridMap
                 }
                 _roomManager.SelectRandomRoom();
 
-                _currentFloorPosS = GenerateFloor(doorPos, out Vector3I startDir);
+                _floorPosS = GenerateFloor(doorPos, out Vector3I startDir);
                 await Task.Delay(MillisecondsBtwSteps);
 
-                if (_currentFloorPosS == null) { continue; }
+                if (_floorPosS == null) { continue; }
 
                 Vector3I originDoorAheadPos = (doorPos == Vector3I.Zero) ? doorPos + (startDir * 2) : doorPos + startDir;
                 int height = Rng.RandiRange(3, MaximumHeight);
@@ -248,13 +241,19 @@ public partial class MapGenerator : GridMap
             return false;
         }
 
-        // Fill Any Doors Open To The VOID Or Leading Into A Wall (due to corners) //
+        // Fill Any Doors Open To The VOID Or Leading Into A Wall //
         foreach (Vector3I pos in allDoorPosS)
         {
+            Vector3I upperPos = pos + Vector3I.Up;
             if
-            (
-                NeighbourInfo.GetFirstEmpty(GetNeighbours(pos, _orthogonalDirs), out _) ||
-                NeighbourInfo.GetFirstEmpty(GetNeighbours(pos, _diagonalDirs), out _)
+            (               
+                NeighbourInfo.GetFirstEmpty(GetNeighbours(pos, OrthogonalDirs), out _) ||
+                NeighbourInfo.GetFirstEmpty(GetNeighbours(pos, DiagonalDirs), out _) ||
+                // Check if it's leading into a wall
+                ( 
+                    NeighbourInfo.GetFirstEmpty(GetNeighbours(upperPos, OrthogonalDirs), out NeighbourInfo emptyNeighbour) &&
+                    GetCellItem(upperPos - emptyNeighbour.Direction) != (int)ItemManager.Id.Empty
+                )
             )
             {
                 Vector3I aboveDoor = pos + (Vector3I.Up * 3);
@@ -264,11 +263,11 @@ public partial class MapGenerator : GridMap
         return true;
     }
 
-    /// <returns><c>HashSet</c> of floor positions.</returns>
+    /// <returns><see cref="HashSet{Vector3I}"/> of floor positions.</returns>
     private HashSet<Vector3I> GenerateFloor(Vector3I originPos, out Vector3I startDir)
     {
         // Get Initial Direction //
-        if (!NeighbourInfo.GetFirstEmpty(GetNeighbours(originPos, _orthogonalDirs), out NeighbourInfo emptyNeighbour))
+        if (!NeighbourInfo.GetFirstEmpty(GetNeighbours(originPos, OrthogonalDirs), out NeighbourInfo emptyNeighbour))
         {
             startDir = Vector3I.Zero;
             return null;
@@ -325,7 +324,7 @@ public partial class MapGenerator : GridMap
             if (i == lastIteration) { break; } // Last iteration doesn't need a new direction
 
             // Choose New Random Direction //
-            List<Vector3I> potentialDirs = new(_orthogonalDirs);
+            List<Vector3I> potentialDirs = new(OrthogonalDirs);
             potentialDirs.Remove(-direction); // Remove opposite direction
 
             Vector3I newDirection = potentialDirs[Rng.RandiRange(0, potentialDirs.Count - 1)];
@@ -343,25 +342,25 @@ public partial class MapGenerator : GridMap
         return _currentFloorPosS;
     }
 
-    /// <returns><c>List</c> of potential door positions.</returns>
+    /// <returns><see cref="List{Vector3I}"/> of potential door positions.</returns>
     private List<Vector3I> GenerateWallsAndCeiling(int height)
     {
         List<Vector3I> potentialDoorPosS = new();
-        IEnumerator<Vector3I> enumerator = _currentFloorPosS.GetEnumerator();
+        IEnumerator<Vector3I> enumerator = _floorPosS.GetEnumerator();
 
         while (enumerator.MoveNext())
         {
             Vector3I floorPos = enumerator.Current;
-            NeighbourInfo[] orthNeighbours = GetNeighbours(floorPos, _orthogonalDirs);
+            NeighbourInfo[] orthNeighbours = GetNeighbours(floorPos, OrthogonalDirs);
 
             if // Any exposed cell requires a wall
             (
                 NeighbourInfo.GetFirstEmpty(orthNeighbours, out NeighbourInfo emptyNeighbour) ||
-                NeighbourInfo.GetFirstEmpty(GetNeighbours(floorPos, _diagonalDirs), out _)
+                NeighbourInfo.GetFirstEmpty(GetNeighbours(floorPos, DiagonalDirs), out _)
             )
             {
                 BuildColumn(floorPos, height, _roomManager.WallId);
-                _currentFloorPosS.Remove(floorPos);
+                _floorPosS.Remove(floorPos);
 
                 if // Excludes corners & not having minimum area as potential doorways
                 (
@@ -372,22 +371,22 @@ public partial class MapGenerator : GridMap
             }
 
 #if ENABLE_CEILING
-            SetCellItem(floorPos + (Vector3I.Up * height), (int)ItemManager.Id.White);
+            SetCellItem(floorPos + (Vector3I.Up * height), (int)_roomManager.CeilingId);
 #endif
         }      
         return potentialDoorPosS;
     }
 
-    /// <returns><c>HashSet</c> of connections (doors made by other rooms).</returns>
+    /// <returns><see cref="HashSet{Vector3I}"/> of connections (doors made by other rooms).</returns>
     private HashSet<Vector3I> MixWallsAndFindConnections(Vector3I originDoorAheadPos, int height)
     {
         HashSet<Vector3I> connectionPosS = new();
-        IEnumerator<Vector3I> enumerator = _currentFloorPosS.GetEnumerator();
+        IEnumerator<Vector3I> enumerator = _floorPosS.GetEnumerator();
 
         while (enumerator.MoveNext())
         {
             Vector3I floorPos = enumerator.Current;
-            NeighbourInfo[] upperOrthNeighbours = GetNeighbours(floorPos + Vector3I.Up, _orthogonalDirs);
+            NeighbourInfo[] upperOrthNeighbours = GetNeighbours(floorPos + Vector3I.Up, OrthogonalDirs);
 
             foreach (NeighbourInfo upperNeighbour in upperOrthNeighbours)
             {
@@ -397,7 +396,7 @@ public partial class MapGenerator : GridMap
                 if (upperNeighbour.Empty)
                 {
                     // Check for doors from other rooms (Connections)
-                    if (!_currentFloorPosS.Contains(neighbourFloorPos))
+                    if (!_floorPosS.Contains(neighbourFloorPos))
                     { 
                         connectionPosS.Add(neighbourFloorPos);
 
@@ -423,7 +422,7 @@ public partial class MapGenerator : GridMap
                 }
                 else if 
                 (
-                    !_currentFloorPosS.Contains(neighbourFloorAheadPos) &&                            // Different room
+                    !_floorPosS.Contains(neighbourFloorAheadPos)                                   && // Different room
                     GetCellItem(neighbourFloorAheadPos)               != (int)ItemManager.Id.Empty && // Floor on other side
                     GetCellItem(neighbourFloorAheadPos + Vector3I.Up) == (int)ItemManager.Id.Empty    // Corners excluded
                 )
@@ -469,7 +468,7 @@ public partial class MapGenerator : GridMap
         return (mixedId, orientation);
     }
 
-    /// <returns><c>HashSet</c> of door positions.</returns>
+    /// <returns><see cref="HashSet{Vector3I}"/> of door positions.</returns>
     private HashSet<Vector3I> GenerateDoors(List<Vector3I> potentialDoorPosS)
     {
         HashSet<Vector3I> doorPosS = new();
@@ -487,275 +486,13 @@ public partial class MapGenerator : GridMap
             potentialDoorPosS.Remove(doorPos);
 
             // Remove Orthogonal Potential Doorway Positions (doors shouldn't be created right next to each other) //
-            NeighbourInfo[] orthNeighbours = GetNeighbours(doorPos, _orthogonalDirs);
+            NeighbourInfo[] orthNeighbours = GetNeighbours(doorPos, OrthogonalDirs);
             foreach (NeighbourInfo neighbour in orthNeighbours)
             {
                 if (!neighbour.Empty) { potentialDoorPosS.Remove(neighbour.Position); }
             }
         }
         return doorPosS;
-    }
-
-    private void GenerateInterior(HashSet<Vector3I> doorPosS, Vector3I originDoorAheadPos, int height)
-    {       
-        int[][] allCellProximities = new int[_currentFloorPosS.Count][];
-        float[] normaliseVals = { 2f, 2f, 2f, 2f };
-
-        AStar3D aStar = new();
-        if (_currentFloorPosS.Count > aStar.GetPointCapacity()) { aStar.ReserveSpace(_currentFloorPosS.Count); }
-
-        Dictionary<Vector3I, long> posToId = new(_currentFloorPosS.Count);
-        Dictionary<long, Vector3I> idToPos = new(_currentFloorPosS.Count);
-        long uniqueId = 0;
-
-        SetProximitiesAndAStar(allCellProximities, normaliseVals, aStar, posToId, idToPos, ref uniqueId);
-        _currentOccupiedPosS = GetAStarPathPositionsBtwDoors(doorPosS, originDoorAheadPos, aStar, posToId, idToPos, ref uniqueId);
-
-        // Get All Empty Positions Projected From The Floor //
-        _currentEmptyPosS = new();
-        for (int j = 1; j < height; j++)
-        {
-            foreach (Vector3I pos in _currentFloorPosS)
-            {
-                _currentEmptyPosS.Add(pos + (Vector3I.Up * j));
-            }
-        }
-
-        // Attempt To Place Interior Nodes //
-        int floorIdx = -1;
-        int heightLevel = -1;
-        foreach (Vector3I freePos in _currentEmptyPosS)
-        {
-            floorIdx = ++floorIdx % _currentFloorPosS.Count;
-            heightLevel = (floorIdx == 0) ? heightLevel + 1 : heightLevel;
-
-            if (_currentOccupiedPosS.Contains(freePos)) { continue; }
-            int[] cellProximities = allCellProximities[floorIdx];
-
-            bool leftEmpty    = cellProximities[(int)AllDir.Left]    > 0,
-                 forwardEmpty = cellProximities[(int)AllDir.Forward] > 0,
-                 rightEmpty   = cellProximities[(int)AllDir.Right]   > 0,
-                 backEmpty    = cellProximities[(int)AllDir.Back]    > 0,
-                 nwFilled     = cellProximities[(int)AllDir.NW]     == 0,
-                 neFilled     = cellProximities[(int)AllDir.NE]     == 0,
-                 seFilled     = cellProximities[(int)AllDir.SE]     == 0,
-                 swFilled     = cellProximities[(int)AllDir.SW]     == 0;
-
-            // Invalid Placements //
-            if
-            (   // Checks For 1 Width Corridor //
-                ( (!leftEmpty    && !rightEmpty) && (forwardEmpty && backEmpty) )  || // EnclosedX & OpenZ
-                ( (!forwardEmpty && !backEmpty)  && (leftEmpty    && rightEmpty) ) || // EnclosedZ & OpenX
-
-                // Checks In Front For 2 Walls And Middle Gap, In Each Orientation //
-                (leftEmpty    && swFilled && nwFilled) || // CW Rotation 0
-                (forwardEmpty && nwFilled && neFilled) || // CW Rotation 90
-                (rightEmpty   && neFilled && seFilled) || // CW Rotation 180
-                (backEmpty    && seFilled && swFilled)    // CW Rotation 270
-            )
-            { continue; }
-
-            // Place Random Node Based On Minimum Normalised Proximity //
-            (float minNormalisedProx, int minIdx) = GetMinimumNormalisedProximityWithIndex(freePos, cellProximities, normaliseVals);
-            PlaceRandomInteriorNode(freePos, heightLevel, minNormalisedProx, GetRotationYFromIndex(minIdx));
-        }
-    }
-    private void SetProximitiesAndAStar(int[][] allCellProximities, float[] normaliseVals, AStar3D aStar, Dictionary<Vector3I, long> posToId, Dictionary<long, Vector3I> idToPos, ref long uniqueId)
-    {
-        int i = -1;
-        foreach (Vector3I floorPos in _currentFloorPosS)
-        {
-            i++;
-
-            // Find The Directional Proximities //
-            allCellProximities[i] = new int[_allDirs.Length];
-            Vector3I upperPos = floorPos + Vector3I.Up;
-
-            for (int j = 0; j < _allDirs.Length; j++)
-            {
-                Vector3I dir = _allDirs[j];
-                Vector3I move = dir;
-                int dist = 0;
-
-                // Is next cell empty and within room bounds
-                while (GetCellItem(upperPos + move) == (int)ItemManager.Id.Empty && _currentFloorPosS.Contains(floorPos + move))
-                {
-                    move = (++dist + 1) * dir;
-                }
-                allCellProximities[i][j] = dist;
-            }
-            // Retrieve every other cell proximity (only need max in one direction for each axis)
-            for (int j = 0; j < normaliseVals.Length; j++) { normaliseVals[j] = Mathf.Max(normaliseVals[j], allCellProximities[i][j * 2]); }
-
-            // Setup AStar Nodes & Connections //
-            long floorPosId = GetAStarId(posToId, idToPos, floorPos, ref uniqueId);
-
-            aStar.AddPoint(floorPosId, floorPos);
-            foreach (Vector3I dir in _orthogonalDirs)
-            {
-                Vector3I pos = floorPos + dir;
-                if (_currentFloorPosS.Contains(pos))
-                {
-                    long posId = GetAStarId(posToId, idToPos, pos, ref uniqueId);
-
-                    aStar.AddPoint(posId, pos);
-                    aStar.ConnectPoints(floorPosId, posId);
-                }
-            }
-        }
-        // Create Normalise Values For Each Axis //
-        for (i = 0; i < normaliseVals.Length; i++) { normaliseVals[i] = 2f / normaliseVals[i]; }
-    }
-    private HashSet<Vector3I> GetAStarPathPositionsBtwDoors(HashSet<Vector3I> doorPosS, Vector3I originDoorAheadPos, AStar3D aStar, Dictionary<Vector3I, long> posToId, Dictionary<long, Vector3I> idToPos, ref long uniqueId)
-    {
-        HashSet<Vector3I> pathPosS = new(_currentFloorPosS.Count);
-        long originDoorAheadId = GetAStarId(posToId, idToPos, originDoorAheadPos, ref uniqueId);
-
-        foreach (Vector3I otherDoorPos in doorPosS)
-        {
-            // Find Position Inside Room, Ahead Of Door //
-            Vector3I otherDoorAheadPos = Vector3I.Zero;
-            NeighbourInfo[] upperOrthNeighbours = GetNeighbours(otherDoorPos + Vector3I.Up, _orthogonalDirs);
-
-            foreach (NeighbourInfo upperNeighbour in upperOrthNeighbours)
-            {
-                Vector3I floorAheadPos = upperNeighbour.Position + Vector3I.Down;
-                if (upperNeighbour.Empty && _currentFloorPosS.Contains(floorAheadPos))
-                {
-                    otherDoorAheadPos = floorAheadPos;
-                    break;
-                }
-            }
-
-            // Create Path From Origin Door To Other Door //
-            long[] path = aStar.GetIdPath
-            (
-                originDoorAheadId,
-                GetAStarId(posToId, idToPos, otherDoorAheadPos, ref uniqueId)
-            );
-            foreach (long id in path)
-            {
-                Vector3I floorPos = idToPos[id];
-
-                // Player Size Above Floor //
-                pathPosS.Add(floorPos + Vector3I.Up);
-                pathPosS.Add(floorPos + (Vector3I.Up * 2));
-            }
-        }
-        return pathPosS;
-    }
-    /// <summary>
-    /// Tries to get an existing position's ID, otherwise it creates a new entry with the ID and then increments it.
-    /// </summary>
-    /// <returns>Associated ID for the given <paramref name="posToCheck"/>.</returns>
-    private long GetAStarId(Dictionary<Vector3I, long> posToId, Dictionary<long, Vector3I> idToPos, Vector3I posToCheck, ref long uniqueId)
-    {
-        if (posToId.TryGetValue(posToCheck, out long id)) { return id; }
-        else
-        {
-            posToId.Add(posToCheck, uniqueId);
-            idToPos.Add(uniqueId, posToCheck);
-
-            return uniqueId++;
-        }
-    }
-    private (float, int) GetMinimumNormalisedProximityWithIndex(Vector3I floorPos, int[] cellProximities, float[] normaliseVals)
-    {
-        (float, int) minNormalisedProx_index = (cellProximities[0], 0);
-        for (int j = 1; j < cellProximities.Length; j++)
-        {
-            float prox = cellProximities[j];
-            int oppositeJ = (j + 2) % 4; // For j <= 3
-
-            if
-            (
-                prox < minNormalisedProx_index.Item1 ||
-                (                                                                                                    // Prioritise when prox equal:
-                    prox == minNormalisedProx_index.Item1 && j <= 3 &&                                               // Orthogonal direction
-                    cellProximities[oppositeJ] > 0 && !_currentOccupiedPosS.Contains(floorPos + _allDirs[oppositeJ]) // Against wall with opening
-                )
-            )
-            { minNormalisedProx_index = (prox, j); }
-        }
-        return (minNormalisedProx_index.Item1 * normaliseVals[minNormalisedProx_index.Item2 / 2], minNormalisedProx_index.Item2);
-    }
-    private float GetRotationYFromIndex(int idx)
-    {
-        AllDir dir = (AllDir)idx;
-        switch (dir)
-        {
-            case AllDir.Left:
-            case AllDir.SW:
-            case AllDir.NW:
-                return Mathf.Pi * 0.5f;
-
-            case AllDir.Right:
-            case AllDir.SE:
-            case AllDir.NE:
-                return Mathf.Pi * -0.5f;
-
-            case AllDir.Back:
-                return Mathf.Pi;
-
-            default: return 0f;
-        }
-    }
-    private void PlaceRandomInteriorNode(Vector3I placePos, int heightLevel, float minNormalisedProx, float rotationY)
-    {
-        InteriorObject placedObj = null;
-        for (int j = 0; j < MaximumInteriorRetries; j++)
-        {
-            InteriorObject obj = _roomManager.GetRandomInteriorObject();
-            HashSet<Vector3I> clearancePosS = obj.GetClearancePositions(placePos, rotationY);
-
-            if
-            (
-                IsPlacementValid(clearancePosS) &&
-                heightLevel >= obj.MinimumHeight && heightLevel <= obj.MaximumHeight &&
-                (
-                    ( obj.Exact && obj.WeightToCentre == minNormalisedProx) ||
-                    (!obj.Exact && Rng.Randf() < GetProximityProbability(obj.WeightToCentre, minNormalisedProx))
-                )
-            )
-            {
-                CreateInteriorNode(obj.Scene, placePos, rotationY, clearancePosS);
-                placedObj = obj;
-
-                break;
-            }
-        }
-
-        // Extend With Potential Extensions //
-        if (placedObj is InteriorObjectExtended extendedObj)
-        {
-            extendedObj.CreateExtensionsRecursively(placePos, rotationY);
-        }
-    }
-
-    /// <summary>
-    /// Calculates probability depending on the weighting and normalised proximity from the edge of a room.
-    /// </summary>
-    /// <param name="weight">Weight towards the centre between 0 and 1 (inclusive).</param>
-    /// <param name="normalisedProx">Normalised proximity from the edge to the centre.</param>
-    /// <returns>Probability represented as a float between 0 and 1 (inclusive).</returns>
-    private float GetProximityProbability(float weight, float normalisedProx) => (weight * normalisedProx) + ((1f - weight) * (1f - normalisedProx));
-
-    /// <summary>
-    /// Get neighbouring cells at each given direction.
-    /// </summary>
-    /// <param name="centrePos">Position to get the neighbours from.</param>
-    /// <returns><c>NeighbourInfo[]</c> in the same order as the <paramref name="directions"/>.</returns>
-    private NeighbourInfo[] GetNeighbours(Vector3I centrePos, Vector3I[] directions)
-    {
-        NeighbourInfo[] neighbours = new NeighbourInfo[directions.Length];    
-        for (int i = 0; i < neighbours.Length; i++)
-        {
-            Vector3I dir = directions[i];
-            Vector3I pos = centrePos + dir;
-
-            neighbours[i] = new NeighbourInfo(pos, dir, GetCellItem(pos));
-        }
-        return neighbours;
     }
 
     /// <returns>Orthogonal index from rotating around the global y-axis.</returns>
@@ -772,7 +509,7 @@ public partial class MapGenerator : GridMap
     }
 
     /// <summary>
-    /// Iterates through an area of the <c>GridMap</c> to check for any non-empty cells.
+    /// Iterates through an area of the <see cref="GridMap"/> to check for any non-empty cells.
     /// </summary>
     /// <param name="startPos">Bottom centre of rectangular area, relative to the <paramref name="direction"/>.</param>
     /// <param name="direction">Direction to iterate along the length of.</param>
@@ -795,7 +532,7 @@ public partial class MapGenerator : GridMap
         }
         return false;
     }
-    ///
+    /// <inheritdoc cref="AreaContainsItems(Vector3I, Vector3I, int, int)"/>
     /// <param name="setToExclude">Set of cells to ignore if they are detected in the area.</param>
     private bool AreaContainsItems(Vector3I startPos, Vector3I direction, int outerWidth, int length, HashSet<Vector3I> setToExclude)
     {

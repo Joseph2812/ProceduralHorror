@@ -1,15 +1,44 @@
-[gd_scene load_steps=41 format=3 uid="uid://kdpm54cye3kw"]
+[gd_scene load_steps=115 format=3 uid="uid://wsdn77yvy3tx"]
 
-[ext_resource type="Texture2D" uid="uid://cbvx3kb1gppqp" path="res://Textures/Cube_White-Orange.png" id="1_2hbu0"]
-[ext_resource type="Texture2D" uid="uid://dv7eqtmp82qln" path="res://Textures/Cube_White-Red.png" id="2_xbw75"]
-[ext_resource type="Texture2D" uid="uid://u3xw7k6x23ok" path="res://Textures/Cube_White-Green.png" id="3_th4i4"]
-[ext_resource type="Texture2D" uid="uid://bhdgknwplc6et" path="res://Textures/Cube_White-Blue.png" id="4_s6ik4"]
-[ext_resource type="Texture2D" uid="uid://dr0cjlwuh6s" path="res://Textures/Cube_Orange-Red.png" id="5_jdoey"]
-[ext_resource type="Texture2D" uid="uid://bqxuu0e3syysv" path="res://Textures/Cube_Orange-Green.png" id="6_f8a14"]
-[ext_resource type="Texture2D" uid="uid://so6xlgsi208g" path="res://Textures/Cube_Orange-Blue.png" id="7_r6we2"]
-[ext_resource type="Texture2D" uid="uid://bmolsastrhgbb" path="res://Textures/Cube_Red-Green.png" id="8_c7b4b"]
-[ext_resource type="Texture2D" uid="uid://dn7qjqxjxobtr" path="res://Textures/Cube_Red-Blue.png" id="9_nylr3"]
-[ext_resource type="Texture2D" uid="uid://dbm2y7f6iqbqt" path="res://Textures/Cube_Green-Blue.png" id="10_hmphq"]
+[ext_resource type="Texture2D" uid="uid://bdg13qinwttcc" path="res://Textures/Wallpaper/Wallpaper002B_4K_Color.jpg" id="1_inq27"]
+[ext_resource type="Texture2D" uid="uid://uhfdg03r1iye" path="res://Textures/Wallpaper/Wallpaper002B_4K_Displacement.jpg" id="2_61hfu"]
+[ext_resource type="Texture2D" uid="uid://c3j84dw2qrcqy" path="res://Textures/Wallpaper/Wallpaper002B_4K_NormalGL.jpg" id="3_t86sv"]
+[ext_resource type="Texture2D" uid="uid://bjm0dhdsrmp5l" path="res://Textures/Wallpaper/Wallpaper002B_4K_Roughness.jpg" id="4_heirl"]
+[ext_resource type="Shader" path="res://Shaders/MixedCube.gdshader" id="10_jcup4"]
+[ext_resource type="Texture2D" uid="uid://dncmuf6ersq17" path="res://Textures/KitchenTiles/floor_tiles_06_diff_4k.jpg" id="11_rjj4h"]
+[ext_resource type="Texture2D" uid="uid://dalihdrjhqh5d" path="res://Textures/KitchenTiles/floor_tiles_06_ao_4k.jpg" id="12_kjqi5"]
+[ext_resource type="Texture2D" uid="uid://0xtdtew357xy" path="res://Textures/KitchenTiles/floor_tiles_06_disp_4k.jpg" id="13_oiclq"]
+[ext_resource type="Texture2D" uid="uid://7apabhgb5gg0" path="res://Textures/KitchenTiles/floor_tiles_06_nor_gl_4k.jpg" id="14_ev2bx"]
+[ext_resource type="Texture2D" uid="uid://btcj74dusq0g0" path="res://Textures/KitchenTiles/floor_tiles_06_rough_4k.jpg" id="15_lnpas"]
+[ext_resource type="Texture2D" uid="uid://co6t35heyjc1h" path="res://Textures/Plaster/Plaster006_4K_Color.jpg" id="20_0v6fq"]
+[ext_resource type="Texture2D" uid="uid://dgra5vuhwnanq" path="res://Textures/Plaster/Plaster006_4K_Displacement.jpg" id="21_ac5tc"]
+[ext_resource type="Texture2D" uid="uid://78l4660bwc32" path="res://Textures/Plaster/Plaster006_4K_NormalGL.jpg" id="22_jbyai"]
+[ext_resource type="Texture2D" uid="uid://ck6lvwy4b3si6" path="res://Textures/Plaster/Plaster006_4K_Roughness.jpg" id="23_w0g6t"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bdrxx"]
+albedo_texture = ExtResource("20_0v6fq")
+roughness_texture = ExtResource("23_w0g6t")
+normal_enabled = true
+normal_texture = ExtResource("22_jbyai")
+heightmap_enabled = true
+heightmap_texture = ExtResource("21_ac5tc")
+
+[sub_resource type="BoxMesh" id="BoxMesh_n2kmy"]
+material = SubResource("StandardMaterial3D_bdrxx")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k6wc7"]
+albedo_texture = ExtResource("11_rjj4h")
+roughness_texture = ExtResource("15_lnpas")
+normal_enabled = true
+normal_texture = ExtResource("14_ev2bx")
+ao_enabled = true
+ao_texture = ExtResource("12_kjqi5")
+heightmap_enabled = true
+heightmap_texture = ExtResource("13_oiclq")
+uv1_scale = Vector3(3, 2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_18vdg"]
+material = SubResource("StandardMaterial3D_k6wc7")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8jnb0"]
 
@@ -44,77 +73,371 @@ texture_filter = 0
 [sub_resource type="BoxMesh" id="BoxMesh_1irma"]
 material = SubResource("StandardMaterial3D_x6red")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_50a4f"]
-albedo_texture = ExtResource("1_2hbu0")
-texture_filter = 0
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pblpb"]
+albedo_texture = ExtResource("1_inq27")
+roughness_texture = ExtResource("4_heirl")
+normal_enabled = true
+normal_texture = ExtResource("3_t86sv")
+heightmap_enabled = true
+heightmap_texture = ExtResource("2_61hfu")
+
+[sub_resource type="BoxMesh" id="BoxMesh_wt5gb"]
+material = SubResource("StandardMaterial3D_pblpb")
+
+[sub_resource type="Gradient" id="Gradient_i6dpq"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0.27451, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_3j6dy"]
+gradient = SubResource("Gradient_i6dpq")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_eemyd"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_3j6dy")
 
 [sub_resource type="BoxMesh" id="BoxMesh_6afuh"]
-material = SubResource("StandardMaterial3D_50a4f")
+material = SubResource("ShaderMaterial_eemyd")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dtaax"]
-albedo_texture = ExtResource("2_xbw75")
-texture_filter = 0
+[sub_resource type="Gradient" id="Gradient_sxgqm"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_d2in4"]
+gradient = SubResource("Gradient_sxgqm")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kxtw2"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_d2in4")
 
 [sub_resource type="BoxMesh" id="BoxMesh_x8gn7"]
-material = SubResource("StandardMaterial3D_dtaax")
+material = SubResource("ShaderMaterial_kxtw2")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ygj1l"]
-albedo_texture = ExtResource("3_th4i4")
-texture_filter = 0
+[sub_resource type="Gradient" id="Gradient_nhtf4"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 1, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_6qwj0"]
+gradient = SubResource("Gradient_nhtf4")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_218ao"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_6qwj0")
 
 [sub_resource type="BoxMesh" id="BoxMesh_skjqf"]
-material = SubResource("StandardMaterial3D_ygj1l")
+material = SubResource("ShaderMaterial_218ao")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qq11j"]
-albedo_texture = ExtResource("4_s6ik4")
-texture_filter = 0
+[sub_resource type="Gradient" id="Gradient_k3grt"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_yp4f4"]
+gradient = SubResource("Gradient_k3grt")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fjy6l"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_yp4f4")
 
 [sub_resource type="BoxMesh" id="BoxMesh_mj1wy"]
-material = SubResource("StandardMaterial3D_qq11j")
+material = SubResource("ShaderMaterial_fjy6l")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4668t"]
-albedo_texture = ExtResource("5_jdoey")
-texture_filter = 0
+[sub_resource type="Gradient" id="Gradient_116fi"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_hnptd"]
+gradient = SubResource("Gradient_116fi")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kbe8b"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_hnptd")
+shader_parameter/albedo2 = ExtResource("1_inq27")
+shader_parameter/normalMap2 = ExtResource("3_t86sv")
+shader_parameter/roughnessMap2 = ExtResource("4_heirl")
+
+[sub_resource type="BoxMesh" id="BoxMesh_vfmig"]
+material = SubResource("ShaderMaterial_kbe8b")
+
+[sub_resource type="Gradient" id="Gradient_3ak41"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0.27451, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_sw8sn"]
+gradient = SubResource("Gradient_3ak41")
+width = 1
+
+[sub_resource type="Gradient" id="Gradient_5n8u0"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1sbnq"]
+gradient = SubResource("Gradient_5n8u0")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6moqg"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_sw8sn")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_1sbnq")
 
 [sub_resource type="BoxMesh" id="BoxMesh_4x7bi"]
-material = SubResource("StandardMaterial3D_4668t")
+material = SubResource("ShaderMaterial_6moqg")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vquva"]
-albedo_texture = ExtResource("6_f8a14")
-texture_filter = 0
+[sub_resource type="Gradient" id="Gradient_yukwe"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0.27451, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_6b1aq"]
+gradient = SubResource("Gradient_yukwe")
+width = 1
+
+[sub_resource type="Gradient" id="Gradient_tijq1"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 1, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_0jmna"]
+gradient = SubResource("Gradient_tijq1")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r1gr0"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_6b1aq")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_0jmna")
 
 [sub_resource type="BoxMesh" id="BoxMesh_qj3vd"]
-material = SubResource("StandardMaterial3D_vquva")
+material = SubResource("ShaderMaterial_r1gr0")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fkrc3"]
-albedo_texture = ExtResource("7_r6we2")
-texture_filter = 0
+[sub_resource type="Gradient" id="Gradient_pfyua"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0.27451, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_713gg"]
+gradient = SubResource("Gradient_pfyua")
+width = 1
+
+[sub_resource type="Gradient" id="Gradient_76jqn"]
+offsets = PackedFloat32Array(0.00301205)
+colors = PackedColorArray(0, 0, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_kgmco"]
+gradient = SubResource("Gradient_76jqn")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_14eq2"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_713gg")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_kgmco")
 
 [sub_resource type="BoxMesh" id="BoxMesh_qmffu"]
-material = SubResource("StandardMaterial3D_fkrc3")
+material = SubResource("ShaderMaterial_14eq2")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o3ae2"]
-albedo_texture = ExtResource("8_c7b4b")
-texture_filter = 0
+[sub_resource type="Gradient" id="Gradient_7cgml"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0.27451, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ib8lr"]
+gradient = SubResource("Gradient_7cgml")
+width = 1
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_pi0gk"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_Color.jpg-48d807518b557c076789f00e5a131a79.s3tc.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_ahbng"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_NormalGL.jpg-e8346605f36f6e70be4dd71da4c05601.s3tc.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_ymn1t"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_Roughness.jpg-11efc33b80a41013239dd5a88244da30.s3tc.ctex"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m11wu"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_ib8lr")
+shader_parameter/albedo2 = SubResource("CompressedTexture2D_pi0gk")
+shader_parameter/normalMap2 = SubResource("CompressedTexture2D_ahbng")
+shader_parameter/roughnessMap2 = SubResource("CompressedTexture2D_ymn1t")
+
+[sub_resource type="BoxMesh" id="BoxMesh_guq5g"]
+material = SubResource("ShaderMaterial_m11wu")
+
+[sub_resource type="Gradient" id="Gradient_pmchf"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_kq7r0"]
+gradient = SubResource("Gradient_pmchf")
+width = 1
+
+[sub_resource type="Gradient" id="Gradient_r37uo"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 1, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1v1hc"]
+gradient = SubResource("Gradient_r37uo")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8qtjl"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_kq7r0")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_1v1hc")
 
 [sub_resource type="BoxMesh" id="BoxMesh_7j1y0"]
-material = SubResource("StandardMaterial3D_o3ae2")
+material = SubResource("ShaderMaterial_8qtjl")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_03nab"]
-albedo_texture = ExtResource("9_nylr3")
-texture_filter = 0
+[sub_resource type="Gradient" id="Gradient_i4q88"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_235ta"]
+gradient = SubResource("Gradient_i4q88")
+width = 1
+
+[sub_resource type="Gradient" id="Gradient_bdm7o"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_0ale5"]
+gradient = SubResource("Gradient_bdm7o")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tixf0"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_235ta")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_0ale5")
 
 [sub_resource type="BoxMesh" id="BoxMesh_4003c"]
-material = SubResource("StandardMaterial3D_03nab")
+material = SubResource("ShaderMaterial_tixf0")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xkr5h"]
-albedo_texture = ExtResource("10_hmphq")
-texture_filter = 0
+[sub_resource type="Gradient" id="Gradient_pmi5c"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(1, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_tf8v1"]
+gradient = SubResource("Gradient_pmi5c")
+width = 1
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_yg7rc"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_Color.jpg-48d807518b557c076789f00e5a131a79.s3tc.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_mkmmm"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_NormalGL.jpg-e8346605f36f6e70be4dd71da4c05601.s3tc.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_fhprr"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_Roughness.jpg-11efc33b80a41013239dd5a88244da30.s3tc.ctex"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4ljom"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_tf8v1")
+shader_parameter/albedo2 = SubResource("CompressedTexture2D_yg7rc")
+shader_parameter/normalMap2 = SubResource("CompressedTexture2D_mkmmm")
+shader_parameter/roughnessMap2 = SubResource("CompressedTexture2D_fhprr")
+
+[sub_resource type="BoxMesh" id="BoxMesh_kap7o"]
+material = SubResource("ShaderMaterial_4ljom")
+
+[sub_resource type="Gradient" id="Gradient_i30sh"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 1, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_8yys5"]
+gradient = SubResource("Gradient_i30sh")
+width = 1
+
+[sub_resource type="Gradient" id="Gradient_bkdsa"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_0y2ll"]
+gradient = SubResource("Gradient_bkdsa")
+width = 1
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dclly"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_8yys5")
+shader_parameter/albedo2 = SubResource("GradientTexture1D_0y2ll")
 
 [sub_resource type="BoxMesh" id="BoxMesh_4hp7n"]
-material = SubResource("StandardMaterial3D_xkr5h")
+material = SubResource("ShaderMaterial_dclly")
+
+[sub_resource type="Gradient" id="Gradient_m68yi"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 1, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_b65k2"]
+gradient = SubResource("Gradient_m68yi")
+width = 1
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_hjiue"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_Color.jpg-48d807518b557c076789f00e5a131a79.s3tc.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_hd6f4"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_NormalGL.jpg-e8346605f36f6e70be4dd71da4c05601.s3tc.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_pa5ed"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_Roughness.jpg-11efc33b80a41013239dd5a88244da30.s3tc.ctex"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ac06g"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_b65k2")
+shader_parameter/albedo2 = SubResource("CompressedTexture2D_hjiue")
+shader_parameter/normalMap2 = SubResource("CompressedTexture2D_hd6f4")
+shader_parameter/roughnessMap2 = SubResource("CompressedTexture2D_pa5ed")
+
+[sub_resource type="BoxMesh" id="BoxMesh_mwrx5"]
+material = SubResource("ShaderMaterial_ac06g")
+
+[sub_resource type="Gradient" id="Gradient_av0oq"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_fh3f1"]
+gradient = SubResource("Gradient_av0oq")
+width = 1
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_qtggh"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_Color.jpg-48d807518b557c076789f00e5a131a79.s3tc.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_ya75a"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_NormalGL.jpg-e8346605f36f6e70be4dd71da4c05601.s3tc.ctex"
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_hq0b4"]
+load_path = "res://.godot/imported/Wallpaper002B_4K_Roughness.jpg-11efc33b80a41013239dd5a88244da30.s3tc.ctex"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4f4im"]
+render_priority = 0
+shader = ExtResource("10_jcup4")
+shader_parameter/albedo1 = SubResource("GradientTexture1D_fh3f1")
+shader_parameter/albedo2 = SubResource("CompressedTexture2D_qtggh")
+shader_parameter/normalMap2 = SubResource("CompressedTexture2D_ya75a")
+shader_parameter/roughnessMap2 = SubResource("CompressedTexture2D_hq0b4")
+
+[sub_resource type="BoxMesh" id="BoxMesh_6pqcu"]
+material = SubResource("ShaderMaterial_4f4im")
 
 [node name="MeshLibrary_Source" type="Node3D"]
+
+[node name="Cube_Plaster" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+mesh = SubResource("BoxMesh_n2kmy")
+
+[node name="Cube_KitchenTiles" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+mesh = SubResource("BoxMesh_18vdg")
 
 [node name="Cube_White" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_xcnec")
@@ -135,6 +458,10 @@ mesh = SubResource("BoxMesh_y081k")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0)
 mesh = SubResource("BoxMesh_1irma")
 
+[node name="Cube_Wallpaper" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 0)
+mesh = SubResource("BoxMesh_wt5gb")
+
 [node name="Cube_White-Orange" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2)
 mesh = SubResource("BoxMesh_6afuh")
@@ -151,6 +478,10 @@ mesh = SubResource("BoxMesh_skjqf")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5)
 mesh = SubResource("BoxMesh_mj1wy")
 
+[node name="Cube_White-Wallpaper" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 6)
+mesh = SubResource("BoxMesh_vfmig")
+
 [node name="Cube_Orange-Red" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
 mesh = SubResource("BoxMesh_4x7bi")
@@ -163,6 +494,10 @@ mesh = SubResource("BoxMesh_qj3vd")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 4)
 mesh = SubResource("BoxMesh_qmffu")
 
+[node name="Cube_Orange-Wallpaper" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 5)
+mesh = SubResource("BoxMesh_guq5g")
+
 [node name="Cube_Red-Green" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
 mesh = SubResource("BoxMesh_7j1y0")
@@ -171,6 +506,18 @@ mesh = SubResource("BoxMesh_7j1y0")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 3)
 mesh = SubResource("BoxMesh_4003c")
 
+[node name="Cube_Red-Wallpaper" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 4)
+mesh = SubResource("BoxMesh_kap7o")
+
 [node name="Cube_Green-Blue" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 2)
 mesh = SubResource("BoxMesh_4hp7n")
+
+[node name="Cube_Green-Wallpaper" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 3)
+mesh = SubResource("BoxMesh_mwrx5")
+
+[node name="Cube_Blue-Wallpaper" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 2)
+mesh = SubResource("BoxMesh_6pqcu")

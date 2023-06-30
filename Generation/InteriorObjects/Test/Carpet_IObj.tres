@@ -1,0 +1,19 @@
+[gd_resource type="Resource" load_steps=3 format=3]
+
+[ext_resource type="PackedScene" uid="uid://04384ocs25wn" path="res://Scenes/ForInteriorObjects/Placeholders/Carpet.tscn" id="1_lehmk"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_wmjgm"]
+
+[resource]
+script = ExtResource("2_wmjgm")
+Scene = ExtResource("1_lehmk")
+WeightOfPlacement = 1
+WeightToCentre = 1.0
+Exact = false
+OnlyCeiling = false
+MinimumHeight = 1
+MaximumHeight = 1
+_maximumCountBtwRooms = 0
+_neighbourConditionsText = ""
+_clearancePositions = PackedVector3Array(1, 0, 0, 2, 0, 0, 0, 0, 1, 1, 0, 1, 2, 0, 1)
+_minimumRotationalYOffset = 0.0
+_maximumRotationalYOffset = 0.0

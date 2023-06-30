@@ -1,0 +1,27 @@
+[gd_scene load_steps=9 format=3 uid="uid://ci04v5j7m60nk"]
+
+[ext_resource type="ArrayMesh" uid="uid://bwmml3nvs27kc" path="res://Models/Placeholders/CopperKettle/CopperKettle.obj" id="1_tkxam"]
+[ext_resource type="Texture2D" uid="uid://s84rxg1mf0ek" path="res://Models/Placeholders/CopperKettle/Mat_Base_Color.png" id="2_qkxt4"]
+[ext_resource type="Texture2D" uid="uid://dw5ygkqa3wbqy" path="res://Models/Placeholders/CopperKettle/Mat_Mixed_AO.png" id="3_p7qt4"]
+[ext_resource type="Texture2D" uid="uid://cil3jcb7kw6k" path="res://Models/Placeholders/CopperKettle/Mat_Height.png" id="4_wishr"]
+[ext_resource type="Texture2D" uid="uid://fsamju7mnkbi" path="res://Models/Placeholders/CopperKettle/Mat_Metallic.png" id="5_rcp41"]
+[ext_resource type="Texture2D" uid="uid://dtt5qg6nlxdvq" path="res://Models/Placeholders/CopperKettle/Mat_Normal_DirectX.png" id="6_3vql7"]
+[ext_resource type="Texture2D" uid="uid://cl30dtmc0i5wi" path="res://Models/Placeholders/CopperKettle/Mat_Roughness.png" id="7_0cc5s"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5ymo1"]
+albedo_texture = ExtResource("2_qkxt4")
+metallic = 1.0
+metallic_texture = ExtResource("5_rcp41")
+roughness_texture = ExtResource("7_0cc5s")
+normal_enabled = true
+normal_texture = ExtResource("6_3vql7")
+ao_enabled = true
+ao_texture = ExtResource("3_p7qt4")
+heightmap_texture = ExtResource("4_wishr")
+
+[node name="CopperKettle" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.005, 0, -4.37114e-10, 0, 0.005, 0, 4.37114e-10, 0, -0.005, 0.5, 0, 0.5)
+mesh = ExtResource("1_tkxam")
+surface_material_override/0 = SubResource("StandardMaterial3D_5ymo1")

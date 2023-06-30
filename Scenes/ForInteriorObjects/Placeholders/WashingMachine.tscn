@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dkyoet4k1n5ud"]
+
+[ext_resource type="PackedScene" uid="uid://bghl7cu15fg6x" path="res://Models/Placeholders/WashingMachine/WashingMachine.fbx" id="1_ais7x"]
+
+[node name="WashingMachine" instance=ExtResource("1_ais7x")]
+
+[node name="Washing_Machine" parent="RootNode" index="0"]
+transform = Transform3D(-6.11959e-08, 0, -1.4, 0, 1.4, 0, 1.4, 0, -6.11959e-08, 0.522179, 0.629147, 0.251192)

@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://cvklhplc6lu3p"]
+
+[ext_resource type="PackedScene" uid="uid://b3c8fycf6lvv" path="res://Models/CounterWithCabinet.glb" id="1_8tu1o"]
+
+[node name="CounterWithCabinet" instance=ExtResource("1_8tu1o")]
+
+[node name="Counter" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+
+[node name="Door_Linked1" parent="Counter" index="0"]
+transform = Transform3D(7.2529e-09, 0, -0.426547, 0, 0.396, 0, 0.0231046, 0, 1.339e-07, -0.424331, -0.0450693, 0.360264)
+
+[node name="Door_Linked2" parent="Counter" index="1"]
+transform = Transform3D(1.74434e-09, -1.11723e-07, 0.426547, 8.99724e-09, 0.396, 1.20342e-07, 0.0231046, -1.54208e-07, -3.22034e-08, 0.423617, -0.0451618, 0.360753)

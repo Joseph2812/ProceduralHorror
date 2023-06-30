@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://covs8pgc7qc1h"
+path="res://.godot/imported/Fluorescent_Lamp.obj-24c7de07811c5ecf9ea58e8a3e65c32e.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Fluorescent_Lamp.obj-24c7de07811c5ecf9ea58e8a3e65c32e.mesh"]
+
+source_file="res://Models/Placeholders/FluorescentLamp/Fluorescent_Lamp.obj"
+dest_files=["res://.godot/imported/Fluorescent_Lamp.obj-24c7de07811c5ecf9ea58e8a3e65c32e.mesh", "res://.godot/imported/Fluorescent_Lamp.obj-24c7de07811c5ecf9ea58e8a3e65c32e.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

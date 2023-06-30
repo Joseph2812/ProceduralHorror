@@ -1,0 +1,29 @@
+[gd_scene load_steps=9 format=3 uid="uid://bfrt3sc3kskwp"]
+
+[ext_resource type="ArrayMesh" uid="uid://cnif1ows5cvp" path="res://Models/Placeholders/CoffeeMachine/CoffeeMaker.obj" id="1_jqprc"]
+[ext_resource type="Texture2D" uid="uid://dh7bw7nmhs3mh" path="res://Models/Placeholders/CoffeeMachine/Mat_Base_Color.png" id="2_qg070"]
+[ext_resource type="Texture2D" uid="uid://drq6x0e6jbf5a" path="res://Models/Placeholders/CoffeeMachine/Mat_Mixed_AO.png" id="3_lveg2"]
+[ext_resource type="Texture2D" uid="uid://3evrvkm7w88a" path="res://Models/Placeholders/CoffeeMachine/Mat_Height.png" id="4_xodvw"]
+[ext_resource type="Texture2D" uid="uid://dv6fe3ytgavtv" path="res://Models/Placeholders/CoffeeMachine/Mat_Metallic.png" id="5_qq2d5"]
+[ext_resource type="Texture2D" uid="uid://bx0cvsy5hhbd" path="res://Models/Placeholders/CoffeeMachine/Mat_Normal_DirectX.png" id="6_yw8dm"]
+[ext_resource type="Texture2D" uid="uid://b7wlgadlv44q5" path="res://Models/Placeholders/CoffeeMachine/Mat_Roughness.png" id="7_b4krg"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sb3xd"]
+albedo_texture = ExtResource("2_qg070")
+metallic = 1.0
+metallic_texture = ExtResource("5_qq2d5")
+roughness_texture = ExtResource("7_b4krg")
+normal_enabled = true
+normal_texture = ExtResource("6_yw8dm")
+ao_enabled = true
+ao_texture = ExtResource("3_lveg2")
+heightmap_enabled = true
+heightmap_scale = 1.0
+heightmap_texture = ExtResource("4_xodvw")
+
+[node name="CoffeeMachine" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-8.74228e-10, 0, -0.02, 0, 0.02, 0, 0.02, 0, -8.74228e-10, 0.473944, 0.589227, -0.167161)
+mesh = ExtResource("1_jqprc")
+surface_material_override/0 = SubResource("StandardMaterial3D_sb3xd")

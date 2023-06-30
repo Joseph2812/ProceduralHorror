@@ -1,0 +1,39 @@
+[gd_scene load_steps=10 format=3 uid="uid://bt22wajf1rtkj"]
+
+[ext_resource type="ArrayMesh" uid="uid://covs8pgc7qc1h" path="res://Models/Placeholders/FluorescentLamp/Fluorescent_Lamp.obj" id="1_k7htq"]
+[ext_resource type="Texture2D" uid="uid://c8wtn7fnjeofi" path="res://Models/Placeholders/FluorescentLamp/Mat_Base_Color.png" id="2_viah6"]
+[ext_resource type="Texture2D" uid="uid://brvyw40s2n7jy" path="res://Models/Placeholders/FluorescentLamp/Mat_Mixed_AO.png" id="3_vfr1g"]
+[ext_resource type="Texture2D" uid="uid://2fdu6o0cmp6d" path="res://Models/Placeholders/FluorescentLamp/Mat_Emissive.png" id="4_vdebg"]
+[ext_resource type="Texture2D" uid="uid://cgwefri84o8a5" path="res://Models/Placeholders/FluorescentLamp/Mat_Height.png" id="5_8amae"]
+[ext_resource type="Texture2D" uid="uid://2oac81sakfmy" path="res://Models/Placeholders/FluorescentLamp/Mat_Metallic.png" id="6_ebi7a"]
+[ext_resource type="Texture2D" uid="uid://bttgdsoyybgt7" path="res://Models/Placeholders/FluorescentLamp/Mat_Normal_DirectX.png" id="7_bw1bj"]
+[ext_resource type="Texture2D" uid="uid://dyypji1tfg7wi" path="res://Models/Placeholders/FluorescentLamp/Mat_Roughness.png" id="8_ewx0c"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kaqdw"]
+albedo_texture = ExtResource("2_viah6")
+metallic = 1.0
+metallic_texture = ExtResource("6_ebi7a")
+roughness_texture = ExtResource("8_ewx0c")
+emission_enabled = true
+emission_energy_multiplier = 2.0
+emission_texture = ExtResource("4_vdebg")
+normal_enabled = true
+normal_texture = ExtResource("7_bw1bj")
+ao_enabled = true
+ao_texture = ExtResource("3_vfr1g")
+heightmap_scale = 2.406
+heightmap_texture = ExtResource("5_8amae")
+
+[node name="FluorescentLamp" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-2.66639e-09, 0, -0.061, 0, 0.061, 0, 0.061, 0, -2.66639e-09, 2, 0.9, 0.5)
+mesh = ExtResource("1_k7htq")
+surface_material_override/0 = SubResource("StandardMaterial3D_kaqdw")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.502, 0)
+light_size = 1.0
+light_bake_mode = 1
+shadow_enabled = true
+omni_range = 8.0

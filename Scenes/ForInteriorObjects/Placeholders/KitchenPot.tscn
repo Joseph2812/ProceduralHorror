@@ -1,0 +1,28 @@
+[gd_scene load_steps=9 format=3 uid="uid://dv1f5ofruix7"]
+
+[ext_resource type="ArrayMesh" uid="uid://8wqmp7odxqld" path="res://Models/Placeholders/KitchenPot/KitchenPot.obj" id="1_3ivmg"]
+[ext_resource type="Texture2D" uid="uid://drxgae4jey4t5" path="res://Models/Placeholders/KitchenPot/Mat_Base_Color.png" id="2_8wxyd"]
+[ext_resource type="Texture2D" uid="uid://c08b6jpkph8eu" path="res://Models/Placeholders/KitchenPot/Mat_Mixed_AO.png" id="3_wnkkw"]
+[ext_resource type="Texture2D" uid="uid://ghbm0dxsv0bm" path="res://Models/Placeholders/KitchenPot/Mat_Height.png" id="4_w8ve4"]
+[ext_resource type="Texture2D" uid="uid://bv3kvhwsuyhj7" path="res://Models/Placeholders/KitchenPot/Mat_Metallic.png" id="5_li1tk"]
+[ext_resource type="Texture2D" uid="uid://c8uqvxm8l4dhg" path="res://Models/Placeholders/KitchenPot/Mat_Normal_DirectX.png" id="6_tj7a0"]
+[ext_resource type="Texture2D" uid="uid://bqdpmjkwxxt28" path="res://Models/Placeholders/KitchenPot/Mat_Roughness.png" id="7_xxaxv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3h4vw"]
+albedo_texture = ExtResource("2_8wxyd")
+metallic = 1.0
+metallic_texture = ExtResource("5_li1tk")
+roughness_texture = ExtResource("7_xxaxv")
+normal_enabled = true
+normal_texture = ExtResource("6_tj7a0")
+ao_enabled = true
+ao_texture = ExtResource("3_wnkkw")
+heightmap_enabled = true
+heightmap_texture = ExtResource("4_w8ve4")
+
+[node name="KitchenPot" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0.5, 0, 0.5)
+mesh = ExtResource("1_3ivmg")
+surface_material_override/0 = SubResource("StandardMaterial3D_3h4vw")

@@ -1,0 +1,27 @@
+[gd_scene load_steps=9 format=3 uid="uid://c0rohvrg3f3sq"]
+
+[ext_resource type="ArrayMesh" uid="uid://cpl2ey5h6byhc" path="res://Models/Placeholders/Toaster/Toaster.obj" id="1_y0ur0"]
+[ext_resource type="Texture2D" uid="uid://b11cp0lq731pa" path="res://Models/Placeholders/Toaster/Mat_Base_Color.png" id="2_gy066"]
+[ext_resource type="Texture2D" uid="uid://bkvbgtsdksk5s" path="res://Models/Placeholders/Toaster/Mat_Mixed_AO.png" id="3_gasrj"]
+[ext_resource type="Texture2D" uid="uid://bl2xb7ajo5d6n" path="res://Models/Placeholders/Toaster/Mat_Height.png" id="4_uqsgj"]
+[ext_resource type="Texture2D" uid="uid://26v5tl03x4fa" path="res://Models/Placeholders/Toaster/Mat_Metallic.png" id="5_lkel3"]
+[ext_resource type="Texture2D" uid="uid://dpbjffx7u1qc3" path="res://Models/Placeholders/Toaster/Mat_Normal_DirectX.png" id="6_ftp6h"]
+[ext_resource type="Texture2D" uid="uid://dd1b4b6y60js6" path="res://Models/Placeholders/Toaster/Mat_Roughness.png" id="7_1uyg3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4aye7"]
+albedo_texture = ExtResource("2_gy066")
+metallic = 1.0
+metallic_texture = ExtResource("5_lkel3")
+roughness_texture = ExtResource("7_1uyg3")
+normal_enabled = true
+normal_texture = ExtResource("6_ftp6h")
+ao_enabled = true
+ao_texture = ExtResource("3_gasrj")
+heightmap_texture = ExtResource("4_uqsgj")
+
+[node name="Toaster" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.005, 0, 0, 0, 0.005, 0, 0, 0, 0.005, 0.483871, 0.185526, 0.5)
+mesh = ExtResource("1_y0ur0")
+surface_material_override/0 = SubResource("StandardMaterial3D_4aye7")

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://cvf34m7yoive7"]
+
+[ext_resource type="Resource" uid="uid://ctme1f7ojo1tj" path="res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension_0/PlacementData/PlacementData_0.tres" id="1_ipptp"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectExtension.cs" id="2_ppwp7"]
+
+[resource]
+script = ExtResource("2_ppwp7")
+ChanceToExtend = 1.0
+PlacementData = Array[Resource]([ExtResource("1_ipptp")])
+_interiorObjectPaths = PackedStringArray("res://Generation/InteriorObjects/Kitchen/Blender/Blender_IObj.tres", "res://Generation/InteriorObjects/Kitchen/CoffeeMachine/CoffeeMachine_IObj.tres", "res://Generation/InteriorObjects/Kitchen/CopperKettle/CopperKettle_IObj.tres", "res://Generation/InteriorObjects/Kitchen/KitchenPot/KitchenPot_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Microwave/Microwave_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Toaster/Toaster_IObj.tres")

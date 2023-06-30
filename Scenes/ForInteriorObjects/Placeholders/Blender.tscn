@@ -1,0 +1,25 @@
+[gd_scene load_steps=8 format=3 uid="uid://cjtidaij2r2p5"]
+
+[ext_resource type="ArrayMesh" uid="uid://bqbs0monajy7e" path="res://Models/Placeholders/Blender/Blender.obj" id="1_ogopv"]
+[ext_resource type="Texture2D" uid="uid://cvdjbwtlrbqn2" path="res://Models/Placeholders/Blender/Mat_Base_Color.png" id="2_nc28m"]
+[ext_resource type="Texture2D" uid="uid://bhmrnnoqv4kg6" path="res://Models/Placeholders/Blender/Mat_Mixed_AO.png" id="3_7ik0n"]
+[ext_resource type="Texture2D" uid="uid://bwrtkiowr05gq" path="res://Models/Placeholders/Blender/Mat_Height.png" id="4_ko6um"]
+[ext_resource type="Texture2D" uid="uid://b2bgeqoo53pyf" path="res://Models/Placeholders/Blender/Mat_Metallic.png" id="5_7ynnn"]
+[ext_resource type="Texture2D" uid="uid://7sogtv0fpd06" path="res://Models/Placeholders/Blender/Mat_Normal_DirectX.png" id="6_wrm6t"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iypwd"]
+albedo_texture = ExtResource("2_nc28m")
+metallic = 1.0
+metallic_texture = ExtResource("5_7ynnn")
+normal_enabled = true
+normal_texture = ExtResource("6_wrm6t")
+ao_enabled = true
+ao_texture = ExtResource("3_7ik0n")
+heightmap_texture = ExtResource("4_ko6um")
+
+[node name="Blender" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.003, 0, 0, 0, 0.003, 0, 0, 0, 0.003, 0.5, 0.02, 0.5)
+mesh = ExtResource("1_ogopv")
+surface_material_override/0 = SubResource("StandardMaterial3D_iypwd")

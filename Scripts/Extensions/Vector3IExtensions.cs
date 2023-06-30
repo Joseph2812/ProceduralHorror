@@ -14,21 +14,13 @@ public static class Vector3IExtensions
     /// <returns>Rotated Vector3I <paramref name="v"/>.</returns>
     public static Vector3I RotatedY(this Vector3I v, float rotationY)
     {
-        switch (rotationY)
-        {
-            case  Mathf.Pi * 0.5f:
-            case -Mathf.Pi * 1.5f:
-                return new(v.Z, v.Y, -v.X);
+        rotationY %= Mathf.Tau;
+        if (rotationY < 0f) { rotationY += Mathf.Tau; }
 
-            case  Mathf.Pi:
-            case -Mathf.Pi:
-                return new(-v.X, v.Y, -v.Z);
-
-            case -Mathf.Pi * 0.5f:
-            case  Mathf.Pi * 1.5f:
-                return new(-v.Z, v.Y, v.X);
-
-            default: return v;
-        }
+        if      (rotationY >= Mathf.Pi * 0.25f && rotationY <= Mathf.Pi * 0.75f) { return new( v.Z, v.Y, -v.X); }
+        else if (rotationY >  Mathf.Pi * 0.75f && rotationY <= Mathf.Pi * 1.25f) { return new(-v.X, v.Y, -v.Z); }
+        else if (rotationY >  Mathf.Pi * 1.25f && rotationY <= Mathf.Pi * 1.75f) { return new(-v.Z, v.Y,  v.X); }
+        
+        return v;
     }
 }

@@ -1,0 +1,18 @@
+[gd_resource type="StandardMaterial3D" load_steps=6 format=3 uid="uid://cx8yamt4hog3k"]
+
+[ext_resource type="Texture2D" uid="uid://d0s735fotfliy" path="res://Textures/BrownFallPolishedMarble/BrownFallPolishedMarble_Albedo.png" id="1_s4hwo"]
+[ext_resource type="Texture2D" uid="uid://6jvgr562704x" path="res://Textures/BrownFallPolishedMarble/BrownFallPolishedMarble_AO.png" id="2_hnbme"]
+[ext_resource type="Texture2D" uid="uid://cr3kccivgb0ff" path="res://Textures/BrownFallPolishedMarble/BrownFallPolishedMarble_Height.png" id="3_3cmcb"]
+[ext_resource type="Texture2D" uid="uid://c0yjx1eskaq8x" path="res://Textures/BrownFallPolishedMarble/BrownFallPolishedMarble_Specular.png" id="4_cd2w4"]
+[ext_resource type="Texture2D" uid="uid://8xj3g0581nlr" path="res://Textures/BrownFallPolishedMarble/BrownFallPolishedMarble_Normal.png" id="5_l56hc"]
+
+[resource]
+albedo_texture = ExtResource("1_s4hwo")
+metallic = 1.0
+metallic_texture = ExtResource("4_cd2w4")
+normal_enabled = true
+normal_texture = ExtResource("5_l56hc")
+ao_enabled = true
+ao_texture = ExtResource("2_hnbme")
+heightmap_enabled = true
+heightmap_texture = ExtResource("3_3cmcb")

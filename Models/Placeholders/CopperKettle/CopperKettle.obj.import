@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bwmml3nvs27kc"
+path="res://.godot/imported/CopperKettle.obj-2765bb5faf5dbd82a472fe395ccf60fa.mesh"
+
+[deps]
+
+files=["res://.godot/imported/CopperKettle.obj-2765bb5faf5dbd82a472fe395ccf60fa.mesh"]
+
+source_file="res://Models/Placeholders/CopperKettle/CopperKettle.obj"
+dest_files=["res://.godot/imported/CopperKettle.obj-2765bb5faf5dbd82a472fe395ccf60fa.mesh", "res://.godot/imported/CopperKettle.obj-2765bb5faf5dbd82a472fe395ccf60fa.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

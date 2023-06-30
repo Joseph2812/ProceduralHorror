@@ -8,22 +8,32 @@ public class ItemManager
     public enum Id
     {
         Empty = -1,
+
+        Plaster,
+        KitchenTiles,
+
         White,
         Orange,
         Red,
         Green,
         Blue,
+        Wallpaper,
 
         WhiteOrange,
         WhiteRed,
         WhiteGreen,
         WhiteBlue,
+        WhiteWallpaper,
         OrangeRed,
         OrangeGreen,
         OrangeBlue,
+        OrangeWallpaper,
         RedGreen,
         RedBlue,
-        GreenBlue
+        RedWallpaper,
+        GreenBlue,
+        GreenWallpaper,
+        BlueWallpaper
     }
 
     private class MixedItemIdComparer : EqualityComparer<(Id, Id)>
@@ -39,19 +49,25 @@ public class ItemManager
 
     private readonly Dictionary<(Id, Id), Id> _mixedItems = new(new MixedItemIdComparer())
     {
-        [(Id.White, Id.Orange)] = Id.WhiteOrange,
-        [(Id.White, Id.Red)]    = Id.WhiteRed,
-        [(Id.White, Id.Green)]  = Id.WhiteGreen,
-        [(Id.White, Id.Blue)]   = Id.WhiteBlue,
+        [(Id.White, Id.Orange)]    = Id.WhiteOrange,
+        [(Id.White, Id.Red)]       = Id.WhiteRed,
+        [(Id.White, Id.Green)]     = Id.WhiteGreen,
+        [(Id.White, Id.Blue)]      = Id.WhiteBlue,
+        [(Id.White, Id.Wallpaper)] = Id.WhiteWallpaper,
 
-        [(Id.Orange, Id.Red)]   = Id.OrangeRed,
-        [(Id.Orange, Id.Green)] = Id.OrangeGreen,
-        [(Id.Orange, Id.Blue)]  = Id.OrangeBlue,
+        [(Id.Orange, Id.Red)]       = Id.OrangeRed,
+        [(Id.Orange, Id.Green)]     = Id.OrangeGreen,
+        [(Id.Orange, Id.Blue)]      = Id.OrangeBlue,
+        [(Id.Orange, Id.Wallpaper)] = Id.OrangeWallpaper,
 
-        [(Id.Red, Id.Green)] = Id.RedGreen,
-        [(Id.Red, Id.Blue)]  = Id.RedBlue,
+        [(Id.Red, Id.Green)]     = Id.RedGreen,
+        [(Id.Red, Id.Blue)]      = Id.RedBlue,
+        [(Id.Red, Id.Wallpaper)] = Id.RedWallpaper,
 
-        [(Id.Green, Id.Blue)] = Id.GreenBlue
+        [(Id.Green, Id.Blue)]      = Id.GreenBlue,
+        [(Id.Green, Id.Wallpaper)] = Id.GreenWallpaper,
+
+        [(Id.Blue, Id.Wallpaper)] = Id.BlueWallpaper
     };
     private readonly Dictionary<Id, (Id, Id)> _reverseMixedItems = new();
 

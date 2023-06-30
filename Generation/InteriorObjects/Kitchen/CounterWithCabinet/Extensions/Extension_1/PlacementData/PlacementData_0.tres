@@ -1,0 +1,8 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://bp6xy84c2vtmd"]
+
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/PlacementData.cs" id="1_cshkk"]
+
+[resource]
+script = ExtResource("1_cshkk")
+Position = Vector3i(-1, 0, 0)
+RotationY = 0.0

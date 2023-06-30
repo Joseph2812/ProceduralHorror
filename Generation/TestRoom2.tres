@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://bw7fxqsg7k8p8"]
+
+[ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="2_5pe3l"]
+
+[resource]
+script = ExtResource("2_5pe3l")
+FloorId = 1
+WallId = 2
+CeilingId = 0
+ChanceOfEmptyCell = 1.0
+_interiorObjectPaths = PackedStringArray()
