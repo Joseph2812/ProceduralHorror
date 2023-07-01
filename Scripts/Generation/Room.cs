@@ -6,14 +6,12 @@ namespace Scripts.Generation;
 
 public partial class Room : Resource
 {
-    [Export] public ItemManager.Id FloorId   { get; private set; }
-    [Export] public ItemManager.Id WallId    { get; private set; }
+    [Export] public ItemManager.Id FloorId { get; private set; }
+    [Export] public ItemManager.Id WallId { get; private set; }
     [Export] public ItemManager.Id CeilingId { get; private set; }
 
     [Export(PropertyHint.Range, "0,1,0.01")]
-    public float ChanceOfEmptyCell { get; private set; } = 1; // Set (0 to 1). 1 for an empty room.
-
-    public InteriorObject[] InteriorObjects { get; private set; } = Array.Empty<InteriorObject>();
+    public float ChanceOfEmptyCell { get; private set; } = 1; // Set to 1 for an empty room.
 
     [Export(PropertyHint.ArrayType, "4/13:*.tres")] // Str/File
     private string[] _interiorObjectPaths
@@ -27,5 +25,38 @@ public partial class Room : Resource
             InteriorObjects = CommonMethods.LoadPaths<InteriorObject>(value);
         }
     }
+
+    [ExportGroup("Extrusions")]
+    [ExportSubgroup("Outer Width (width either side of a doorway|centre)")]
+    [Export(PropertyHint.Range, $"1,10,1,or_greater")]
+    public int MinimumOuterWidth { get; private set; } = 1; // Minimum width: (1 * 2) + 1 = 3
+    [Export(PropertyHint.Range, $"1,10,1,or_greater")]
+    public int MaximumOuterWidth { get; private set; } = 1;
+
+    [ExportSubgroup("Length")]
+    [Export(PropertyHint.Range, $"3,10,1,or_greater")]
+    public int MinimumLength { get; private set; } = 3;
+    [Export(PropertyHint.Range, $"3,10,1,or_greater")]
+    public int MaximumLength { get; private set; } = 3;
+
+    [ExportSubgroup("Iterations")]
+    [Export(PropertyHint.Range, $"1,10,1,or_greater")]
+    public int MinimumExtrusionIterations { get; private set; } = 1;
+    [Export(PropertyHint.Range, $"1,10,1,or_greater")]
+    public int MaximumExtrusionIterations { get; private set; } = 1;
+
+    [ExportGroup("Height")]
+    [Export(PropertyHint.Range, $"3,10,1,or_greater")]
+    public int MinimumHeight { get; private set; } = 3; // Includes ceiling
+    [Export(PropertyHint.Range, $"3,10,1,or_greater")]
+    public int MaximumHeight { get; private set; } = 3;
+
+    [ExportGroup("Doorways")]
+    [Export(PropertyHint.Range, $"1,10,1,or_greater")]
+    public int MinimumDoorways { get; private set; } = 1;
+    [Export(PropertyHint.Range, $"1,10,1,or_greater")]
+    public int MaximumDoorways { get; private set; } = 1;
+
+    public InteriorObject[] InteriorObjects { get; private set; }
     private string[] p_interiorObjectPaths;
 }

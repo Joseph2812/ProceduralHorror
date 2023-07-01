@@ -98,7 +98,7 @@ public partial class MapGenerator : GridMap
 
                 _emptyPosS.Add(elevatedPos, pathPosS.Contains(elevatedPos));
 
-                if (Rng.Randf() < _roomManager.ChanceOfEmptyCell) { continue; }
+                if (Rng.Randf() < _roomManager.SelectedRoom.ChanceOfEmptyCell) { continue; }
                 _potentialPos_floorIdx_heightLvl_S.Add((elevatedPos, floorIdx, heightLvl));
             }
         }

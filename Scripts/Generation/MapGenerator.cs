@@ -9,19 +9,9 @@ using Scripts.Extensions;
 namespace Scripts.Generation;
 
 public partial class MapGenerator : GridMap
-{
-    private const int MaximumRoomCount        = 30; // Max where generation will stop
-    private const int MaximumIterations       = 4;  // Max number of times to randomly extrude a room
-    private const int MaximumExtrusionRetries = 50; // Max number of times to keep randomly sizing extrusions until it fits or runs out
-    private const int MaximumOuterWidth       = 5;  // Max outer width of extrusion (applied separately to either side of a doorway)
-    private const int MaximumLength           = 10; // Max length of extrusion
-    private const int MaximumHeight           = 5;  // Max height of a room (including ceiling)
-    private const int MaximumDoorways         = 5;  // Max number of doorways it can generate 
-
-    private const int MinimumOuterWidth = 1; // Minimum width: (1 * 2) + 1 = 3
-    private const int MinimumLength     = 3;
-
+{  
     private const int MillisecondsBtwSteps = 250; // Slows down generation by adding this delay between steps
+    private const int MaximumExtrusionRetries = 50;
 
     public enum OrthDir
     {
@@ -195,7 +185,7 @@ public partial class MapGenerator : GridMap
             HashSet<Vector3I> doorPosS = new();
             foreach (Vector3I doorPos in prevDoorPosS)
             {
-                if (roomCount == MaximumRoomCount)
+                if (roomCount == _roomManager.MaximumRoomCount)
                 {
                     doorPosS.Clear();
                     break;
@@ -208,9 +198,9 @@ public partial class MapGenerator : GridMap
                 if (_floorPosS == null) { continue; }
 
                 Vector3I originDoorAheadPos = (doorPos == Vector3I.Zero) ? doorPos + (startDir * 2) : doorPos + startDir;
-                int height = Rng.RandiRange(3, MaximumHeight);
+                int height = Rng.RandiRange(_roomManager.SelectedRoom.MinimumHeight, _roomManager.SelectedRoom.MaximumHeight);
 
-                List<Vector3I> potentialDoorPosS = GenerateWallsAndCeiling(height);
+                List<Vector3I> potentialDoorPosS = GenerateWallsAndCeiling(doorPos, height);
                 await Task.Delay(MillisecondsBtwSteps);
                 HashSet<Vector3I> connectionPosS = MixWallsAndFindConnections(originDoorAheadPos, height);
                 await Task.Delay(MillisecondsBtwSteps);
@@ -229,7 +219,7 @@ public partial class MapGenerator : GridMap
             prevDoorPosS = doorPosS;
         }
 
-        if (roomCount < MaximumRoomCount)
+        if (roomCount < _roomManager.MaximumRoomCount)
         {
             GD.Print($"Maximum room count wasn't reached. Current: {roomCount}. Retrying...");
 
@@ -278,7 +268,7 @@ public partial class MapGenerator : GridMap
         HashSet<Vector3I> _currentFloorPosS = new(); // For walls later
         Vector3I direction = startDir;
 
-        int iterations = Rng.RandiRange(1, MaximumIterations);
+        int iterations = Rng.RandiRange(_roomManager.SelectedRoom.MinimumExtrusionIterations, _roomManager.SelectedRoom.MaximumExtrusionIterations);
         int lastIteration = iterations - 1;
 
         originPos += direction; // Shift one away from the door
@@ -292,8 +282,8 @@ public partial class MapGenerator : GridMap
             bool extrusionFits = false;
             for (int j = 0; j < MaximumExtrusionRetries; j++)
             {
-                outerWidth = Rng.RandiRange(MinimumOuterWidth, MaximumOuterWidth);
-                length = Rng.RandiRange(MinimumLength, MaximumLength);
+                outerWidth = Rng.RandiRange(_roomManager.SelectedRoom.MinimumOuterWidth, _roomManager.SelectedRoom.MaximumOuterWidth);
+                length = Rng.RandiRange(_roomManager.SelectedRoom.MinimumLength, _roomManager.SelectedRoom.MaximumLength);
 
                 // Check If The Area Is Clear //
                 if (!AreaContainsItems(originPos, direction, outerWidth, length, _currentFloorPosS))
@@ -316,7 +306,7 @@ public partial class MapGenerator : GridMap
                 {
                     Vector3I newPos = originPos + (perpDir * x) + (direction * z);
 
-                    SetCellItem(newPos, (int)_roomManager.FloorId);
+                    SetCellItem(newPos, (int)_roomManager.SelectedRoom.FloorId);
                     _currentFloorPosS.Add(newPos);
                 }
             }
@@ -331,7 +321,7 @@ public partial class MapGenerator : GridMap
 
             // Move The Origin To A New Edge //
             // (length - 2) & (outerWidth - 1) = Move one into existing floor, (outerWidth + 1) = Move one out of existing floor
-            // This ensures there's a minimum of a 3 cell width connected directly to previous extrusion, so a corridor can be made.
+            // This ensures there's a minimum of a 3 cell width connected directly to previous extrusion, so a corridor can be made
             if (newDirection.Equals(direction))     { originPos += (direction * length) + (perpDir * Rng.RandiRange(-(outerWidth - 1), outerWidth - 1)); }
             else if (newDirection.Equals(perpDir))  { originPos += (direction * Rng.RandiRange(1, length - 2)) + (perpDir * (outerWidth + 1)); }
             else if (newDirection.Equals(-perpDir)) { originPos += (direction * Rng.RandiRange(1, length - 2)) + (-perpDir * (outerWidth + 1)); }
@@ -343,7 +333,7 @@ public partial class MapGenerator : GridMap
     }
 
     /// <returns><see cref="List{Vector3I}"/> of potential door positions.</returns>
-    private List<Vector3I> GenerateWallsAndCeiling(int height)
+    private List<Vector3I> GenerateWallsAndCeiling(Vector3I doorPos, int height)
     {
         List<Vector3I> potentialDoorPosS = new();
         IEnumerator<Vector3I> enumerator = _floorPosS.GetEnumerator();
@@ -359,21 +349,24 @@ public partial class MapGenerator : GridMap
                 NeighbourInfo.GetFirstEmpty(GetNeighbours(floorPos, DiagonalDirs), out _)
             )
             {
-                BuildColumn(floorPos, height, _roomManager.WallId);
+                BuildColumn(floorPos, height, _roomManager.SelectedRoom.WallId);
                 _floorPosS.Remove(floorPos);
 
                 if // Excludes corners & not having minimum area as potential doorways
                 (
                     NeighbourInfo.GetEmptyCount(orthNeighbours) == 1 &&
-                    !AreaContainsItems(floorPos + emptyNeighbour.Direction, emptyNeighbour.Direction, MinimumOuterWidth, MinimumLength)
+                    !AreaContainsItems(floorPos + emptyNeighbour.Direction, emptyNeighbour.Direction, _roomManager.SelectedRoom.MinimumOuterWidth, _roomManager.SelectedRoom.MinimumLength)
                 )
                 { potentialDoorPosS.Add(floorPos); }
             }
 
 #if ENABLE_CEILING
-            SetCellItem(floorPos + (Vector3I.Up * height), (int)_roomManager.CeilingId);
+            SetCellItem(floorPos + (Vector3I.Up * height), (int)_roomManager.SelectedRoom.CeilingId);
 #endif
-        }      
+        }
+#if ENABLE_CEILING
+        SetCellItem(doorPos + (Vector3I.Up * height), (int)_roomManager.SelectedRoom.CeilingId);
+#endif
         return potentialDoorPosS;
     }
 
@@ -406,7 +399,7 @@ public partial class MapGenerator : GridMap
 
                         (ItemManager.Id mixedId, int orientation) = GetMixedIdWithOrientation
                         (
-                            id1               : _roomManager.WallId,
+                            id1               : _roomManager.SelectedRoom.WallId,
                             id2               : (ItemManager.Id)GetCellItem(upperPlusUp2),
                             direction         : upperNeighbour.Direction,
                             defaultOrientation: GetCellItemOrientation(upperPlusUp2)
@@ -429,7 +422,7 @@ public partial class MapGenerator : GridMap
                 {
                     (ItemManager.Id mixedId, int orientation) = GetMixedIdWithOrientation
                     (
-                        id1               : _roomManager.WallId,
+                        id1               : _roomManager.SelectedRoom.WallId,
                         id2               : upperNeighbour.ItemId,
                         direction         : upperNeighbour.Direction,
                         defaultOrientation: GetCellItemOrientation(upperNeighbour.Position)
@@ -442,7 +435,7 @@ public partial class MapGenerator : GridMap
                         orientation
                     );
                 }
-                else { BuildColumn(neighbourFloorPos, height, _roomManager.WallId); } // In case of intrusions from other rooms
+                else { BuildColumn(neighbourFloorPos, height, _roomManager.SelectedRoom.WallId); } // In case of intrusions from other rooms
             }
         }
         connectionPosS.Remove(originDoorAheadPos);
@@ -472,7 +465,7 @@ public partial class MapGenerator : GridMap
     private HashSet<Vector3I> GenerateDoors(List<Vector3I> potentialDoorPosS)
     {
         HashSet<Vector3I> doorPosS = new();
-        int doorCountTarget = Rng.RandiRange(1, MaximumDoorways);
+        int doorCountTarget = Rng.RandiRange(_roomManager.SelectedRoom.MinimumDoorways, _roomManager.SelectedRoom.MaximumDoorways);
 
         for (int i = 0; i < doorCountTarget; i++)
         {
