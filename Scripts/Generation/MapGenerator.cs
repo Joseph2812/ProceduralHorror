@@ -118,6 +118,7 @@ public partial class MapGenerator : GridMap
         base._Ready();
 
         // Initialise //
+        MeshLibrary = _itemManager.GetMeshLibrary();
         _interiorNodeParent = new Node3D { Name = InteriorObjectParentName };
         AddChild(_interiorNodeParent);
 

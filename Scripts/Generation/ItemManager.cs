@@ -1,39 +1,64 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 namespace Scripts.Generation;
 
 public class ItemManager
 {
+    private const string CubeTexturePath = "res://Textures/Cubes/";
+    private const string CubeShaderPath = "res://Shaders/MixedCube.gdshader";
+    private const int PureItemCount = 8;
+
     public enum Id
     {
         Empty = -1,
 
-        Plaster,
-        KitchenTiles,
-
+        // Pure Items //
         White,
         Orange,
         Red,
         Green,
         Blue,
+        KitchenTiles,
         Wallpaper,
+        Plaster,
 
+        // Mixed Items //
         WhiteOrange,
         WhiteRed,
         WhiteGreen,
         WhiteBlue,
+        WhiteKitchenTiles,
         WhiteWallpaper,
+        WhitePlaster,
+
         OrangeRed,
         OrangeGreen,
         OrangeBlue,
+        OrangeKitchenTiles,
         OrangeWallpaper,
+        OrangePlaster,
+
         RedGreen,
         RedBlue,
+        RedKitchenTiles,
         RedWallpaper,
+        RedPlaster,
+
         GreenBlue,
+        GreenKitchenTiles,
         GreenWallpaper,
-        BlueWallpaper
+        GreenPlaster,
+
+        BlueKitchenTiles,
+        BlueWallpaper,
+        BluePlaster,
+
+        KitchenTilesWallpaper,
+        KitchenTilesPlaster,
+
+        WallpaperPlaster
     }
 
     private class MixedItemIdComparer : EqualityComparer<(Id, Id)>
@@ -47,38 +72,131 @@ public class ItemManager
         public override int GetHashCode((Id, Id) obj) => ((int)obj.Item1) ^ ((int)obj.Item2);
     }
 
-    private readonly Dictionary<(Id, Id), Id> _mixedItems = new(new MixedItemIdComparer())
-    {
-        [(Id.White, Id.Orange)]    = Id.WhiteOrange,
-        [(Id.White, Id.Red)]       = Id.WhiteRed,
-        [(Id.White, Id.Green)]     = Id.WhiteGreen,
-        [(Id.White, Id.Blue)]      = Id.WhiteBlue,
-        [(Id.White, Id.Wallpaper)] = Id.WhiteWallpaper,
-
-        [(Id.Orange, Id.Red)]       = Id.OrangeRed,
-        [(Id.Orange, Id.Green)]     = Id.OrangeGreen,
-        [(Id.Orange, Id.Blue)]      = Id.OrangeBlue,
-        [(Id.Orange, Id.Wallpaper)] = Id.OrangeWallpaper,
-
-        [(Id.Red, Id.Green)]     = Id.RedGreen,
-        [(Id.Red, Id.Blue)]      = Id.RedBlue,
-        [(Id.Red, Id.Wallpaper)] = Id.RedWallpaper,
-
-        [(Id.Green, Id.Blue)]      = Id.GreenBlue,
-        [(Id.Green, Id.Wallpaper)] = Id.GreenWallpaper,
-
-        [(Id.Blue, Id.Wallpaper)] = Id.BlueWallpaper
-    };
+    private readonly Dictionary<(Id, Id), Id> _mixedItems = new(new MixedItemIdComparer());
     private readonly Dictionary<Id, (Id, Id)> _reverseMixedItems = new();
 
     public ItemManager()
     {
+        for (int i = 0; i < PureItemCount; i++)
+        {
+            for (int j = i + 1; j < PureItemCount; j++)
+            {
+                Id id1 = (Id)i;
+                Id id2 = (Id)j;
+
+                _mixedItems.Add
+                (
+                    (id1, id2),
+                    (Id)Enum.Parse(typeof(Id), Enum.GetName(typeof(Id), id1) + Enum.GetName(typeof(Id), id2))
+                );
+            }
+        }
+
         // Create Reverse Lookup //
         foreach (KeyValuePair<(Id, Id), Id> pair in _mixedItems)
         {
             _reverseMixedItems.Add(pair.Value, pair.Key);
         }
     }
+
+    /// <summary>
+    /// Create a <see cref="MeshLibrary"/> from <see cref="Id"/> constants, and matching textures in the resources folder.
+    /// </summary>
+    /// <returns><see cref="MeshLibrary"/> containing all generated <see cref="BoxMesh"/>es.</returns>
+    public MeshLibrary GetMeshLibrary()
+    {
+        MeshLibrary lib = new();
+        Shader shader = GD.Load<Shader>(CubeShaderPath);
+        int mixedIdx = PureItemCount;
+
+        // Pure Cube //
+        for (int i = 0; i < PureItemCount; i++)
+        {
+            StandardMaterial3D mat = new StandardMaterial3D() { Uv1Scale = new(3f, 2f, 1f) };
+            BoxMesh box = new() { Material = mat };
+
+            string itemPath = CubeTexturePath + Enum.GetName(typeof(Id), i);
+
+            // Setup Standard Material //
+            if (TryLoadTexture($"{itemPath}/AlbedoMap", out Texture2D texture)) { mat.AlbedoTexture = texture; }
+            if (TryLoadTexture($"{itemPath}/MetallicMap", out texture))         { mat.MetallicTexture = texture; }
+            if (TryLoadTexture($"{itemPath}/RoughnessMap", out texture))        { mat.RoughnessTexture = texture; }
+
+            if (TryLoadTexture($"{itemPath}/NormalMap", out texture))
+            {
+                mat.NormalEnabled = true;
+                mat.NormalTexture = texture;
+            }
+            if (TryLoadTexture($"{itemPath}/AmbientOcclusionMap", out texture))
+            {
+                mat.AOEnabled = true;
+                mat.AOTexture = texture;
+            }
+            //
+
+            lib.CreateItem(i);
+            lib.SetItemMesh(i, box);
+
+            // Mixed Items //
+            for (int j = i + 1; j < PureItemCount; j++)
+            {
+                ShaderMaterial shaderMat = new ShaderMaterial() { Shader = shader };
+                box = new() { Material = shaderMat };
+
+                shaderMat.SetShaderParameter($"albedoMap1"          , mat.AlbedoTexture);
+                shaderMat.SetShaderParameter($"metallicMap1"        , mat.MetallicTexture);
+                shaderMat.SetShaderParameter($"roughnessMap1"       , mat.RoughnessTexture);
+                shaderMat.SetShaderParameter($"normalMap1"          , mat.NormalTexture);
+                shaderMat.SetShaderParameter($"ambientOcclusionMap1", mat.AOTexture);
+
+                // Load 2nd Textures //
+                itemPath = CubeTexturePath + Enum.GetName(typeof(Id), j);
+                if (TryLoadTexture($"{itemPath}/AlbedoMap", out texture))
+                {
+                    shaderMat.SetShaderParameter($"albedoMap2", texture);
+                }
+
+                if (TryLoadTexture($"{itemPath}/MetallicMap", out texture))
+                {
+                    shaderMat.SetShaderParameter($"metallicMap2", texture);
+                }
+
+                if (TryLoadTexture($"{itemPath}/RoughnessMap", out texture))
+                {
+                    shaderMat.SetShaderParameter($"roughnessMap2", texture);
+                }
+
+                if (TryLoadTexture($"{itemPath}/NormalMap", out texture))
+                {
+                    shaderMat.SetShaderParameter($"normalMap2", texture);
+                }
+
+                if (TryLoadTexture($"{itemPath}/AmbientOcclusionMap", out texture))
+                {
+                    shaderMat.SetShaderParameter($"ambientOcclusionMap2", texture);
+                }
+                //
+
+                lib.CreateItem(mixedIdx);
+                lib.SetItemMesh(mixedIdx, box);
+                mixedIdx++;
+            }
+        }
+        return lib;
+    }
+    private bool TryLoadTexture(string fullPathWithoutExt, out Texture2D texture)
+    {
+        string pathTres = fullPathWithoutExt + ".tres";
+        string pathJpg = fullPathWithoutExt + ".jpg";
+
+        texture = null;
+        if (ResourceLoader.Exists(pathTres))     { texture = GD.Load<Texture2D>(pathTres); }
+        else if (ResourceLoader.Exists(pathJpg)) { texture = GD.Load<Texture2D>(pathJpg); }
+        else                                     { return false; }
+
+        return true;
+    }
+
 
     /// <summary>
     /// Find the mixed equivalent of two item IDs, and whether it matches the order in the stored dictionary (<paramref name="mixedId"/> = <paramref name="id2"/> on failure).
