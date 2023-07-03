@@ -201,7 +201,7 @@ public partial class MapGenerator : GridMap
                 Vector3I originDoorAheadPos = (doorPos == Vector3I.Zero) ? doorPos + (startDir * 2) : doorPos + startDir;
                 int height = Rng.RandiRange(_roomManager.SelectedRoom.MinimumHeight, _roomManager.SelectedRoom.MaximumHeight);
 
-                List<Vector3I> potentialDoorPosS = GenerateWallsAndCeiling(doorPos, height);
+                List<Vector3I> potentialDoorPosS = GenerateWallsAndCeiling((doorPos == Vector3I.Zero) ? doorPos + startDir : doorPos, height);
                 await Task.Delay(MillisecondsBtwSteps);
                 HashSet<Vector3I> connectionPosS = MixWallsAndFindConnections(originDoorAheadPos, height);
                 await Task.Delay(MillisecondsBtwSteps);

@@ -52,7 +52,6 @@ public partial class MapGenerator : GridMap
     {
         // Get Proximities & Setup AStar //
         int[][] allCellProximities = new int[_floorPosS.Count][];
-        float[] normaliseVals = { 2f, 2f, 2f, 2f };
 
         AStar3D aStar = new();
         if (_floorPosS.Count > aStar.GetPointCapacity()) { aStar.ReserveSpace(_floorPosS.Count); }
@@ -61,7 +60,7 @@ public partial class MapGenerator : GridMap
         Dictionary<long, Vector3I> idToPos = new(_floorPosS.Count);
         long uniqueId = 0;
 
-        SetProximitiesAndAStar(allCellProximities, normaliseVals, aStar, posToId, idToPos, ref uniqueId);
+        SetProximitiesAndAStar(allCellProximities, aStar, posToId, idToPos, ref uniqueId);
         HashSet<Vector3I> pathPosS = GetAStarPathPositionsBtwDoors(doorPosS, originDoorAheadPos, aStar, posToId, idToPos, ref uniqueId);
 
         // Get All Empty Positions Projected From The Floor //
@@ -113,12 +112,12 @@ public partial class MapGenerator : GridMap
             (Vector3I potentialPos, int floorIdx, int heightLvl) =  _potentialPos_floorIdx_heightLvl_S[randomIdx];
 
             // Place Random Node Based On Minimum Normalised Proximity //
-            (float minNormalisedProx, int minIdx) = GetMinimumNormalisedProximityWithIndex(potentialPos, allCellProximities[floorIdx], normaliseVals);
+            (float minNormalisedProx, int minIdx) = GetMinimumNormalisedProximityWithIndex(potentialPos, allCellProximities[floorIdx]);
             PlaceRandomInteriorNode(potentialPos, maxHeightLvl, heightLvl, minNormalisedProx, GetRotationYFromIndex(minIdx));
         }
     }
 
-    private void SetProximitiesAndAStar(int[][] allCellProximities, float[] normaliseVals, AStar3D aStar, Dictionary<Vector3I, long> posToId, Dictionary<long, Vector3I> idToPos, ref long uniqueId)
+    private void SetProximitiesAndAStar(int[][] allCellProximities, AStar3D aStar, Dictionary<Vector3I, long> posToId, Dictionary<long, Vector3I> idToPos, ref long uniqueId)
     {
         int i = -1;
         foreach (Vector3I floorPos in _floorPosS)
@@ -142,8 +141,6 @@ public partial class MapGenerator : GridMap
                 }
                 allCellProximities[i][j] = dist;
             }
-            // Retrieve every other cell proximity (only need max in one direction for each axis)
-            for (int j = 0; j < normaliseVals.Length; j++) { normaliseVals[j] = Mathf.Max(normaliseVals[j], allCellProximities[i][j * 2]); }
 
             // Setup AStar Nodes & Connections //
             long floorPosId = GetAStarId(posToId, idToPos, floorPos, ref uniqueId);
@@ -161,8 +158,6 @@ public partial class MapGenerator : GridMap
                 }
             }
         }
-        // Create Normalise Values For Each Axis //
-        for (i = 0; i < normaliseVals.Length; i++) { normaliseVals[i] = 2f / normaliseVals[i]; }
     }
 
     private HashSet<Vector3I> GetAStarPathPositionsBtwDoors(HashSet<Vector3I> doorPosS, Vector3I originDoorAheadPos, AStar3D aStar, Dictionary<Vector3I, long> posToId, Dictionary<long, Vector3I> idToPos, ref long uniqueId)
@@ -236,26 +231,38 @@ public partial class MapGenerator : GridMap
         );
     }
 
-    private (float, int) GetMinimumNormalisedProximityWithIndex(Vector3I floorPos, int[] cellProximities, float[] normaliseVals)
+    private (float, int) GetMinimumNormalisedProximityWithIndex(Vector3I floorPos, int[] cellProximities)
     {
-        (float, int) minNormalisedProx_index = (cellProximities[0], 0);
-        for (int j = 1; j < cellProximities.Length; j++)
+        (int, int, int) minProx_oppositeProx_minIdx = (cellProximities[0], cellProximities[GetOppositeIndex(0)], 0);
+        for (int i = 1; i < cellProximities.Length; i++)
         {
-            float prox = cellProximities[j];
-            int oppositeJ = (j + 2) % 4; // For j <= 3
+            int prox = cellProximities[i];
+            int oppositeI = GetOppositeIndex(i);
 
             if
             (
-                prox < minNormalisedProx_index.Item1 ||
-                (                                                                                              // Prioritise when prox equal:
-                    prox == minNormalisedProx_index.Item1 && j <= 3 &&                                         // Orthogonal direction
-                    cellProximities[oppositeJ] > 0 && _emptyPosS.ContainsKey(floorPos + All3x3Dirs[oppositeJ]) // Against wall with opening
+                prox < minProx_oppositeProx_minIdx.Item1 ||
+                (                                                                                              // Prioritise when proximity is equal:
+                    prox == minProx_oppositeProx_minIdx.Item1 && i <= 3 &&                                     // Orthogonal direction
+                    cellProximities[oppositeI] > 0 && _emptyPosS.ContainsKey(floorPos + All3x3Dirs[oppositeI]) // Against wall with opening
                 )
             )
-            { minNormalisedProx_index = (prox, j); }
+            { minProx_oppositeProx_minIdx = (prox, cellProximities[oppositeI], i); }
         }
-        return (minNormalisedProx_index.Item1 * normaliseVals[minNormalisedProx_index.Item2 / 2], minNormalisedProx_index.Item2);
+
+        (int minProx, int oppositeProx, int minIdx) = minProx_oppositeProx_minIdx;
+        int totalDist = minProx + oppositeProx;
+        return
+        (
+            (totalDist == 0) ? 0 : minProx / (totalDist * 0.5f),
+            minIdx
+        );
     }
+
+    /// <summary>
+    /// Find index of opposite direction from given <see cref="All3x3Dir"/> index.
+    /// </summary>
+    private int GetOppositeIndex(int i) => (i <= 3) ? (i + 2) % 4 : Mathf.Wrap(i + 2, 4, 8);
 
     private float GetRotationYFromIndex(int idx)
     {
