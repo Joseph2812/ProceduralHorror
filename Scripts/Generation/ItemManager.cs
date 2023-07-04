@@ -119,8 +119,8 @@ public class ItemManager
 
             // Setup Standard Material //
             if (TryLoadTexture($"{itemPath}/AlbedoMap", out Texture2D texture)) { mat.AlbedoTexture = texture; }
-            if (TryLoadTexture($"{itemPath}/MetallicMap", out texture))         { mat.MetallicTexture = texture; }
             if (TryLoadTexture($"{itemPath}/RoughnessMap", out texture))        { mat.RoughnessTexture = texture; }
+            if (TryLoadTexture($"{itemPath}/MetallicMap", out texture))         { mat.MetallicTexture = texture; }
 
             if (TryLoadTexture($"{itemPath}/NormalMap", out texture))
             {
@@ -143,37 +143,37 @@ public class ItemManager
                 ShaderMaterial shaderMat = new ShaderMaterial() { Shader = shader };
                 box = new() { Material = shaderMat };
 
-                shaderMat.SetShaderParameter($"albedoMap1"          , mat.AlbedoTexture);
-                shaderMat.SetShaderParameter($"metallicMap1"        , mat.MetallicTexture);
-                shaderMat.SetShaderParameter($"roughnessMap1"       , mat.RoughnessTexture);
-                shaderMat.SetShaderParameter($"normalMap1"          , mat.NormalTexture);
-                shaderMat.SetShaderParameter($"ambientOcclusionMap1", mat.AOTexture);
+                shaderMat.SetShaderParameter($"albedo_map_1"   , mat.AlbedoTexture);
+                shaderMat.SetShaderParameter($"roughness_map_1", mat.RoughnessTexture);
+                shaderMat.SetShaderParameter($"metallic_map_1" , mat.MetallicTexture);
+                shaderMat.SetShaderParameter($"normal_map_1"   , mat.NormalTexture);
+                shaderMat.SetShaderParameter($"ao_map_1"       , mat.AOTexture);
 
                 // Load 2nd Textures //
                 itemPath = CubeTexturePath + Enum.GetName(typeof(Id), j);
                 if (TryLoadTexture($"{itemPath}/AlbedoMap", out texture))
                 {
-                    shaderMat.SetShaderParameter($"albedoMap2", texture);
-                }
-
-                if (TryLoadTexture($"{itemPath}/MetallicMap", out texture))
-                {
-                    shaderMat.SetShaderParameter($"metallicMap2", texture);
+                    shaderMat.SetShaderParameter($"albedo_map_2", texture);
                 }
 
                 if (TryLoadTexture($"{itemPath}/RoughnessMap", out texture))
                 {
-                    shaderMat.SetShaderParameter($"roughnessMap2", texture);
+                    shaderMat.SetShaderParameter($"roughness_map_2", texture);
+                }
+
+                if (TryLoadTexture($"{itemPath}/MetallicMap", out texture))
+                {
+                    shaderMat.SetShaderParameter($"metallic_map_2", texture);
                 }
 
                 if (TryLoadTexture($"{itemPath}/NormalMap", out texture))
                 {
-                    shaderMat.SetShaderParameter($"normalMap2", texture);
+                    shaderMat.SetShaderParameter($"normal_map_2", texture);
                 }
 
                 if (TryLoadTexture($"{itemPath}/AmbientOcclusionMap", out texture))
                 {
-                    shaderMat.SetShaderParameter($"ambientOcclusionMap2", texture);
+                    shaderMat.SetShaderParameter($"ao_map_2", texture);
                 }
                 //
 

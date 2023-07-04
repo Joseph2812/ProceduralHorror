@@ -392,7 +392,7 @@ public partial class MapGenerator : GridMap
                     { 
                         connectionPosS.Add(neighbourFloorPos);
 
-                        // Build Column For Door Connection //
+                        // Mix Column Above Doorway Connection //
                         Vector3I up2 = Vector3I.Up * 2;
                         Vector3I orthNeighbourPlusUp2 = orthNeighbour.Position + up2;
 
@@ -410,6 +410,16 @@ public partial class MapGenerator : GridMap
                             mixedId,
                             orientation
                         );
+
+                        // Mix Doorway Floor Item //
+                        (mixedId, orientation) = GetMixedIdWithOrientation
+                        (
+                            id1               : _roomManager.SelectedRoom.FloorId,
+                            id2               : (ItemManager.Id)GetCellItem(neighbourFloorAheadPos),
+                            direction         : orthNeighbour.Direction,
+                            defaultOrientation: GetCellItemOrientation(neighbourFloorAheadPos)
+                        );
+                        SetCellItem(neighbourFloorPos, (int)mixedId, orientation);
                     }
                 }
                 else if 
