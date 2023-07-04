@@ -135,7 +135,7 @@ public partial class MapGenerator : GridMap
         for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i + (All3x3Dirs.Length * 2)] = All3x3Dirs[i] + Vector3I.Up; }
         //
 
-        //Rng.Seed = 8205665769902400944;
+        Rng.Seed = 184690118043452219;
         GD.Print(Rng.Seed);
 
         bool success = false;
@@ -380,14 +380,14 @@ public partial class MapGenerator : GridMap
         while (enumerator.MoveNext())
         {
             Vector3I floorPos = enumerator.Current;
-            NeighbourInfo[] upperOrthNeighbours = GetNeighbours(floorPos + Vector3I.Up, OrthogonalDirs);
+            NeighbourInfo[] orthUpperNeighbours = GetNeighbours(floorPos + Vector3I.Up, OrthogonalDirs);
 
-            foreach (NeighbourInfo upperNeighbour in upperOrthNeighbours)
+            foreach (NeighbourInfo orthNeighbour in orthUpperNeighbours)
             {
-                Vector3I neighbourFloorPos = upperNeighbour.Position + Vector3I.Down;
-                Vector3I neighbourFloorAheadPos = neighbourFloorPos + upperNeighbour.Direction;
+                Vector3I neighbourFloorPos = orthNeighbour.Position + Vector3I.Down;
+                Vector3I neighbourFloorAheadPos = neighbourFloorPos + orthNeighbour.Direction;
 
-                if (upperNeighbour.Empty)
+                if (orthNeighbour.Empty)
                 {
                     // Check for doors from other rooms (Connections)
                     if (!_floorPosS.Contains(neighbourFloorPos))
@@ -395,19 +395,18 @@ public partial class MapGenerator : GridMap
                         connectionPosS.Add(neighbourFloorPos);
 
                         // Build Column For Door Connection //
-                        Vector3I up2 = Vector3I.Up * 2;
-                        Vector3I upperPlusUp2 = upperNeighbour.Position + up2;
+                        Vector3I orthNeighbourPlusPerpDir = orthNeighbour.Position + orthNeighbour.Direction.RotatedY(Mathf.Pi * -0.5f);
 
                         (ItemManager.Id mixedId, int orientation) = GetMixedIdWithOrientation
                         (
                             id1               : _roomManager.SelectedRoom.WallId,
-                            id2               : (ItemManager.Id)GetCellItem(upperPlusUp2),
-                            direction         : upperNeighbour.Direction,
-                            defaultOrientation: GetCellItemOrientation(upperPlusUp2)
+                            id2               : (ItemManager.Id)GetCellItem(orthNeighbourPlusPerpDir),
+                            direction         : orthNeighbour.Direction,
+                            defaultOrientation: GetCellItemOrientation(orthNeighbourPlusPerpDir)
                         );
                         BuildColumn
                         (
-                            neighbourFloorPos + up2,
+                            neighbourFloorPos + (Vector3I.Up * 2),
                             height - 2,
                             mixedId,
                             orientation
@@ -424,9 +423,9 @@ public partial class MapGenerator : GridMap
                     (ItemManager.Id mixedId, int orientation) = GetMixedIdWithOrientation
                     (
                         id1               : _roomManager.SelectedRoom.WallId,
-                        id2               : upperNeighbour.ItemId,
-                        direction         : upperNeighbour.Direction,
-                        defaultOrientation: GetCellItemOrientation(upperNeighbour.Position)
+                        id2               : orthNeighbour.ItemId,
+                        direction         : orthNeighbour.Direction,
+                        defaultOrientation: GetCellItemOrientation(orthNeighbour.Position)
                     );
                     BuildColumn
                     (

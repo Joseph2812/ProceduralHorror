@@ -234,7 +234,7 @@ public partial class InteriorObject : Resource
 
         return
         (
-            IsClearanceFullyContainedInEmptyPosS(emptyPosS, clearancePosS)                                                                            &&
+            IsClearanceFullyContainedInEmptyPosS(emptyPosS, clearancePosS)                                                                       &&
             (semiClearancePosS.Count == 0 || semiClearancePosS.IsProperSubsetOf(emptyPosS.Keys) || semiClearancePosS.IsSubsetOf(emptyPosS.Keys)) &&
             IsNeighboursValid(MapGenerator.Inst.GetNeighbours(position, MapGenerator.Inst.All3x3x3Dirs), rotationY)                              &&
             IsNotMaxCountAndIncrement(),

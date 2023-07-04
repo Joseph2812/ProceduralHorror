@@ -318,5 +318,9 @@ public partial class MapGenerator : GridMap
     /// <param name="weight">Weight towards the centre between 0 and 1 (inclusive).</param>
     /// <param name="normalisedProx">Normalised proximity from the edge to the centre.</param>
     /// <returns>Probability represented as a float between 0 and 1 (inclusive).</returns>
-    private float GetProximityProbability(float weight, float normalisedProx) => (weight * normalisedProx) + ((1f - weight) * (1f - normalisedProx));
+    private float GetProximityProbability(float weight, float normalisedProx)
+    {
+        float normalisedProxPow2 = normalisedProx * normalisedProx;
+        return (weight * normalisedProxPow2) + ( (1f - weight) * (1f - normalisedProxPow2) );
+    }
 }
