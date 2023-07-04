@@ -10,7 +10,7 @@ namespace Scripts.Generation;
 
 public partial class MapGenerator : GridMap
 {  
-    private const int MillisecondsBtwSteps = 250; // Slows down generation by adding this delay between steps
+    private const int MillisecondsBtwSteps = 50; // Slows down generation by adding this delay between steps
     private const int MaximumExtrusionRetries = 50;
 
     public enum OrthDir
@@ -198,12 +198,14 @@ public partial class MapGenerator : GridMap
 
                 if (_floorPosS == null) { continue; }
 
-                Vector3I originDoorAheadPos = (doorPos == Vector3I.Zero) ? doorPos + (startDir * 2) : doorPos + startDir;
+                Vector3I actualDoorPos = (doorPos == Vector3I.Zero) ? doorPos + startDir : doorPos;
+                Vector3I aheadDoorPos = actualDoorPos + startDir;
+
                 int height = Rng.RandiRange(_roomManager.SelectedRoom.MinimumHeight, _roomManager.SelectedRoom.MaximumHeight);
 
-                List<Vector3I> potentialDoorPosS = GenerateWallsAndCeiling((doorPos == Vector3I.Zero) ? doorPos + startDir : doorPos, height);
+                List<Vector3I> potentialDoorPosS = GenerateWallsAndCeiling(actualDoorPos, height);
                 await Task.Delay(MillisecondsBtwSteps);
-                HashSet<Vector3I> connectionPosS = MixWallsAndFindConnections(originDoorAheadPos, height);
+                HashSet<Vector3I> connectionPosS = MixWallsAndFindConnections(aheadDoorPos, height);
                 await Task.Delay(MillisecondsBtwSteps);
                 HashSet<Vector3I> newDoorPosS = GenerateDoors(potentialDoorPosS);
                 await Task.Delay(MillisecondsBtwSteps);
@@ -212,7 +214,7 @@ public partial class MapGenerator : GridMap
                 doorPosS.UnionWith(newDoorPosS);
 
                 newDoorPosS.UnionWith(connectionPosS); // Add doors from other rooms (Connections)
-                GenerateInterior(newDoorPosS, originDoorAheadPos, height);
+                GenerateInterior(newDoorPosS, aheadDoorPos, height);
                 await Task.Delay(MillisecondsBtwSteps);
 
                 roomCount++;
@@ -360,14 +362,10 @@ public partial class MapGenerator : GridMap
                 )
                 { potentialDoorPosS.Add(floorPos); }
             }
-
 #if ENABLE_CEILING
             SetCellItem(floorPos + (Vector3I.Up * height), (int)_roomManager.SelectedRoom.CeilingId);
 #endif
         }
-#if ENABLE_CEILING
-        SetCellItem(doorPos + (Vector3I.Up * height), (int)_roomManager.SelectedRoom.CeilingId);
-#endif
         return potentialDoorPosS;
     }
 
@@ -395,18 +393,19 @@ public partial class MapGenerator : GridMap
                         connectionPosS.Add(neighbourFloorPos);
 
                         // Build Column For Door Connection //
-                        Vector3I orthNeighbourPlusPerpDir = orthNeighbour.Position + orthNeighbour.Direction.RotatedY(Mathf.Pi * -0.5f);
+                        Vector3I up2 = Vector3I.Up * 2;
+                        Vector3I orthNeighbourPlusUp2 = orthNeighbour.Position + up2;
 
                         (ItemManager.Id mixedId, int orientation) = GetMixedIdWithOrientation
                         (
                             id1               : _roomManager.SelectedRoom.WallId,
-                            id2               : (ItemManager.Id)GetCellItem(orthNeighbourPlusPerpDir),
+                            id2               : (ItemManager.Id)GetCellItem(orthNeighbourPlusUp2),
                             direction         : orthNeighbour.Direction,
-                            defaultOrientation: GetCellItemOrientation(orthNeighbourPlusPerpDir)
+                            defaultOrientation: GetCellItemOrientation(orthNeighbourPlusUp2)
                         );
                         BuildColumn
                         (
-                            neighbourFloorPos + (Vector3I.Up * 2),
+                            neighbourFloorPos + up2,
                             height - 2,
                             mixedId,
                             orientation
