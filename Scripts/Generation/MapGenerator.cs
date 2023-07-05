@@ -135,7 +135,7 @@ public partial class MapGenerator : GridMap
         for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i + (All3x3Dirs.Length * 2)] = All3x3Dirs[i] + Vector3I.Up; }
         //
 
-        Rng.Seed = 184690118043452219;
+        //Rng.Seed = 184690118043452219;
         GD.Print(Rng.Seed);
 
         bool success = false;
@@ -155,6 +155,8 @@ public partial class MapGenerator : GridMap
         _floorPosS = null;
         _emptyPosS = null;
         _potentialPos_floorIdx_heightLvl_S = null;
+
+        GC.Collect();
     }
 
     /// <summary>
@@ -268,7 +270,7 @@ public partial class MapGenerator : GridMap
         startDir = emptyNeighbour.Direction;
 
         // Extrude A Random Number Of Times //
-        HashSet<Vector3I> _currentFloorPosS = new(); // For walls later
+        HashSet<Vector3I> _currentFloorPosS = new();
         Vector3I direction = startDir;
 
         int iterations = Rng.RandiRange(_roomManager.SelectedRoom.MinimumExtrusionIterations, _roomManager.SelectedRoom.MaximumExtrusionIterations);
@@ -411,6 +413,7 @@ public partial class MapGenerator : GridMap
                             orientation
                         );
 
+                        /* Doesn't work since shader UV can't be rotated per instance for a GridMap (each item isn't a separate instance).
                         // Mix Doorway Floor Item //
                         (mixedId, orientation) = GetMixedIdWithOrientation
                         (
@@ -420,6 +423,7 @@ public partial class MapGenerator : GridMap
                             defaultOrientation: GetCellItemOrientation(neighbourFloorAheadPos)
                         );
                         SetCellItem(neighbourFloorPos, (int)mixedId, orientation);
+                        */
                     }
                 }
                 else if 

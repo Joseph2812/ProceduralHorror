@@ -22,7 +22,6 @@ public partial class MapGenerator : GridMap
     /// <param name="obj"></param>
     /// <param name="position"></param>
     /// <param name="rotationY"></param>
-    /// <param name="clearancePosS"></param>
     /// <returns>Whether creation was successful.</returns>
     public bool TryCreateInteriorNode(InteriorObject obj, Vector3I position, float rotationY)
     {
@@ -112,8 +111,8 @@ public partial class MapGenerator : GridMap
             (Vector3I potentialPos, int floorIdx, int heightLvl) =  _potentialPos_floorIdx_heightLvl_S[randomIdx];
 
             // Place Random Node Based On Minimum Normalised Proximity //
-            (float minNormalisedProx, int minIdx) = GetMinimumNormalisedProximityWithIndex(potentialPos, allCellProximities[floorIdx]);
-            PlaceRandomInteriorNode(potentialPos, maxHeightLvl, heightLvl, minNormalisedProx, GetRotationYFromIndex(minIdx));
+            (float minNormalisedProx, int minIdx, int totalDist) = GetMinimumNormalisedProximityWithIndex(potentialPos, allCellProximities[floorIdx]);
+            PlaceRandomInteriorNode(potentialPos, maxHeightLvl, heightLvl, minNormalisedProx, GetRotationYFromIndex(minIdx), totalDist);
         }
     }
 
@@ -231,7 +230,8 @@ public partial class MapGenerator : GridMap
         );
     }
 
-    private (float, int) GetMinimumNormalisedProximityWithIndex(Vector3I floorPos, int[] cellProximities)
+    /// <returns>(NormalisedProximity, MinIndex, TotalDistance). TotalDistance = Shortest distance along a direction, excluding the placement cell itself (e.g. LeftProx + RightProx).</returns>
+    private (float, int, int) GetMinimumNormalisedProximityWithIndex(Vector3I floorPos, int[] cellProximities)
     {
         (int, int, int) minProx_oppositeProx_minIdx = (cellProximities[0], cellProximities[GetOppositeIndex(0)], 0);
         for (int i = 1; i < cellProximities.Length; i++)
@@ -255,7 +255,8 @@ public partial class MapGenerator : GridMap
         return
         (
             (totalDist == 0) ? 0 : minProx / (totalDist * 0.5f),
-            minIdx
+            minIdx,
+            totalDist
         );
     }
 
@@ -286,7 +287,7 @@ public partial class MapGenerator : GridMap
         }
     }
 
-    private void PlaceRandomInteriorNode(Vector3I pos, int maxHeightLvl, int heightLvl, float minNormalisedProx, float rotationY)
+    private void PlaceRandomInteriorNode(Vector3I pos, int maxHeightLvl, int heightLvl, float minNormalisedProx, float rotationY, int totalDist)
     {
         InteriorObject obj = _roomManager.GetRandomInteriorObject();
         if
@@ -297,6 +298,7 @@ public partial class MapGenerator : GridMap
                     (!obj.OnlyCeiling && heightLvl >= obj.MinimumHeight && heightLvl <= obj.MaximumHeight)
                 ) &&
                 (
+                    (totalDist < 2)                                         || // Weighting doesn't matter below this value (too thin for a centre to exist)
                     ( obj.Exact && obj.WeightToCentre == minNormalisedProx) ||
                     (!obj.Exact && Rng.Randf() < GetProximityProbability(obj.WeightToCentre, minNormalisedProx))
                 ) &&
