@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=3 format=3 uid="uid://cdca2u30synrl"]
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://btb26gppou4yl"]
 
 [ext_resource type="PackedScene" uid="uid://cvklhplc6lu3p" path="res://Scenes/ForInteriorObjects/CounterWithCabinet.tscn" id="1_2thqq"]
 [ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectExtended.cs" id="4_umfxg"]
@@ -7,7 +7,6 @@
 script = ExtResource("4_umfxg")
 _extensionPaths = PackedStringArray("res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension_0/Extension_0.tres", "res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension_1/Extension_1.tres")
 Scene = ExtResource("1_2thqq")
-WeightOfPlacement = 10
 WeightToCentre = 0.0
 Exact = true
 OnlyCeiling = false

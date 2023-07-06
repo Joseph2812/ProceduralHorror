@@ -1,6 +1,8 @@
-[gd_resource type="Resource" load_steps=2 format=3 uid="uid://cog8r41rnwpvd"]
+[gd_resource type="Resource" load_steps=4 format=3 uid="uid://cog8r41rnwpvd"]
 
+[ext_resource type="Resource" uid="uid://b2glos0g71q77" path="res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/CounterWithCabinet_Wt.tres" id="1_igu4m"]
 [ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="2_d2lfa"]
+[ext_resource type="Resource" uid="uid://cklbwl2a4ck6v" path="res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension_0/IOWithWeightings/Blender_Wt.tres" id="2_erygu"]
 
 [resource]
 script = ExtResource("2_d2lfa")
@@ -8,7 +10,7 @@ FloorId = 5
 WallId = 6
 CeilingId = 7
 ChanceOfEmptyCell = 0.0
-_interiorObjectPaths = PackedStringArray("res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/CounterWithCabinet_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Dishwasher/Dishwasher_IObj.tres", "res://Generation/InteriorObjects/Kitchen/FluorescentLamp/FluorescentLamp_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Fridge/Fridge_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Oven/Oven_IObj.tres", "res://Generation/InteriorObjects/Kitchen/Trashcan/Trashcan_IObj.tres", "res://Generation/InteriorObjects/Kitchen/WashingMachine/WashingMachine_IObj.tres")
+InteriorObjectsWithWeights = Array[Resource]([ExtResource("1_igu4m"), ExtResource("2_erygu")])
 MinimumOuterWidth = 2
 MaximumOuterWidth = 4
 MinimumLength = 3

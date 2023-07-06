@@ -17,14 +17,6 @@ public partial class InteriorObjectExtension : Resource
     /// <summary>
     /// Other <see cref="InteriorObject"/>s that pair with the root <see cref="InteriorObject"/> (meant to generate together). 
     /// </summary>
-    public InteriorObject[] InteriorObjects { get; private set; }
-
-    [Export(PropertyHint.ArrayType, "4/13:*.tres")] // Str/File
-    private string[] _interiorObjectPaths; // Had to be done to allow cyclic references along extensions
-
-    public InteriorObjectExtension()
-    {
-        // Causes a resource load error if it isn't loaded after rooms (Usually happens with cyclic references to resources. Godot doesn't like it for some reason)
-        RoomManager.RoomsLoaded += () => InteriorObjects = CommonMethods.LoadPaths<InteriorObject>(_interiorObjectPaths);
-    }
+    [Export]
+    public InteriorObjectWithWeight[] InteriorObjectsWithWeights { get; private set; }
 }

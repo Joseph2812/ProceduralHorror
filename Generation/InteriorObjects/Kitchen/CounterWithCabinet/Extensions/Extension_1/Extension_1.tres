@@ -1,11 +1,12 @@
-[gd_resource type="Resource" load_steps=4 format=3 uid="uid://dvggn34lhqj1d"]
+[gd_resource type="Resource" load_steps=5 format=3 uid="uid://bqrudojbiygw8"]
 
-[ext_resource type="Resource" uid="uid://bp6xy84c2vtmd" path="res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension_1/PlacementData/PlacementData_0.tres" id="1_2r3ca"]
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectExtension.cs" id="1_qp8g6"]
-[ext_resource type="Resource" uid="uid://b1nunevb13pgg" path="res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension_1/PlacementData/PlacementData_1.tres" id="2_vhtmo"]
+[ext_resource type="Resource" path="res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension_1/PlacementData/PlacementData_0.tres" id="1_2r3ca"]
+[ext_resource type="Resource" uid="uid://cklbwl2a4ck6v" path="res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension_0/IOWithWeightings/Blender_Wt.tres" id="1_fa6a4"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/IOExtension/InteriorObjectExtension.cs" id="1_qp8g6"]
+[ext_resource type="Resource" path="res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension_1/PlacementData/PlacementData_1.tres" id="2_vhtmo"]
 
 [resource]
 script = ExtResource("1_qp8g6")
 ChanceToExtend = 1.0
 PlacementData = Array[Resource]([ExtResource("1_2r3ca"), ExtResource("2_vhtmo")])
-_interiorObjectPaths = PackedStringArray("res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/CounterWithCabinet_IObj.tres")
+InteriorObjectsWithWeights = Array[Resource]([ExtResource("1_fa6a4")])

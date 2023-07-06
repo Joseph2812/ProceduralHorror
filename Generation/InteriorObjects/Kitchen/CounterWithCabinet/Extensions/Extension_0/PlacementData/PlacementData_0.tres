@@ -1,6 +1,6 @@
-[gd_resource type="Resource" load_steps=2 format=3 uid="uid://ctme1f7ojo1tj"]
+[gd_resource type="Resource" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/PlacementData.cs" id="1_tutrc"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/IOExtension/PlacementData.cs" id="1_tutrc"]
 
 [resource]
 script = ExtResource("1_tutrc")

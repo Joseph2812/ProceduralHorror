@@ -1,0 +1,8 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://b2glos0g71q77"]
+
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/IOExtension/InteriorObjectWithWeight.cs" id="1_p53bw"]
+
+[resource]
+script = ExtResource("1_p53bw")
+WeightOfPlacement = 1
+_interiorObjectPath = "res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/CounterWithCabinet_IObj.tres"

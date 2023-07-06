@@ -13,18 +13,8 @@ public partial class Room : Resource
     [Export(PropertyHint.Range, "0,1,0.01")]
     public float ChanceOfEmptyCell { get; private set; } = 1; // Set to 1 for an empty room.
 
-    [Export(PropertyHint.ArrayType, "4/13:*.tres")] // Str/File
-    private string[] _interiorObjectPaths
-    {
-        get => p_interiorObjectPaths;
-        set
-        {
-            p_interiorObjectPaths = value;
-            if (Engine.IsEditorHint()) { return; }
-
-            InteriorObjects = CommonMethods.LoadPaths<InteriorObject>(value);
-        }
-    }
+    [Export]
+    public InteriorObjectWithWeight[] InteriorObjectsWithWeights { get; private set; }
 
     [ExportGroup("Extrusions")]
     [ExportSubgroup("Outer Width (width either side of a doorway|centre)")]
@@ -56,7 +46,4 @@ public partial class Room : Resource
     public int MinimumDoorways { get; private set; } = 1;
     [Export(PropertyHint.Range, $"1,10,1,or_greater")]
     public int MaximumDoorways { get; private set; } = 1;
-
-    public InteriorObject[] InteriorObjects { get; private set; }
-    private string[] p_interiorObjectPaths;
 }

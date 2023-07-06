@@ -6,7 +6,6 @@
 [resource]
 script = ExtResource("2_ahjaf")
 Scene = ExtResource("1_8ngg4")
-WeightOfPlacement = 1
 WeightToCentre = 0.0
 Exact = false
 OnlyCeiling = false

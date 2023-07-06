@@ -66,7 +66,7 @@ public partial class InteriorObjectExtended : InteriorObject
                 float nextRotationY = rotationY + data.RotationY;
 
                 // Select Random InteriorObject For Placement //
-                InteriorObject randomObj = extension.InteriorObjects[MapGenerator.Inst.Rng.RandiRange(0, extension.InteriorObjects.Length - 1)];
+                InteriorObject randomObj = extension.InteriorObjectsWithWeights.GetRandomElementByWeight(x => x.WeightOfPlacement).InteriorObject;
 
                 if (!MapGenerator.Inst.TryCreateInteriorNode(randomObj, nextPos, nextRotationY)) { continue; }
                 if (randomObj is InteriorObjectExtended extendedObj) { extendedObj.CreateExtensionsRecursively(nextPos, nextRotationY); }

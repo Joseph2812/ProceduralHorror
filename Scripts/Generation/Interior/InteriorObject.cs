@@ -11,12 +11,6 @@ public partial class InteriorObject : Resource
     public PackedScene Scene { get; private set; }
 
     /// <summary>
-    /// Weight of appearance compared to other <see cref="InteriorObject"/>s in the same room.
-    /// Set to 0 to disable it from placement.
-    /// </summary>
-    public int WeightOfPlacement { get; private set; } = 1;
-
-    /// <summary>
     /// Likelihood of <see cref="Scene"/> appearing in a cell depending on its proxmity to the centre, from 0 (edge) to 1 (centre).
     /// </summary>
     public float WeightToCentre { get; private set; }
@@ -98,7 +92,6 @@ public partial class InteriorObject : Resource
         switch (property)
         {
             case nameof(Scene)                       : return default;
-            case nameof(WeightOfPlacement)           : return 1;
             case nameof(WeightToCentre)              : return 0f;
             case nameof(Exact)                       : return false;
             case nameof(OnlyCeiling)                 : return false;
@@ -136,13 +129,6 @@ public partial class InteriorObject : Resource
                 },
 
                 CommonMethods.GetGroup("Probability"),
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(WeightOfPlacement) },
-                    { "type"       , (int)Variant.Type.Int },
-                    { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", $"0,{int.MaxValue}" }
-                },
                 new Godot.Collections.Dictionary
                 {
                     { "name"       , nameof(WeightToCentre) },

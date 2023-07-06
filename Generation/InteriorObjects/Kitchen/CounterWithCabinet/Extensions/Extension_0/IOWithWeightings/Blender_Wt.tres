@@ -1,0 +1,8 @@
+[gd_resource type="Resource" load_steps=2 format=3 uid="uid://cklbwl2a4ck6v"]
+
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/IOExtension/InteriorObjectWithWeight.cs" id="1_rat5l"]
+
+[resource]
+script = ExtResource("1_rat5l")
+WeightOfPlacement = 1
+_interiorObjectPath = "res://Generation/InteriorObjects/Kitchen/Blender/Blender_IObj.tres"

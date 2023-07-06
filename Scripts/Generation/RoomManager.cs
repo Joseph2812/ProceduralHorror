@@ -31,5 +31,5 @@ public class RoomManager
 
     public void SelectRandomRoom() { SelectedRoom = _rooms[MapGenerator.Inst.Rng.RandiRange(0, _rooms.Length - 1)]; }
 
-    public InteriorObject GetRandomInteriorObject() => SelectedRoom.InteriorObjects.GetRandomElementByWeight(x => x.WeightOfPlacement);
+    public InteriorObject GetRandomInteriorObject() => SelectedRoom.InteriorObjectsWithWeights.GetRandomElementByWeight(x => x.WeightOfPlacement).InteriorObject;
 }
