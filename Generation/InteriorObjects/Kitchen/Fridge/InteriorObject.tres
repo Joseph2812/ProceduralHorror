@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://dqeb0ovn7hyil"]
+
+[ext_resource type="PackedScene" uid="uid://dc3ekesjsj3ns" path="res://Scenes/ForInteriorObjects/Placeholders/Fridge.tscn" id="1_j4x0o"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_u18pe"]
+
+[resource]
+script = ExtResource("2_u18pe")
+Scene = ExtResource("1_j4x0o")
+WeightToCentre = 0.0
+Exact = true
+OnlyCeiling = false
+MinimumHeight = 1
+MaximumHeight = 1
+_maximumCountBtwRooms = 0
+_neighbourConditionsText = "forward1"
+_clearancePositions = PackedVector3Array(0, 1, 0)
+_semiClearancePositions = PackedVector3Array(0, 0, 1, 0, 1, 1)
+_minimumRotationalYOffset = 0.0
+_maximumRotationalYOffset = 0.0

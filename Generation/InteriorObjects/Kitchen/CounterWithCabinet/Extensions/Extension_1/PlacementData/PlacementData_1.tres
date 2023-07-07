@@ -1,8 +1,0 @@
-[gd_resource type="Resource" load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/IOExtension/PlacementData.cs" id="1_1m360"]
-
-[resource]
-script = ExtResource("1_1m360")
-Position = Vector3i(1, 0, 0)
-RotationY = 0.0

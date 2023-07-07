@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://dqi0lsoxr7thh"]
+
+[ext_resource type="PackedScene" uid="uid://bfrt3sc3kskwp" path="res://Scenes/ForInteriorObjects/Placeholders/CoffeeMachine.tscn" id="1_8o7xf"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_fjhxn"]
+
+[resource]
+script = ExtResource("2_fjhxn")
+Scene = ExtResource("1_8o7xf")
+WeightToCentre = 0.0
+Exact = false
+OnlyCeiling = false
+MinimumHeight = 1
+MaximumHeight = 2147483646
+_maximumCountBtwRooms = 0
+_neighbourConditionsText = ""
+_clearancePositions = PackedVector3Array()
+_semiClearancePositions = PackedVector3Array()
+_minimumRotationalYOffset = -0.174533
+_maximumRotationalYOffset = 0.174533

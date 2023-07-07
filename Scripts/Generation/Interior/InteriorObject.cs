@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Scripts.Generation.Interior;
 
+[GlobalClass]
 [Tool]
 public partial class InteriorObject : Resource
 {

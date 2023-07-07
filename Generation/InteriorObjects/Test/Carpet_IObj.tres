@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=3 format=3 uid="uid://dt380yfvwehj5"]
+[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://dt380yfvwehj5"]
 
 [ext_resource type="PackedScene" uid="uid://04384ocs25wn" path="res://Scenes/ForInteriorObjects/Placeholders/Carpet.tscn" id="1_lehmk"]
 [ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_wmjgm"]

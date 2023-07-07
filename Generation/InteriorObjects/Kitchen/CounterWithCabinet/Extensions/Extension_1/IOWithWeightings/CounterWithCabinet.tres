@@ -1,8 +1,0 @@
-[gd_resource type="Resource" load_steps=2 format=3 uid="uid://b8sfh8o7kqr8e"]
-
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/IOExtension/InteriorObjectWithWeight.cs" id="1_gkgda"]
-
-[resource]
-script = ExtResource("1_gkgda")
-WeightOfPlacement = 1
-_interiorObjectPath = "res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/CounterWithCabinet_IObj.tres"

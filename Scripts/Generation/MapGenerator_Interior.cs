@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using Scripts.Generation.Interior;
+using Scripts.Generation.Interior.Extension;
 
 namespace Scripts.Generation;
 

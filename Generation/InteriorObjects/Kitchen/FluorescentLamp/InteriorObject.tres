@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://bfv8rhq7ahbt5"]
+
+[ext_resource type="PackedScene" uid="uid://bt22wajf1rtkj" path="res://Scenes/ForInteriorObjects/Placeholders/FluorescentLamp.tscn" id="1_dnwvr"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_q3ij1"]
+
+[resource]
+script = ExtResource("2_q3ij1")
+Scene = ExtResource("1_dnwvr")
+WeightToCentre = 1.0
+Exact = false
+OnlyCeiling = true
+MinimumHeight = 1
+MaximumHeight = 2147483646
+_maximumCountBtwRooms = 0
+_neighbourConditionsText = ""
+_clearancePositions = PackedVector3Array(-2, 0, 0, -1, 0, 0, 1, 0, 0, 2, 0, 0)
+_semiClearancePositions = PackedVector3Array()
+_minimumRotationalYOffset = 0.0
+_maximumRotationalYOffset = 0.0

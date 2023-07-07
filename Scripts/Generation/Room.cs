@@ -4,6 +4,7 @@ using Scripts.Generation.Interior;
 
 namespace Scripts.Generation;
 
+[GlobalClass]
 public partial class Room : Resource
 {
     [Export] public ItemManager.Id FloorId { get; private set; }
@@ -12,9 +13,6 @@ public partial class Room : Resource
 
     [Export(PropertyHint.Range, "0,1,0.01")]
     public float ChanceOfEmptyCell { get; private set; } = 1; // Set to 1 for an empty room.
-
-    [Export]
-    public InteriorObjectWithWeight[] InteriorObjectsWithWeights { get; private set; }
 
     [ExportGroup("Extrusions")]
     [ExportSubgroup("Outer Width (width either side of a doorway|centre)")]
@@ -46,4 +44,14 @@ public partial class Room : Resource
     public int MinimumDoorways { get; private set; } = 1;
     [Export(PropertyHint.Range, $"1,10,1,or_greater")]
     public int MaximumDoorways { get; private set; } = 1;
+
+    public InteriorObjectWithWeight[] InteriorObjectWithWeightS { get; private set; }
+
+    public Room() { CallDeferred(nameof(LoadInteriorObjectWithWeightS)); }
+
+    private void LoadInteriorObjectWithWeightS()
+    {
+        if (ChanceOfEmptyCell == 1f) { return; }
+        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryUpFromResource<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
+    }
 }

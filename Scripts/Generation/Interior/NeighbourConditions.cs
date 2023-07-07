@@ -1,3 +1,5 @@
+//#define ENABLE_PRINT
+
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -35,7 +37,7 @@ public class NeighbourConditions
     /// </summary>
     public void ParseIntoTree(string conditionsToParse)
     {
-#if DEBUG
+#if ENABLE_PRINT
         GD.Print($"=== Parsing ===\n{conditionsToParse}\n");
 #endif
         if (conditionsToParse.Length == 0)
@@ -68,12 +70,12 @@ public class NeighbourConditions
             {
                 // Brackets //
                 case '(':
-#if DEBUG
+#if ENABLE_PRINT
                     GD.Print("--- Entering sub-stack ---");
 #endif
                     (TreeNode rootNode, int endIdx) = GetNode(conditions, i + 1);
                     i = endIdx;
-#if DEBUG
+#if ENABLE_PRINT
                     GD.Print("--- Returning from sub-stack ---");
 #endif
                     stack.Push(rootNode);
@@ -125,7 +127,7 @@ public class NeighbourConditions
                     CheckStackForMerging(stack);
                     break;
             }
-#if DEBUG
+#if ENABLE_PRINT
             int num = 0;
             foreach (TreeNode node in stack)
             {
@@ -152,7 +154,7 @@ public class NeighbourConditions
             {
                 topNode = stack.Pop();
                 TreeNode nextNode = stack.Peek();
-#if DEBUG
+#if ENABLE_PRINT
                 GD.Print($"{nextNode} <-MERGE- {topNode}");
 #endif
                 if (nextNode is NotNode notNode)         { notNode.Left = topNode; }

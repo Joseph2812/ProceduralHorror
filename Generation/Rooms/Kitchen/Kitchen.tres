@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="Room" load_steps=2 format=3 uid="uid://cog8r41rnwpvd"]
+
+[ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="1_q8nsi"]
+
+[resource]
+script = ExtResource("1_q8nsi")
+FloorId = 5
+WallId = 6
+CeilingId = 7
+ChanceOfEmptyCell = 0.0
+_interiorObjectWithWeightS = PackedStringArray("res://Generation/Rooms/Kitchen/IObjWithWeightS/CounterWithCabinet_Wt.tres", "res://Generation/Rooms/Kitchen/IObjWithWeightS/Dishwasher_Wt.tres", "res://Generation/Rooms/Kitchen/IObjWithWeightS/FluorescentLamp_Wt.tres", "res://Generation/Rooms/Kitchen/IObjWithWeightS/Fridge_Wt.tres", "res://Generation/Rooms/Kitchen/IObjWithWeightS/Oven_Wt.tres", "res://Generation/Rooms/Kitchen/IObjWithWeightS/Trashcan_Wt.tres", "res://Generation/Rooms/Kitchen/IObjWithWeightS/WashingMachine_Wt.tres")
+MinimumOuterWidth = 2
+MaximumOuterWidth = 4
+MinimumLength = 3
+MaximumLength = 9
+MinimumExtrusionIterations = 1
+MaximumExtrusionIterations = 2
+MinimumHeight = 4
+MaximumHeight = 5
+MinimumDoorways = 1
+MaximumDoorways = 4

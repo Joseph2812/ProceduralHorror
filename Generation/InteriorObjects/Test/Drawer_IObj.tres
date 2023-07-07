@@ -1,4 +1,4 @@
-[gd_resource type="Resource" load_steps=3 format=3 uid="uid://bxhl6yrv2f5qh"]
+[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://bxhl6yrv2f5qh"]
 
 [ext_resource type="PackedScene" uid="uid://fjhotcx22006" path="res://Scenes/ForInteriorObjects/Drawer.tscn" id="1_lnulb"]
 [ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_4vdbv"]
