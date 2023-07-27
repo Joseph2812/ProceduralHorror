@@ -13,6 +13,8 @@ public partial class MapGenerator : GridMap
     private const int MillisecondsBtwSteps = 50; // Slows down generation by adding this delay between steps
     private const int MaximumExtrusionRetries = 50;
 
+    private const string ConsoleSeedArgs = "'gen'|'enemy'|'item'";
+
     public enum OrthDir
     {
         Left,
@@ -122,6 +124,16 @@ public partial class MapGenerator : GridMap
         _interiorNodeParent = new Node3D { Name = InteriorObjectParentName };
         AddChild(_interiorNodeParent);
 
+        Console.Inst.AddCommand
+        (
+            "seed",
+            new
+            (
+                new(OnConsoleCmd_Seed),
+                $"[color=#aaa]<{ConsoleSeedArgs}>[/color]. Prints current seed."
+            )
+        );
+
         // Setting Directions //
         int orthDiagLength = OrthogonalDirs.Length + DiagonalDirs.Length;
 
@@ -136,14 +148,11 @@ public partial class MapGenerator : GridMap
         //
 
         //Rng.Seed = 184690118043452219;
-        GD.Print(Rng.Seed);
 
         bool success = false;
         while (!success) { success = await StartGeneration(); }
 
         // Free Unused Objects //
-        Rng.Dispose();
-
         OrthogonalDirs = null;
         DiagonalDirs = null;
         All3x3Dirs = null;
@@ -569,6 +578,28 @@ public partial class MapGenerator : GridMap
         for (int y = 1; y <= height; y++)
         {
             SetCellItem(floorPos + (Vector3I.Up * y), (int)id, orientation);
+        }
+    }
+
+    // Events //
+    private void OnConsoleCmd_Seed(string[] commandSplit)
+    {
+        if (commandSplit.Length < 2)
+        {
+            Console.Inst.AppendLine($"Add a specifier for the type of seed: {ConsoleSeedArgs}.");
+            return;
+        }
+
+        string arg = commandSplit[1];
+        switch (arg)
+        {
+            case "gen":
+                Console.Inst.AppendLine($"Generation Seed: {Rng.Seed}.");
+                break;
+
+            default:
+                Console.Inst.AppendLine($"Seed '{arg}' is not implemented.");
+                break;
         }
     }
 }

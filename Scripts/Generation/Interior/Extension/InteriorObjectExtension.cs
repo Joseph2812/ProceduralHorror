@@ -10,7 +10,7 @@ namespace Scripts.Generation.Interior.Extension;
 public partial class InteriorObjectExtension : Resource
 {
     [Export(PropertyHint.Range, "0,1,0.01")]
-    public float ChanceToExtend { get; private set; } = 1f;
+    public float ChanceToSkipAPosition { get; private set; } = 1f;
 
     [Export]
     public PlacementData[] PlacementData { get; private set; }

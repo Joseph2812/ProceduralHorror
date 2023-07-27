@@ -16,7 +16,8 @@ public partial class CameraController : Camera3D
 
         _viewport = GetViewport();
 
-        Input.MouseMode = Input.MouseModeEnum.Captured;
+        Console.Inst.Opened += OnConsole_Opened;
+        Console.Inst.Closed += OnConsole_Closed;
     }
 
     public override void _Process(double delta)
@@ -42,5 +43,16 @@ public partial class CameraController : Camera3D
             RotateObjectLocal(Vector3.Right, -mouseMotion.Relative.Y * MouseSensitivity);
             RotateY(-mouseMotion.Relative.X * MouseSensitivity);
         }
+    }
+
+    private void OnConsole_Opened()
+    { 
+        SetProcess(false);
+        SetProcessUnhandledInput(false);
+    }
+    private void OnConsole_Closed()
+    {
+        SetProcess(true);
+        SetProcessUnhandledInput(true);
     }
 }

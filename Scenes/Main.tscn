@@ -1,7 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://dduxddcquhrp1"]
+[gd_scene load_steps=8 format=3 uid="uid://dduxddcquhrp1"]
 
 [ext_resource type="Script" path="res://Scripts/CameraController.cs" id="1_f47qg"]
+[ext_resource type="Theme" uid="uid://bmbx06aggy0cl" path="res://Theme.tres" id="3_a65xu"]
 [ext_resource type="Script" path="res://Scripts/Generation/MapGenerator.cs" id="3_xb8fi"]
+[ext_resource type="Script" path="res://Scripts/Console.cs" id="4_egocs"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
 
@@ -41,3 +43,41 @@ spot_range = 20.0
 cell_size = Vector3(1, 1, 1)
 script = ExtResource("3_xb8fi")
 metadata/_editor_floor_ = Vector3(0, 0, 0)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Console" type="Panel" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -1080.0
+offset_bottom = -1080.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3_a65xu")
+script = ExtResource("4_egocs")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/Console"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Output" type="RichTextLabel" parent="UI/Console/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+focus_mode = 2
+bbcode_enabled = true
+scroll_following = true
+context_menu_enabled = true
+selection_enabled = true
+
+[node name="Input" type="LineEdit" parent="UI/Console/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.05
+placeholder_text = "Enter a command..."

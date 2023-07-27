@@ -25,7 +25,7 @@ public partial class InteriorObjectExtended : InteriorObject
             InteriorObjectExtension extension = _extensions[i];
             for (int j = 0; j < extension.PlacementData.Length; j++)
             {
-                if (MapGenerator.Inst.Rng.Randf() > extension.ChanceToExtend) { continue; }
+                if (MapGenerator.Inst.Rng.Randf() < extension.ChanceToSkipAPosition) { continue; }
 
                 // Position & Rotation For Next Extension //
                 PlacementData data = extension.PlacementData[j];
