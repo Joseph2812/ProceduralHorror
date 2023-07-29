@@ -87,7 +87,7 @@ public class ItemManager
                 _mixedItems.Add
                 (
                     (id1, id2),
-                    (Id)Enum.Parse(typeof(Id), Enum.GetName(typeof(Id), id1) + Enum.GetName(typeof(Id), id2))
+                    Enum.Parse<Id>(Enum.GetName(id1) + Enum.GetName(id2))
                 );
             }
         }
@@ -115,7 +115,7 @@ public class ItemManager
             StandardMaterial3D mat = new StandardMaterial3D() { Uv1Scale = new(3f, 2f, 1f) };
             BoxMesh box = new() { Material = mat };
 
-            string itemPath = CubeTexturePath + Enum.GetName(typeof(Id), i);
+            string itemPath = CubeTexturePath + Enum.GetName((Id)i);
 
             // Setup Standard Material //
             if (TryLoadTexture($"{itemPath}/AlbedoMap", out Texture2D texture)) { mat.AlbedoTexture = texture; }
@@ -150,7 +150,7 @@ public class ItemManager
                 shaderMat.SetShaderParameter($"ao_map_1"       , mat.AOTexture);
 
                 // Load 2nd Textures //
-                itemPath = CubeTexturePath + Enum.GetName(typeof(Id), j);
+                itemPath = CubeTexturePath + Enum.GetName((Id)j);
                 if (TryLoadTexture($"{itemPath}/AlbedoMap", out texture))
                 {
                     shaderMat.SetShaderParameter($"albedo_map_2", texture);

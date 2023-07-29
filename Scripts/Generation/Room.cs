@@ -15,7 +15,7 @@ public partial class Room : Resource
     public float ChanceOfEmptyCell { get; private set; } = 1; // Set to 1 for an empty room.
 
     [ExportGroup("Extrusions")]
-    [ExportSubgroup("Outer Width (width either side of a doorway|centre)")]
+    [ExportSubgroup("Outer Width (width either side of a doorway|middle)")]
     [Export(PropertyHint.Range, $"1,10,1,or_greater")]
     public int MinimumOuterWidth { get; private set; } = 1; // Minimum width: (1 * 2) + 1 = 3
     [Export(PropertyHint.Range, $"1,10,1,or_greater")]

@@ -9,34 +9,28 @@ namespace Scripts.Generation.Interior;
 [Tool]
 public partial class InteriorObject : Resource
 {
+    public enum Relative
+    {
+        Floor,
+        Middle,
+        Ceiling
+    }
+
     public PackedScene Scene { get; private set; }
 
     /// <summary>
-    /// Likelihood of <see cref="Scene"/> appearing in a cell depending on its proxmity to the centre, from 0 (edge) to 1 (centre).
+    /// Likelihood of <see cref="Scene"/> appearing in a cell depending on its proxmity to the middle, from 0 (edge) to 1 (middle).
     /// </summary>
-    public float WeightToCentre { get; private set; }
+    public float WeightToMiddle { get; private set; }
 
     /// <summary>
-    /// If true, <see cref="Scene"/>  will have a chance to appear in a cell only if <see cref="WeightToCentre"/> is equal to normalised distance.<para/>
-    /// Mainly only useful for <see cref="WeightToCentre"/> = 0 or 1, as inbetween values aren't guaranteed to appear among the cells.
+    /// If true, <see cref="Scene"/> will have a chance to appear in a cell only if <see cref="WeightToMiddle"/> is equal to normalised distance.<para/>
+    /// Mainly only useful for <see cref="WeightToMiddle"/> = 0 or 1, as inbetween values aren't guaranteed to appear among the cells.
     /// </summary>
     public bool Exact { get; private set; }
 
     /// <summary>
-    /// Only allows <see cref="Scene"/>  to be at maximum height of the room for it to be placed.
-    /// </summary>
-    public bool OnlyCeiling
-    {
-        get => _onlyCeiling;
-        private set
-        {
-            _onlyCeiling = value;
-            NotifyPropertyListChanged();
-        }
-    }
-
-    /// <summary>
-    /// Minimum height <see cref="Scene"/>  needs to be at/above for it to be placed.
+    /// Minimum height <see cref="Scene"/> needs to be at/above for it to be placed.
     /// </summary>
     public int MinimumHeight { get; private set; } = 1;
 
@@ -46,9 +40,17 @@ public partial class InteriorObject : Resource
     public int MaximumHeight { get; private set; } = int.MaxValue - 1;
 
     /// <summary>
-    /// Maximum times of <see cref="Scene"/> can be placed from this <see cref="InteriorObject"/> instance.<br/>
-    /// Use to set limits across multiple rooms when assigning to room types.<br/>
-    /// 0 = There is no max count restriction.
+    /// Sets what <see cref="MinimumHeight"/> and <see cref="MaximumHeight"/> will be relative to with their values.<para/>
+    /// 
+    /// 1 <![CDATA[->]]> (<see cref="int.MaxValue"/> - 1): <see cref="Relative.Floor"/> and <see cref="Relative.Ceiling"/><br/>
+    /// -(<see cref="int.MaxValue"/> - 1) <![CDATA[<- 0 ->]]> (<see cref="int.MaxValue"/> - 1): <see cref="Relative.Middle"/>
+    /// </summary>
+    public Relative RelativeTo { get; private set; }
+
+    /// <summary>
+    /// Maximum times of <see cref="Scene"/> that can be placed from this <see cref="InteriorObject"/> instance.<br/>
+    /// Use to set limits across all the rooms.<br/>
+    /// 0 = There is no maximum count restriction.
     /// </summary>
     private int _maximumCountBtwRooms;
     private int _currentCountBtwRooms; 
@@ -93,11 +95,11 @@ public partial class InteriorObject : Resource
         switch (property)
         {
             case nameof(Scene)                       : return default;
-            case nameof(WeightToCentre)              : return 0f;
+            case nameof(WeightToMiddle)              : return 0f;
             case nameof(Exact)                       : return false;
-            case nameof(OnlyCeiling)                 : return false;
             case nameof(MinimumHeight)               : return 1;
             case nameof(MaximumHeight)               : return int.MaxValue - 1;
+            case nameof(RelativeTo)                  : return 0;
             case nameof(_maximumCountBtwRooms)       : return 0;
             case nameof(_neighbourConditionsText)    : return string.Empty;
             case nameof(_clearancePositions)         : return Array.Empty<Vector3>();
@@ -110,12 +112,6 @@ public partial class InteriorObject : Resource
 
     public override Godot.Collections.Array<Godot.Collections.Dictionary> _GetPropertyList()
     {
-        PropertyUsageFlags minMaxHeight_Usage = PropertyUsageFlags.NoEditor;
-        if (!OnlyCeiling)
-        {
-            minMaxHeight_Usage = PropertyUsageFlags.Default;
-        }
-
         return new
         (
             new Godot.Collections.Dictionary[]
@@ -132,7 +128,7 @@ public partial class InteriorObject : Resource
                 CommonMethods.GetGroup("Probability"),
                 new Godot.Collections.Dictionary
                 {
-                    { "name"       , nameof(WeightToCentre) },
+                    { "name"       , nameof(WeightToMiddle) },
                     { "type"       , (int)Variant.Type.Float },
                     { "hint"       , (int)PropertyHint.Range },
                     { "hint_string", "0,1,0.01" }
@@ -146,25 +142,26 @@ public partial class InteriorObject : Resource
                 CommonMethods.GetGroup("Constraints"),
                 new Godot.Collections.Dictionary
                 {
-                    { "name", nameof(OnlyCeiling) },
-                    { "type", (int)Variant.Type.Bool }
-                },
-                new Godot.Collections.Dictionary
-                {
                     { "name"       , nameof(MinimumHeight) },
                     { "type"       , (int)Variant.Type.Int },
-                    { "usage"      , (int)minMaxHeight_Usage },
                     { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", $"1,{int.MaxValue - 1}" }
+                    { "hint_string", $"{-(int.MaxValue - 1)},{int.MaxValue - 1}"}
                 },
                 new Godot.Collections.Dictionary
                 {
                     { "name"       , nameof(MaximumHeight) },
                     { "type"       , (int)Variant.Type.Int },
-                    { "usage"      , (int)minMaxHeight_Usage },
                     { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", $"1,{int.MaxValue - 1}" }
+                    { "hint_string", $"{-(int.MaxValue - 1)},{int.MaxValue - 1}"}
                 },
+                new Godot.Collections.Dictionary
+                {
+                    { "name"       , nameof(RelativeTo) },
+                    { "type"       , (int)Variant.Type.Int },
+                    { "hint"       , (int)PropertyHint.Enum },
+                    { "hint_string", Enum.GetNames<Relative>().Join(",") }
+                },
+
                 new Godot.Collections.Dictionary
                 {
                     { "name"       , nameof(_maximumCountBtwRooms) },
@@ -223,7 +220,7 @@ public partial class InteriorObject : Resource
         (
             IsClearanceFullyContainedInEmptyPosS(emptyPosS, clearancePosS)                                                                       &&
             (semiClearancePosS.Count == 0 || semiClearancePosS.IsProperSubsetOf(emptyPosS.Keys) || semiClearancePosS.IsSubsetOf(emptyPosS.Keys)) &&
-            IsNeighboursValid(MapGenerator.Inst.GetNeighbours(position, MapGenerator.Inst.All3x3x3Dirs), rotationY)                              &&
+            _neighbourConditions.IsSatisfied(MapGenerator.Inst.GetNeighbours(position, MapGenerator.Inst.All3x3x3Dirs), rotationY)               &&
             IsNotMaxCountAndIncrement(),
 
             clearancePosS,
@@ -290,11 +287,4 @@ public partial class InteriorObject : Resource
             return true;
         }
     }
-
-    /// <summary>
-    /// Check whether the conditions defined in <see cref="NeighbourConditions"/> are met.
-    /// </summary>
-    /// <param name="all3x3x3Neighbours"></param>
-    /// <param name="rotationY"></param>
-    private bool IsNeighboursValid(NeighbourInfo[] all3x3x3Neighbours, float rotationY) => _neighbourConditions.IsSatisfied(all3x3x3Neighbours, rotationY);
 }

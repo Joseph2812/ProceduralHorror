@@ -16,7 +16,7 @@ namespace Scripts.Generation.Interior;
 /// </summary>
 public class NeighbourConditions
 {
-    private static readonly ValueNode[] _valueNodes = new ValueNode[Enum.GetValues(typeof(All3x3x3Dir)).Length];
+    private static readonly ValueNode[] _valueNodes = new ValueNode[Enum.GetValues<All3x3x3Dir>().Length];
     private static readonly ValueNode _alwaysTrueNode = new ValueNode(true);
 
     private TreeNode _root;

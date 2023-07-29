@@ -1,0 +1,15 @@
+[gd_scene load_steps=5 format=3 uid="uid://cy5p8sdnduwi6"]
+
+[ext_resource type="PackedScene" uid="uid://w8fjalme56fe" path="res://Models/TV.glb" id="1_33ely"]
+[ext_resource type="Texture2D" uid="uid://w7gp5iceecuu" path="res://Textures/TV/Albedo.png" id="2_vywot"]
+[ext_resource type="Texture2D" uid="uid://cdgui255s6eqe" path="res://Textures/TV/ORM.png" id="3_nyayx"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_xfr5h"]
+albedo_texture = ExtResource("2_vywot")
+orm_texture = ExtResource("3_nyayx")
+
+[node name="TV" instance=ExtResource("1_33ely")]
+
+[node name="TV_Obj" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.5)
+surface_material_override/0 = SubResource("ORMMaterial3D_xfr5h")

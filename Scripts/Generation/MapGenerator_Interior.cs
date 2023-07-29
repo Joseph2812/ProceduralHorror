@@ -39,7 +39,7 @@ public partial class MapGenerator : GridMap
         node.Position = position + _interiorNodeOffset;
         node.Rotation = obj.GetRotationWithOffset(rotationY) * Vector3.Up;
 
-        foreach (Vector3I pos in semiClearancePosS) { _emptyPosS[pos] = true; } // Set existing to semi-empty
+        foreach (Vector3I pos in semiClearancePosS) { _emptyPosS[pos] = true; } // Set new & existing to semi-empty
         foreach (Vector3I pos in clearancePosS)     { _emptyPosS.Remove(pos); } // Remove fully occupied
 
         _potentialPos_floorIdx_heightLvl_S.RemoveAll(x => clearancePosS.Contains(x.Item1) || semiClearancePosS.Contains(x.Item1));
@@ -64,11 +64,13 @@ public partial class MapGenerator : GridMap
         HashSet<Vector3I> pathPosS = GetAStarPathPositionsBtwDoors(doorPosS, originDoorAheadPos, aStar, posToId, idToPos, ref uniqueId);
 
         // Get All Empty Positions Projected From The Floor //
-        int cellCount = _floorPosS.Count * 3;
+        int cellCount = _floorPosS.Count * height;
         _emptyPosS = new(cellCount);
         _potentialPos_floorIdx_heightLvl_S = new(cellCount);
 
-        for (int heightLvl = 1; heightLvl < height; heightLvl++)
+        IEnumerator<Vector3I> doorPosEnumerator = doorPosS.GetEnumerator();
+        doorPosEnumerator.MoveNext();
+        for (int heightLvl = doorPosEnumerator.Current.Y + 1; heightLvl < height; heightLvl++)
         {
             int floorIdx = -1;
             foreach (Vector3I floorPos in _floorPosS)
@@ -262,7 +264,7 @@ public partial class MapGenerator : GridMap
     }
 
     /// <summary>
-    /// Find index of opposite direction from given <see cref="All3x3Dir"/> index.
+    /// Find index of opposite direction from the given <see cref="All3x3Dir"/> index.
     /// </summary>
     private int GetOppositeIndex(int i) => (i <= 3) ? (i + 2) % 4 : Mathf.Wrap(i + 2, 4, 8);
 
@@ -291,17 +293,35 @@ public partial class MapGenerator : GridMap
     private void PlaceRandomInteriorNode(Vector3I pos, int maxHeightLvl, int heightLvl, float minNormalisedProx, float rotationY, int totalDist)
     {
         InteriorObject obj = _roomManager.GetRandomInteriorObject();
+
+        // Height Constraint Check //
+        bool satisfiedHeightConstraint = false;
+        switch (obj.RelativeTo)
+        {
+            case InteriorObject.Relative.Floor:
+                satisfiedHeightConstraint = heightLvl >= obj.MinimumHeight && heightLvl <= obj.MaximumHeight;
+                break;
+
+            case InteriorObject.Relative.Middle:
+                int middleToHeightLvl = heightLvl - Mathf.RoundToInt(maxHeightLvl * 0.5f);
+                satisfiedHeightConstraint = middleToHeightLvl >= obj.MinimumHeight && middleToHeightLvl <= obj.MaximumHeight;
+                break;
+
+            case InteriorObject.Relative.Ceiling:
+                int reverseHeightLvl = maxHeightLvl - (heightLvl - 1);
+                satisfiedHeightConstraint = reverseHeightLvl >= obj.MinimumHeight && reverseHeightLvl <= obj.MaximumHeight;
+                break;
+        }
+
+        // All Pre-placement Checks //
         if
         (
             !(
+                satisfiedHeightConstraint &&
                 (
-                    ( obj.OnlyCeiling && heightLvl == maxHeightLvl) ||
-                    (!obj.OnlyCeiling && heightLvl >= obj.MinimumHeight && heightLvl <= obj.MaximumHeight)
-                ) &&
-                (
-                    (totalDist < 2)                                         || // Weighting doesn't matter below this value (too thin for a centre to exist)
-                    ( obj.Exact && obj.WeightToCentre == minNormalisedProx) ||
-                    (!obj.Exact && Rng.Randf() < GetProximityProbability(obj.WeightToCentre, minNormalisedProx))
+                    (totalDist < 2)                                         || // Weighting doesn't matter below this value (too thin for a middle to exist)
+                    ( obj.Exact && obj.WeightToMiddle == minNormalisedProx) ||
+                    (!obj.Exact && Rng.Randf() < GetProximityProbability(obj.WeightToMiddle, minNormalisedProx))
                 ) &&
                 TryCreateInteriorNode(obj, pos, rotationY)
             )
@@ -318,8 +338,8 @@ public partial class MapGenerator : GridMap
     /// <summary>
     /// Calculates probability depending on the weighting and normalised proximity from the edge of a room.
     /// </summary>
-    /// <param name="weight">Weight towards the centre between 0 and 1 (inclusive).</param>
-    /// <param name="normalisedProx">Normalised proximity from the edge to the centre.</param>
+    /// <param name="weight">Weight towards the middle between 0 and 1 (inclusive).</param>
+    /// <param name="normalisedProx">Normalised proximity from the edge to the middle.</param>
     /// <returns>Probability represented as a float between 0 and 1 (inclusive).</returns>
     private float GetProximityProbability(float weight, float normalisedProx)
     {

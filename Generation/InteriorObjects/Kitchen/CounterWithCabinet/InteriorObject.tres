@@ -6,11 +6,11 @@
 [resource]
 script = ExtResource("2_qut8u")
 Scene = ExtResource("1_2thqq")
-WeightToCentre = 0.0
+WeightToMiddle = 0.0
 Exact = true
-OnlyCeiling = false
 MinimumHeight = 1
 MaximumHeight = 1
+RelativeTo = 0
 _maximumCountBtwRooms = 0
 _neighbourConditionsText = "forward0"
 _clearancePositions = PackedVector3Array()

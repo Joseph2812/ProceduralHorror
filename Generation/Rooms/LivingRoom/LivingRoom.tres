@@ -1,14 +1,13 @@
 [gd_resource type="Resource" script_class="Room" load_steps=2 format=3 uid="uid://dvwg6ampw3sc3"]
 
-[ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="2_f5u22"]
+[ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="1_c4mmd"]
 
 [resource]
-script = ExtResource("2_f5u22")
+script = ExtResource("1_c4mmd")
 FloorId = 0
 WallId = 1
 CeilingId = 0
-ChanceOfEmptyCell = 1.0
-InteriorObjectsWithWeights = null
+ChanceOfEmptyCell = 0.0
 MinimumOuterWidth = 1
 MaximumOuterWidth = 3
 MinimumLength = 3

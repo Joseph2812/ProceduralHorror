@@ -33,7 +33,7 @@ public partial class MapGenerator : GridMap
     /// <summary>
     /// Directions:<br/>
     /// | NW   | Forward | NE    |<br/>
-    /// | Left | Centre  | Right |<br/>
+    /// | Left | Middle  | Right |<br/>
     /// | SW   | Back    | SE    |<para/>
     /// </summary>
     public enum All3x3Dir
@@ -526,9 +526,9 @@ public partial class MapGenerator : GridMap
     /// <summary>
     /// Iterates through an area of the <see cref="GridMap"/> to check for any non-empty cells.
     /// </summary>
-    /// <param name="startPos">Bottom centre of rectangular area, relative to the <paramref name="direction"/>.</param>
+    /// <param name="startPos">Bottom middle of rectangular area, relative to the <paramref name="direction"/>.</param>
     /// <param name="direction">Direction to iterate along the length of.</param>
-    /// <param name="outerWidth">Number of cells either side of a centre cell.</param>
+    /// <param name="outerWidth">Number of cells either side of a middle cell.</param>
     /// <param name="length">Number of cells along the <paramref name="direction"/>.</param>
     /// <returns>If the area of cells contains any items.</returns>
     private bool AreaContainsItems(Vector3I startPos, Vector3I direction, int outerWidth, int length)
