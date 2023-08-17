@@ -64,13 +64,11 @@ public partial class MapGenerator : GridMap
         HashSet<Vector3I> pathPosS = GetAStarPathPositionsBtwDoors(doorPosS, originDoorAheadPos, aStar, posToId, idToPos, ref uniqueId);
 
         // Get All Empty Positions Projected From The Floor //
-        int cellCount = _floorPosS.Count * height;
+        int cellCount = _floorPosS.Count * (height - 1);
         _emptyPosS = new(cellCount);
         _potentialPos_floorIdx_heightLvl_S = new(cellCount);
 
-        IEnumerator<Vector3I> doorPosEnumerator = doorPosS.GetEnumerator();
-        doorPosEnumerator.MoveNext();
-        for (int heightLvl = doorPosEnumerator.Current.Y + 1; heightLvl < height; heightLvl++)
+        for (int heightLvl = 1; heightLvl < height; heightLvl++)
         {
             int floorIdx = -1;
             foreach (Vector3I floorPos in _floorPosS)
@@ -111,11 +109,11 @@ public partial class MapGenerator : GridMap
             if (_potentialPos_floorIdx_heightLvl_S.Count == 0) { break; }
 
             int randomIdx = Rng.RandiRange(0, _potentialPos_floorIdx_heightLvl_S.Count - 1);
-            (Vector3I potentialPos, int floorIdx, int heightLvl) =  _potentialPos_floorIdx_heightLvl_S[randomIdx];
+            (Vector3I potentialPos, int floorIdx, int heightLvl) = _potentialPos_floorIdx_heightLvl_S[randomIdx];
 
             // Place Random Node Based On Minimum Normalised Proximity //
             (float minNormalisedProx, int minIdx, int totalDist) = GetMinimumNormalisedProximityWithIndex(potentialPos, allCellProximities[floorIdx]);
-            PlaceRandomInteriorNode(potentialPos, maxHeightLvl, heightLvl, minNormalisedProx, GetRotationYFromIndex(minIdx), totalDist);
+            PlaceRandomInteriorNode(potentialPos, heightLvl, maxHeightLvl, minNormalisedProx, GetRotationYFromIndex(minIdx), totalDist);
         }
     }
 
@@ -290,7 +288,7 @@ public partial class MapGenerator : GridMap
         }
     }
 
-    private void PlaceRandomInteriorNode(Vector3I pos, int maxHeightLvl, int heightLvl, float minNormalisedProx, float rotationY, int totalDist)
+    private void PlaceRandomInteriorNode(Vector3I pos, int heightLvl, int maxHeightLvl, float minNormalisedProx, float rotationY, int totalDist)
     {
         InteriorObject obj = _roomManager.GetRandomInteriorObject();
 

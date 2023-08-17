@@ -7,7 +7,7 @@ namespace Scripts.Generation;
 public class ItemManager
 {
     private const string CubeTexturePath = "res://Textures/Cubes/";
-    private const string CubeShaderPath = "res://Shaders/MixedCube.gdshader";
+    private const string MixedCubeShaderPath = "res://Shaders/MixedCube.gdshader";
     private const int PureItemCount = 8;
 
     public enum Id
@@ -61,6 +61,8 @@ public class ItemManager
         WallpaperPlaster
     }
 
+    public MeshLibrary MeshLibrary { get; private set; }
+
     private class MixedItemIdComparer : EqualityComparer<(Id, Id)>
     {
         public override bool Equals((Id, Id) x, (Id, Id) y)
@@ -97,27 +99,28 @@ public class ItemManager
         {
             _reverseMixedItems.Add(pair.Value, pair.Key);
         }
+
+        GenerateMeshLibrary();
     }
 
     /// <summary>
-    /// Create a <see cref="MeshLibrary"/> from <see cref="Id"/> constants, and matching textures in the resources folder.
+    /// Create a <see cref="Godot.MeshLibrary"/> from <see cref="Id"/> constants, and matching textures in the resources folder.
     /// </summary>
-    /// <returns><see cref="MeshLibrary"/> containing all generated <see cref="BoxMesh"/>es.</returns>
-    public MeshLibrary GetMeshLibrary()
+    /// <returns><see cref="Godot.MeshLibrary"/> containing all generated <see cref="BoxMesh"/>es.</returns>
+    private void GenerateMeshLibrary()
     {
-        MeshLibrary lib = new();
-        Shader shader = GD.Load<Shader>(CubeShaderPath);
+        MeshLibrary = new();
+
+        Shader mixedShader = GD.Load<Shader>(MixedCubeShaderPath);
         int mixedIdx = PureItemCount;
 
-        // Pure Cube //
         for (int i = 0; i < PureItemCount; i++)
         {
+            // Pure Item //
             StandardMaterial3D mat = new StandardMaterial3D() { Uv1Scale = new(3f, 2f, 1f) };
-            BoxMesh box = new() { Material = mat };
 
             string itemPath = CubeTexturePath + Enum.GetName((Id)i);
 
-            // Setup Standard Material //
             if (TryLoadTexture($"{itemPath}/AlbedoMap", out Texture2D texture)) { mat.AlbedoTexture = texture; }
             if (TryLoadTexture($"{itemPath}/RoughnessMap", out texture))        { mat.RoughnessTexture = texture; }
             if (TryLoadTexture($"{itemPath}/MetallicMap", out texture))         { mat.MetallicTexture = texture; }
@@ -132,16 +135,13 @@ public class ItemManager
                 mat.AOEnabled = true;
                 mat.AOTexture = texture;
             }
-            //
-
-            lib.CreateItem(i);
-            lib.SetItemMesh(i, box);
+            
+            AddBoxItem(i, mat);
 
             // Mixed Items //
             for (int j = i + 1; j < PureItemCount; j++)
             {
-                ShaderMaterial shaderMat = new ShaderMaterial() { Shader = shader };
-                box = new() { Material = shaderMat };
+                ShaderMaterial shaderMat = new ShaderMaterial() { Shader = mixedShader };
 
                 shaderMat.SetShaderParameter($"albedo_map_1"   , mat.AlbedoTexture);
                 shaderMat.SetShaderParameter($"roughness_map_1", mat.RoughnessTexture);
@@ -177,21 +177,30 @@ public class ItemManager
                 }
                 //
 
-                lib.CreateItem(mixedIdx);
-                lib.SetItemMesh(mixedIdx, box);
-                mixedIdx++;
+                AddBoxItem(mixedIdx++, shaderMat);
             }
         }
-        return lib;
     }
+
+    private void AddBoxItem(int idx, Material mat)
+    {
+        BoxMesh box = new() { Material = mat };
+
+        MeshLibrary.CreateItem(idx);
+        MeshLibrary.SetItemMesh(idx, box);
+        MeshLibrary.SetItemShapes(idx, new() { new BoxShape3D() { Size = Vector3.One }, Transform3D.Identity });
+    }
+
     private bool TryLoadTexture(string fullPathWithoutExt, out Texture2D texture)
     {
         string pathTres = fullPathWithoutExt + ".tres";
         string pathJpg = fullPathWithoutExt + ".jpg";
+        string pathPng = fullPathWithoutExt + ".png";
 
         texture = null;
         if (ResourceLoader.Exists(pathTres))     { texture = GD.Load<Texture2D>(pathTres); }
         else if (ResourceLoader.Exists(pathJpg)) { texture = GD.Load<Texture2D>(pathJpg); }
+        else if (ResourceLoader.Exists(pathPng)) { texture = GD.Load<Texture2D>(pathPng); }
         else                                     { return false; }
 
         return true;

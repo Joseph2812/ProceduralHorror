@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://dduxddcquhrp1"]
+[gd_scene load_steps=12 format=3 uid="uid://dduxddcquhrp1"]
 
-[ext_resource type="Script" path="res://Scripts/CameraController.cs" id="1_f47qg"]
+[ext_resource type="Script" path="res://Scripts/FreeViewController.cs" id="1_n1o8o"]
 [ext_resource type="Theme" uid="uid://bmbx06aggy0cl" path="res://Theme.tres" id="3_a65xu"]
 [ext_resource type="Script" path="res://Scripts/Generation/MapGenerator.cs" id="3_xb8fi"]
 [ext_resource type="Script" path="res://Scripts/Console.cs" id="4_egocs"]
+[ext_resource type="Script" path="res://Scripts/Player/MovementController.cs" id="5_ofh15"]
+[ext_resource type="Script" path="res://Scripts/Player/CameraController.cs" id="6_2pppc"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
 
@@ -19,6 +21,14 @@ sdfgi_enabled = true
 sdfgi_read_sky_light = false
 glow_enabled = true
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k83d5"]
+radius = 0.4
+height = 1.9
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_kpy6l"]
+radius = 0.4
+height = 1.9
+
 [node name="Main" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -29,20 +39,19 @@ transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -
 shadow_enabled = true
 editor_only = true
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 30, 0)
-current = true
-fov = 90.0
-size = 150.0
-script = ExtResource("1_f47qg")
-
-[node name="SpotLight3D" type="SpotLight3D" parent="Camera3D"]
-spot_range = 20.0
-
 [node name="GridMap" type="GridMap" parent="."]
 cell_size = Vector3(1, 1, 1)
 script = ExtResource("3_xb8fi")
 metadata/_editor_floor_ = Vector3(0, 0, 0)
+
+[node name="FreeViewCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 30, 0)
+fov = 90.0
+size = 150.0
+script = ExtResource("1_n1o8o")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="FreeViewCamera"]
+spot_range = 20.0
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -81,3 +90,26 @@ layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.05
 placeholder_text = "Enter a command..."
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, 0.5)
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+script = ExtResource("5_ofh15")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("CapsuleShape3D_k83d5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+mesh = SubResource("CapsuleMesh_kpy6l")
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+current = true
+fov = 90.0
+script = ExtResource("6_2pppc")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Player/Camera3D"]
+spot_range = 20.0

@@ -15,6 +15,11 @@ public partial class Console : Panel
         public Action<string[]> ActionToUse { get; private set; }
         public string Description { get; private set; }
 
+        /// <summary>
+        /// Assign an action that takes in the command string as an argument, with an optional description (add to the main command).
+        /// </summary>
+        /// <param name="action">Action to take when command is run. string[] = Command.</param>
+        /// <param name="description">Description to show when help is run.</param>
         public CommandData(Action<string[]> action, string description = "")
         {
             ActionToUse = action;
@@ -34,7 +39,6 @@ public partial class Console : Panel
     private Callable _setVisibleFalse;
     private bool _isActive;
 
-    // string[] = Command split up
     private readonly Dictionary<string, CommandData> _commands;
     private readonly string[] _historyLines = new string[HistoryLineCount];
     private int _historyIdx;
