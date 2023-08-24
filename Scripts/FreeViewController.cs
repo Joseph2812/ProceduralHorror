@@ -7,13 +7,10 @@ public partial class FreeViewController : Camera3D
 {
     private const float Speed = 10f;
 
-    private Viewport _viewport;
-
     public override void _Ready()
     {
         base._Ready();
 
-        _viewport = GetViewport();
         SetAllProcesses(false);
 
         Console.Inst.AddCommand("free-cam", new(OnConsoleCmd_FreeCamera, "Switch to free-view camera."));

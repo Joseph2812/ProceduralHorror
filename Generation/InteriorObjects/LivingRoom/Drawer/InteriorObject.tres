@@ -1,16 +1,16 @@
-[gd_resource type="Resource" script_class="InteriorObjectExtended" load_steps=3 format=3 uid="uid://bxhl6yrv2f5qh"]
+[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://bxhl6yrv2f5qh"]
 
 [ext_resource type="PackedScene" uid="uid://fjhotcx22006" path="res://Scenes/ForInteriorObjects/Drawer.tscn" id="1_f2pa6"]
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/Extension/InteriorObjectExtended.cs" id="2_6m6g8"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_ip4ee"]
 
 [resource]
-script = ExtResource("2_6m6g8")
+script = ExtResource("2_ip4ee")
 Scene = ExtResource("1_f2pa6")
-WeightToCentre = 0.0
+WeightToMiddle = 0.0
 Exact = true
 MinimumHeight = 1
 MaximumHeight = 1
-RelativeToCeiling = false
+RelativeTo = 0
 _maximumCountBtwRooms = 0
 _neighbourConditionsText = ""
 _clearancePositions = PackedVector3Array(0, 0, 1)

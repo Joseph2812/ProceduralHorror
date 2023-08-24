@@ -29,6 +29,10 @@ window/stretch/aspect="expand"
 
 project/assembly_name="ProceduralHorror"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/InteriorObjectCreator/plugin.cfg")
+
 [filesystem]
 
 import/blender/enabled=false

@@ -1,0 +1,17 @@
+[gd_scene load_steps=6 format=3 uid="uid://c15enste8xslg"]
+
+[ext_resource type="PackedScene" uid="uid://b8xqv7dx6yp8b" path="res://Models/Sofa.glb" id="1_apsjg"]
+[ext_resource type="Texture2D" uid="uid://cmpf4vqx0tgg5" path="res://Textures/Sofa/Albedo.png" id="2_872u6"]
+[ext_resource type="Texture2D" uid="uid://bqdgcbiwli3eo" path="res://Textures/Sofa/Normal.png" id="3_71neg"]
+[ext_resource type="Texture2D" uid="uid://bee4jr2ox2esv" path="res://Textures/Sofa/ORM.png" id="4_p7dis"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_o4j7s"]
+albedo_texture = ExtResource("2_872u6")
+orm_texture = ExtResource("4_p7dis")
+normal_enabled = true
+normal_texture = ExtResource("3_71neg")
+
+[node name="Sofa" instance=ExtResource("1_apsjg")]
+
+[node name="Sofa_Obj" parent="." index="0"]
+surface_material_override/0 = SubResource("ORMMaterial3D_o4j7s")

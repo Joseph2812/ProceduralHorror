@@ -11,5 +11,5 @@ orm_texture = ExtResource("3_ij4r8")
 [node name="Desk" instance=ExtResource("1_te8xq")]
 
 [node name="Desk_Obj" parent="." index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0.5)
 surface_material_override/0 = SubResource("ORMMaterial3D_32rfe")

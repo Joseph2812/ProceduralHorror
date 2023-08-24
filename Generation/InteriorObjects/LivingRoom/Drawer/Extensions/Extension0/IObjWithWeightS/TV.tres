@@ -1,8 +1,0 @@
-[gd_resource type="Resource" script_class="InteriorObjectWithWeight" load_steps=2 format=3 uid="uid://brspy8bhxstkr"]
-
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_wdfgd"]
-
-[resource]
-script = ExtResource("1_wdfgd")
-WeightOfPlacement = 1
-_interiorObjectPath = "res://Generation/InteriorObjects/LivingRoom/TV/InteriorObject.tres"

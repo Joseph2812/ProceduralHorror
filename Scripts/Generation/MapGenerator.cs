@@ -494,12 +494,13 @@ public partial class MapGenerator : GridMap
             if (potentialDoorPosS.Count == 0) { break; }
 
             // Create Random Doorway //
-            Vector3I doorPos = potentialDoorPosS[Rng.RandiRange(0, potentialDoorPosS.Count - 1)];
-
-            BuildColumn(doorPos, 2, ItemManager.Id.Empty);
+            int randNum = Rng.RandiRange(0, potentialDoorPosS.Count - 1);
+            Vector3I doorPos = potentialDoorPosS[randNum];
+            
+            potentialDoorPosS.RemoveAt(randNum);
             doorPosS.Add(doorPos);
-            potentialDoorPosS.Remove(doorPos);
-
+            BuildColumn(doorPos, 2, ItemManager.Id.Empty);
+            
             // Remove Orthogonal Potential Doorway Positions (doors shouldn't be created right next to each other) //
             NeighbourInfo[] orthNeighbours = GetNeighbours(doorPos, OrthogonalDirs);
             foreach (NeighbourInfo neighbour in orthNeighbours)

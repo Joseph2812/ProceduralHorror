@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://depig04iqbqld"]
+
+[node name="Element" type="HBoxContainer"]
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="X" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="X"]
+layout_mode = 2
+text = "X"
+
+[node name="LineEdit" type="LineEdit" parent="X"]
+layout_mode = 2
+
+[node name="Y" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="Y"]
+layout_mode = 2
+text = "Y"
+
+[node name="LineEdit" type="LineEdit" parent="Y"]
+layout_mode = 2
+
+[node name="Z" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="Z"]
+layout_mode = 2
+text = "Z"
+
+[node name="LineEdit" type="LineEdit" parent="Z"]
+layout_mode = 2
