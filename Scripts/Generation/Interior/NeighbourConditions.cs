@@ -28,9 +28,9 @@ public class NeighbourConditions
 
     /// <summary>
     /// Converts the given string into a tree of nodes for dynamic boolean expression computation. Use <see cref="IsSatisfied(Scripts.Generation.NeighbourInfo[], float)"/> to get the result based on the neighbours.<br/>
-    /// <paramref name="conditionsToParse"/> is a string that represents a boolean expression, with directions (lowercase), brackets, and operators.<para/>
+    /// <paramref name="conditionsToParse"/> is a string that represents a boolean expression, with directions (lower-case), operators, and brackets.<para/>
     /// 
-    /// Directions: left[i], forward[i], right[i], back[i], nw[i], ne[i], se[i], sw[i]. Where [i] = 0 or 1 or 2, to represent relative y (1 = Middle).<br/>
+    /// Directions: left[i], forward[i], right[i], back[i], fl[i], fr[i], br[i], bl[i]. Where [i] = 0 or 1 or 2, to represent relative y (1 = Middle).<br/>
     /// Operators: <![CDATA[! (NOT), & (AND), | (OR), ^ (XOR).]]><para/>
     /// 
     /// Example:<br/><![CDATA[(!left0 & right1) | (forward2 ^ back0)]]> 
@@ -179,28 +179,28 @@ public class NeighbourConditions
             case "forward0": return _valueNodes[(int)All3x3x3Dir.Forward0];
             case "right0"  : return _valueNodes[(int)All3x3x3Dir.Right0];
             case "back0"   : return _valueNodes[(int)All3x3x3Dir.Back0];
-            case "nw0"     : return _valueNodes[(int)All3x3x3Dir.NW0];
-            case "ne0"     : return _valueNodes[(int)All3x3x3Dir.NE0];
-            case "se0"     : return _valueNodes[(int)All3x3x3Dir.SE0];
-            case "sw0"     : return _valueNodes[(int)All3x3x3Dir.SW0];
+            case "fl0"     : return _valueNodes[(int)All3x3x3Dir.FL0];
+            case "fr0"     : return _valueNodes[(int)All3x3x3Dir.FR0];
+            case "br0"     : return _valueNodes[(int)All3x3x3Dir.BR0];
+            case "bl0"     : return _valueNodes[(int)All3x3x3Dir.BL0];
 
             case "left1"   : return _valueNodes[(int)All3x3x3Dir.Left1];
             case "forward1": return _valueNodes[(int)All3x3x3Dir.Forward1];
             case "right1"  : return _valueNodes[(int)All3x3x3Dir.Right1];
             case "back1"   : return _valueNodes[(int)All3x3x3Dir.Back1];
-            case "nw1"     : return _valueNodes[(int)All3x3x3Dir.NW1];
-            case "ne1"     : return _valueNodes[(int)All3x3x3Dir.NE1];
-            case "se1"     : return _valueNodes[(int)All3x3x3Dir.SE1];
-            case "sw1"     : return _valueNodes[(int)All3x3x3Dir.SW1];
+            case "fl1"     : return _valueNodes[(int)All3x3x3Dir.FL1];
+            case "fr1"     : return _valueNodes[(int)All3x3x3Dir.FR1];
+            case "br1"     : return _valueNodes[(int)All3x3x3Dir.BR1];
+            case "bl1"     : return _valueNodes[(int)All3x3x3Dir.BL1];
 
             case "left2"   : return _valueNodes[(int)All3x3x3Dir.Left2];
             case "forward2": return _valueNodes[(int)All3x3x3Dir.Forward2];
             case "right2"  : return _valueNodes[(int)All3x3x3Dir.Right2];
             case "back2"   : return _valueNodes[(int)All3x3x3Dir.Back2];
-            case "nw2"     : return _valueNodes[(int)All3x3x3Dir.NW2];
-            case "ne2"     : return _valueNodes[(int)All3x3x3Dir.NE2];
-            case "se2"     : return _valueNodes[(int)All3x3x3Dir.SE2];
-            case "sw2"     : return _valueNodes[(int)All3x3x3Dir.SW2];
+            case "fl2"     : return _valueNodes[(int)All3x3x3Dir.FL2];
+            case "fr2"     : return _valueNodes[(int)All3x3x3Dir.FR2];
+            case "br2"     : return _valueNodes[(int)All3x3x3Dir.BR2];
+            case "bl2"     : return _valueNodes[(int)All3x3x3Dir.BL2];
 
             default: throw new NotImplementedException($"\"{directionName}\" is not a valid direction.");
         }

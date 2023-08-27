@@ -10,6 +10,5 @@ RotationY = 0.0
 
 [resource]
 script = ExtResource("2_8jn03")
-ChanceToExtend = 1.0
+ChanceToSkipAPosition = 0.0
 PlacementData = Array[Object]([SubResource("Resource_fck0j")])
-_interiorObjectWithWeightPaths = PackedStringArray("res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension1/IObjWithWeightS/Blender_Wt.tres", "res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension1/IObjWithWeightS/CoffeeMachine_Wt.tres", "res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension1/IObjWithWeightS/CopperKettle_Wt.tres", "res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension1/IObjWithWeightS/KitchenPot_Wt.tres", "res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension1/IObjWithWeightS/Microwave_Wt.tres", "res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension1/IObjWithWeightS/Toaster_Wt.tres")

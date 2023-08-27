@@ -87,10 +87,10 @@ public partial class MapGenerator : GridMap
                         forwardEmpty: cellProximities[(int)All3x3Dir.Forward] > 0,
                         rightEmpty  : cellProximities[(int)All3x3Dir.Right]   > 0,
                         backEmpty   : cellProximities[(int)All3x3Dir.Back]    > 0,
-                        nwEmpty     : cellProximities[(int)All3x3Dir.NW]      > 0,
-                        neEmpty     : cellProximities[(int)All3x3Dir.NE]      > 0,
-                        seEmpty     : cellProximities[(int)All3x3Dir.SE]      > 0,
-                        swEmpty     : cellProximities[(int)All3x3Dir.SW]      > 0
+                        nwEmpty     : cellProximities[(int)All3x3Dir.FL]      > 0,
+                        neEmpty     : cellProximities[(int)All3x3Dir.FR]      > 0,
+                        seEmpty     : cellProximities[(int)All3x3Dir.BR]      > 0,
+                        swEmpty     : cellProximities[(int)All3x3Dir.BL]      > 0
                     )
                 )
                 { continue; }
@@ -272,13 +272,13 @@ public partial class MapGenerator : GridMap
         switch (dir)
         {
             case All3x3Dir.Left:
-            case All3x3Dir.SW:
-            case All3x3Dir.NW:
+            case All3x3Dir.BL:
+            case All3x3Dir.FL:
                 return Mathf.Pi * 0.5f;
 
             case All3x3Dir.Right:
-            case All3x3Dir.SE:
-            case All3x3Dir.NE:
+            case All3x3Dir.BR:
+            case All3x3Dir.FR:
                 return Mathf.Pi * -0.5f;
 
             case All3x3Dir.Back:

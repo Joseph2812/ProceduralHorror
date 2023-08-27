@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3 uid="uid://dp0073bwaejea"]
+
+[ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/UiList.cs" id="1_lil4k"]
+[ext_resource type="PackedScene" uid="uid://depig04iqbqld" path="res://addons/InteriorObjectCreator/Dock/Element_Vector3.tscn" id="2_nnqnw"]
+
+[node name="Element_Extension" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ChanceToSkipAPosition" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ChanceToSkipAPosition"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Chance To Skip A Position"
+clip_text = true
+
+[node name="LineEdit" type="LineEdit" parent="ChanceToSkipAPosition"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "[0, 1], Default = 0"
+
+[node name="PlacementData" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PlacementData"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+text = "Placement Data"
+clip_text = true
+
+[node name="UiList" type="VBoxContainer" parent="PlacementData"]
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("1_lil4k")
+_elementUi = ExtResource("2_nnqnw")
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 2

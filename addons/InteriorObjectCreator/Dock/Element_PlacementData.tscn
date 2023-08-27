@@ -1,0 +1,48 @@
+[gd_scene load_steps=3 format=3 uid="uid://bg8m0hokurie3"]
+
+[ext_resource type="PackedScene" uid="uid://depig04iqbqld" path="res://addons/InteriorObjectCreator/Dock/Element_Vector3.tscn" id="1_egfa0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ql30g"]
+bg_color = Color(0, 0.482353, 0.835294, 1)
+
+[node name="Element_PlacementData" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Element_Vector3" parent="HBoxContainer/VBoxContainer" instance=ExtResource("1_egfa0")]
+layout_mode = 2
+
+[node name="RotationY" type="HBoxContainer" parent="HBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/VBoxContainer/RotationY"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Rotation-Y"
+clip_text = true
+
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer/VBoxContainer/RotationY"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "0"
+caret_blink = true
+caret_blink_interval = 0.5
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ql30g")
+toggle_mode = true
+text = "O"
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 2

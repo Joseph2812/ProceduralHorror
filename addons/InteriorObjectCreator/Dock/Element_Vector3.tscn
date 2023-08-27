@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://depig04iqbqld"]
 
-[node name="Element" type="HBoxContainer"]
+[node name="Element_Vector3" type="HBoxContainer"]
 size_flags_horizontal = 3
 alignment = 2
 
@@ -14,6 +14,8 @@ text = "X"
 
 [node name="LineEdit" type="LineEdit" parent="X"]
 layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "0"
 
 [node name="Y" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -25,6 +27,8 @@ text = "Y"
 
 [node name="LineEdit" type="LineEdit" parent="Y"]
 layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "0"
 
 [node name="Z" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -36,3 +40,5 @@ text = "Z"
 
 [node name="LineEdit" type="LineEdit" parent="Z"]
 layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "0"

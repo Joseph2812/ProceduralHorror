@@ -8,13 +8,6 @@ public partial class InteriorObjectWithWeight : Resource
 {
     public InteriorObject InteriorObject { get; private set; }
 
-    /// <summary>
-    /// Weight of appearance compared to other assigned <see cref="InteriorObjectWithWeight"/>s.
-    /// Set to 0 to disable it from placement.
-    /// </summary>
-    [Export(PropertyHint.Range, "0,100,1,or_greater")]
-    public int WeightOfPlacement { get; private set; } = 1;
-
     [Export(PropertyHint.File, "*.tres")]
     private string _interiorObjectPath
     {
@@ -26,6 +19,13 @@ public partial class InteriorObjectWithWeight : Resource
         }
     }
     private string p_interiorObjectPath;
+
+    /// <summary>
+    /// Weight of appearance compared to other assigned <see cref="InteriorObjectWithWeight"/>s.
+    /// Set to 0 to disable it from placement.
+    /// </summary>
+    [Export(PropertyHint.Range, "0,100,1,or_greater")]
+    public int WeightOfPlacement { get; private set; } = 1;
 
     private void LoadInteriorObject() { InteriorObject = GD.Load<InteriorObject>(_interiorObjectPath); }
 }

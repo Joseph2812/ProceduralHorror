@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://b44uba3yukl4v"]
+
+[node name="Element_IObjWithWeight" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Name" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Name"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name"
+clip_text = true
+
+[node name="LineEdit" type="LineEdit" parent="Name"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Containing folder"
+
+[node name="WeightOfPlacement" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="WeightOfPlacement"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Weight Of Placement"
+clip_text = true
+
+[node name="LineEdit" type="LineEdit" parent="WeightOfPlacement"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "[0, IntMax], Default = 1"
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 2

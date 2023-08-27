@@ -1,10 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://dpbxfwfqcug2j"]
+[gd_scene load_steps=8 format=3 uid="uid://dpbxfwfqcug2j"]
 
 [ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/FoldingButton.cs" id="1_s3s22"]
 [ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/UiList.cs" id="2_puh2l"]
 [ext_resource type="PackedScene" uid="uid://depig04iqbqld" path="res://addons/InteriorObjectCreator/Dock/Element_Vector3.tscn" id="2_ulx6r"]
+[ext_resource type="PackedScene" uid="uid://b44uba3yukl4v" path="res://addons/InteriorObjectCreator/Dock/Element_IObjWithWeight.tscn" id="4_bmm6c"]
+[ext_resource type="PackedScene" uid="uid://bg8m0hokurie3" path="res://addons/InteriorObjectCreator/Dock/Element_PlacementData.tscn" id="4_k1yhx"]
+[ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/ExtensionSelector.cs" id="4_rodgd"]
 
-[node name="IObjCreator" type="ScrollContainer"]
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_0d7jm"]
+color = Color(1, 1, 1, 1)
+
+[node name="IObjCreator" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -12,47 +18,49 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+metadata/_edit_vertical_guides_ = []
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="InteriorObject" type="ScrollContainer" parent="TabContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/InteriorObject"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
+[node name="Name" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer"]
 layout_mode = 2
 
-[node name="InteriorObject" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
-layout_mode = 2
-
-[node name="Name" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Name"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Name"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Name"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/InteriorObject/Name"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Name"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Containing folder"
 
-[node name="Scene" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject"]
+[node name="ScenePath" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Scene"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/ScenePath"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Scene"
+text = "Scene Path"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/InteriorObject/Scene"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/ScenePath"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Path to scene"
 
-[node name="Folding_Probability" type="Button" parent="VBoxContainer/TabContainer/InteriorObject" node_paths=PackedStringArray("_itemToFold")]
+[node name="Folding_Probability" type="Button" parent="TabContainer/InteriorObject/VBoxContainer" node_paths=PackedStringArray("_itemToFold")]
 layout_mode = 2
 toggle_mode = true
 text = "⇒ Probability"
@@ -60,40 +68,41 @@ alignment = 0
 script = ExtResource("1_s3s22")
 _itemToFold = NodePath("../Probability")
 
-[node name="Probability" type="MarginContainer" parent="VBoxContainer/TabContainer/InteriorObject"]
+[node name="Probability" type="MarginContainer" parent="TabContainer/InteriorObject/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 15
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Probability"]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Probability"]
 layout_mode = 2
 
-[node name="WeightToMiddle" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Probability/VBoxContainer"]
+[node name="WeightToMiddle" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Probability/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Probability/VBoxContainer/WeightToMiddle"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Probability/VBoxContainer/WeightToMiddle"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Weight To Middle"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/InteriorObject/Probability/VBoxContainer/WeightToMiddle"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Probability/VBoxContainer/WeightToMiddle"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "[0, 1], Default = 0"
 
-[node name="Exact" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Probability/VBoxContainer"]
+[node name="Exact" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Probability/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Probability/VBoxContainer/Exact"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Probability/VBoxContainer/Exact"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Exact [Only (weight == norm dist) allowed]"
 clip_text = true
 
-[node name="CheckBox" type="CheckBox" parent="VBoxContainer/TabContainer/InteriorObject/Probability/VBoxContainer/Exact"]
+[node name="CheckBox" type="CheckBox" parent="TabContainer/InteriorObject/VBoxContainer/Probability/VBoxContainer/Exact"]
 layout_mode = 2
 
-[node name="Folding_Constriants" type="Button" parent="VBoxContainer/TabContainer/InteriorObject" node_paths=PackedStringArray("_itemToFold")]
+[node name="Folding_Constriants" type="Button" parent="TabContainer/InteriorObject/VBoxContainer" node_paths=PackedStringArray("_itemToFold")]
 layout_mode = 2
 toggle_mode = true
 text = "⇒ Constraints"
@@ -101,50 +110,51 @@ alignment = 0
 script = ExtResource("1_s3s22")
 _itemToFold = NodePath("../Constraints")
 
-[node name="Constraints" type="MarginContainer" parent="VBoxContainer/TabContainer/InteriorObject"]
+[node name="Constraints" type="MarginContainer" parent="TabContainer/InteriorObject/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 15
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints"]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints"]
 layout_mode = 2
 
-[node name="MinimumHeight" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer"]
+[node name="MinimumHeight" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/MinimumHeight"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/MinimumHeight"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Minimum Height"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/MinimumHeight"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/MinimumHeight"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "[1, IntMax-1], Default = 1"
 
-[node name="MaximumHeight" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer"]
+[node name="MaximumHeight" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/MaximumHeight"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/MaximumHeight"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Maximum Height"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/MaximumHeight"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/MaximumHeight"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "[1, IntMax-1], Default = IntMaxMinusOne"
 
-[node name="RelativeTo" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer"]
+[node name="RelativeTo" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/RelativeTo"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/RelativeTo"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Relative To"
 
-[node name="OptionButton" type="OptionButton" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/RelativeTo"]
+[node name="OptionButton" type="OptionButton" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/RelativeTo"]
 layout_mode = 2
 item_count = 3
 selected = 0
@@ -155,72 +165,72 @@ popup/item_1/id = 1
 popup/item_2/text = "Ceiling"
 popup/item_2/id = 2
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2
 
-[node name="MaximumCountBtwRooms" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer"]
+[node name="MaximumCountBtwRooms" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/MaximumCountBtwRooms"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/MaximumCountBtwRooms"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Maximum Count Btw Rooms"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/MaximumCountBtwRooms"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/MaximumCountBtwRooms"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "[0, IntMax], Default = 0 -> No Maximum"
 
-[node name="NeighbourConditionsText" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer"]
+[node name="NeighbourConditionsText" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/NeighbourConditionsText"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/NeighbourConditionsText"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 text = "Neighbour Conditions Text"
 clip_text = true
 
-[node name="LineEdit" type="TextEdit" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/NeighbourConditionsText"]
+[node name="LineEdit" type="TextEdit" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/NeighbourConditionsText"]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "[0, IntMax], Default = 0 -> No Maximum"
+placeholder_text = "DIRECTIONS: left[i], forward[i], right[i], back[i], fl[i], fr[i], br[i], bl[i]. Where [i] = 0 or 1 or 2, to represent relative y (1 = Middle). OPERATORS: ! (not), & (and), | (or), ^ (xor)."
 scroll_fit_content_height = true
 
-[node name="ClearancePositions" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer"]
+[node name="ClearancePositions" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/ClearancePositions"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/ClearancePositions"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 text = "Clearance Positions"
 clip_text = true
 
-[node name="List" type="VBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/ClearancePositions"]
+[node name="UiList" type="VBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/ClearancePositions"]
 layout_mode = 2
-size_flags_horizontal = 10
+size_flags_horizontal = 3
 script = ExtResource("2_puh2l")
 _elementUi = ExtResource("2_ulx6r")
 
-[node name="SemiClearancePositions" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer"]
+[node name="SemiClearancePositions" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/SemiClearancePositions"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/SemiClearancePositions"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
 text = "Semi-Clearance Positions"
 clip_text = true
 
-[node name="List" type="VBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Constraints/VBoxContainer/SemiClearancePositions"]
+[node name="UiList" type="VBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/SemiClearancePositions"]
 layout_mode = 2
-size_flags_horizontal = 10
+size_flags_horizontal = 3
 script = ExtResource("2_puh2l")
 _elementUi = ExtResource("2_ulx6r")
 
-[node name="Folding_Rotation" type="Button" parent="VBoxContainer/TabContainer/InteriorObject" node_paths=PackedStringArray("_itemToFold")]
+[node name="Folding_Rotation" type="Button" parent="TabContainer/InteriorObject/VBoxContainer" node_paths=PackedStringArray("_itemToFold")]
 layout_mode = 2
 toggle_mode = true
 text = "⇒ Rotation"
@@ -228,58 +238,74 @@ alignment = 0
 script = ExtResource("1_s3s22")
 _itemToFold = NodePath("../Rotation")
 
-[node name="Rotation" type="MarginContainer" parent="VBoxContainer/TabContainer/InteriorObject"]
+[node name="Rotation" type="MarginContainer" parent="TabContainer/InteriorObject/VBoxContainer"]
+visible = false
 layout_mode = 2
 theme_override_constants/margin_left = 15
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Rotation"]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Rotation"]
 layout_mode = 2
 
-[node name="MinimumRotationalYOffset" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Rotation/VBoxContainer"]
+[node name="MinimumRotationalYOffset" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Rotation/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Rotation/VBoxContainer/MinimumRotationalYOffset"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Rotation/VBoxContainer/MinimumRotationalYOffset"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Minimum Rotational-Y Offset"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/InteriorObject/Rotation/VBoxContainer/MinimumRotationalYOffset"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Rotation/VBoxContainer/MinimumRotationalYOffset"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "[-360, 360], Default = 0"
 
-[node name="MaximumRotationalYOffset" type="HBoxContainer" parent="VBoxContainer/TabContainer/InteriorObject/Rotation/VBoxContainer"]
+[node name="MaximumRotationalYOffset" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Rotation/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/InteriorObject/Rotation/VBoxContainer/MaximumRotationalYOffset"]
+[node name="Label" type="Label" parent="TabContainer/InteriorObject/VBoxContainer/Rotation/VBoxContainer/MaximumRotationalYOffset"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Maximum Rotational-Y Offset"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/InteriorObject/Rotation/VBoxContainer/MaximumRotationalYOffset"]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Rotation/VBoxContainer/MaximumRotationalYOffset"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "[-360, 360], Default = 0"
 
-[node name="Extensions" type="VBoxContainer" parent="VBoxContainer/TabContainer"]
+[node name="Extensions" type="ScrollContainer" parent="TabContainer"]
 visible = false
 layout_mode = 2
 
-[node name="HUGE" type="HBoxContainer" parent="VBoxContainer/TabContainer/Extensions"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="VBoxContainer/TabContainer/Extensions/HUGE"]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Extensions"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "HUGE"
+size_flags_vertical = 3
+script = ExtResource("4_rodgd")
 
-[node name="LineEdit" type="LineEdit" parent="VBoxContainer/TabContainer/Extensions/HUGE"]
+[node name="PlacementDataList" type="VBoxContainer" parent="TabContainer/Extensions/VBoxContainer"]
 layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "LINE"
+script = ExtResource("2_puh2l")
+_elementUi = ExtResource("4_k1yhx")
 
-[node name="Button" type="Button" parent="VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="TabContainer/Extensions/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_0d7jm")
+
+[node name="Label" type="Label" parent="TabContainer/Extensions/VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "Interior Object With Weight List"
+horizontal_alignment = 1
+clip_text = true
+
+[node name="IObjWithWeightList" type="VBoxContainer" parent="TabContainer/Extensions/VBoxContainer"]
+visible = false
+layout_mode = 2
+script = ExtResource("2_puh2l")
+_elementUi = ExtResource("4_bmm6c")
+
+[node name="Button" type="Button" parent="."]
 layout_mode = 2
 text = "Create"

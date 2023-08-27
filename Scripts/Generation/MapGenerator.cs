@@ -24,17 +24,17 @@ public partial class MapGenerator : GridMap
     }
     public enum DiagDir
     {
-        NW,
-        NE,
-        SE,
-        SW
+        FL,
+        FR,
+        BR,
+        BL
     }
 
     /// <summary>
     /// Directions:<br/>
-    /// | NW   | Forward | NE    |<br/>
-    /// | Left | Middle  | Right |<br/>
-    /// | SW   | Back    | SE    |<para/>
+    /// | FL   | Forward | FR    |<br/>
+    /// | Left | X       | Right |<br/>
+    /// | BL   | Back    | BR    |<para/>
     /// </summary>
     public enum All3x3Dir
     {
@@ -42,10 +42,10 @@ public partial class MapGenerator : GridMap
         Forward,
         Right,
         Back,
-        NW,
-        NE,
-        SE,
-        SW
+        FL,
+        FR,
+        BR,
+        BL
     }
 
     /// <summary>
@@ -62,28 +62,28 @@ public partial class MapGenerator : GridMap
         Forward0,
         Right0,
         Back0,
-        NW0,
-        NE0,
-        SE0,
-        SW0,
+        FL0,
+        FR0,
+        BR0,
+        BL0,
 
         Left1,
         Forward1,
         Right1,
         Back1,
-        NW1,
-        NE1,
-        SE1,
-        SW1,
+        FL1,
+        FR1,
+        BR1,
+        BL1,
 
         Left2,
         Forward2,
         Right2,
         Back2,
-        NW2,
-        NE2,
-        SE2,
-        SW2
+        FL2,
+        FR2,
+        BR2,
+        BL2
     }
 
     public static MapGenerator Inst { get; private set; }
@@ -100,10 +100,10 @@ public partial class MapGenerator : GridMap
     };
     public Vector3I[] DiagonalDirs { get; private set; } =
     {
-        new Vector3I(-1, 0, -1), // North West (North = -Z)
-        new Vector3I(1, 0, -1),  // North East
-        new Vector3I(1, 0, 1),   // South East
-        new Vector3I(-1, 0, 1)   // South West
+        new Vector3I(-1, 0, -1), // Forward Left (Forward = -Z)
+        new Vector3I(1, 0, -1),  // Forward Right
+        new Vector3I(1, 0, 1),   // Back Right
+        new Vector3I(-1, 0, 1)   // Back Left
     };
     public Vector3I[] All3x3Dirs { get; private set; } // Orthogonal + Diagonal
     public Vector3I[] All3x3x3Dirs { get; private set; } // _all3x3Dirs x3 along y
@@ -570,7 +570,7 @@ public partial class MapGenerator : GridMap
     /// <summary>
     /// Build a column of items above the floor position.
     /// </summary>
-    /// <param name="floorPos">Column will be built ONE above (global y) this position.</param>
+    /// <param name="floorPos">Column will be built OFR above (global y) this position.</param>
     /// <param name="height">Number of cells from the <paramref name="floorPos"/>.</param>
     /// <param name="id">Item ID to set in each cell.</param>
     /// <param name="orientation">Rotation to apply to each cell, approximated as orthogonal indexes.</param>
