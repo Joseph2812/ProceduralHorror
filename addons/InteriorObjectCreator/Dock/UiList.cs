@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +9,8 @@ namespace Addons.InteriorObjectCreator;
 [GlobalClass]
 public partial class UiList : VBoxContainer
 {
-    public const string HBoxName = "ListButtons";
+    public event Action<Node> Creation;
+    public event Action<Node> Deletion;
 
     [Export] private PackedScene _elementUi;
 
@@ -21,7 +23,7 @@ public partial class UiList : VBoxContainer
     {
         base._Ready();
 
-        _hBox = new() { Name = HBoxName };
+        _hBox = new() { Name = "ListButtons" };
         _hBox.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
         AddChild(_hBox, false, InternalMode.Back);
 
@@ -42,7 +44,13 @@ public partial class UiList : VBoxContainer
     /// <summary>
     /// Instantiate new <see cref="_elementUi"/> and add to the UI.
     /// </summary>
-    public void Add() { Add(_elementUi.Instantiate()); }
+    public void Add()
+    {
+        Node element = _elementUi.Instantiate();
+
+        Add(element);
+        Creation?.Invoke(element);
+    }
     ///
     /// <summary>
     /// Add pre-existing <paramref name="element"/> to the UI.
@@ -95,6 +103,8 @@ public partial class UiList : VBoxContainer
     {
         Remove(element);
         element.QueueFree();
+
+        Deletion?.Invoke(element);
     }
 
     /// <summary>
