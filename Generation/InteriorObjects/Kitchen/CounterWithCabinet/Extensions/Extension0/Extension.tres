@@ -15,6 +15,5 @@ RotationY = 0.0
 
 [resource]
 script = ExtResource("2_b8e4q")
-ChanceToExtend = 1.0
+ChanceToSkipAPosition = 0.0
 PlacementData = Array[Object]([SubResource("Resource_ag881"), SubResource("Resource_gqv6x")])
-_interiorObjectWithWeightPaths = PackedStringArray("res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/Extensions/Extension0/IObjWithWeightS/CounterWithCabinet_Wt.tres")

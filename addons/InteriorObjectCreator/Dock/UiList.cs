@@ -1,13 +1,14 @@
 using Godot;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Addons.InteriorObjectCreator;
 
-[Tool]
 [GlobalClass]
-public partial class UiList : VBoxContainer
+[Tool]
+public partial class UiList : VBoxContainer, IEnumerable<Node>
 {
     public event Action<Node> Creation;
     public event Action<Node> Deletion;
@@ -41,21 +42,25 @@ public partial class UiList : VBoxContainer
         _hBox.AddChild(_removeButton,false, InternalMode.Back);
     }
 
+    public IEnumerator<Node> GetEnumerator() => _elements.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    public int Count => _elements.Count;
+
     /// <summary>
     /// Instantiate new <see cref="_elementUi"/> and add to the UI.
     /// </summary>
     public void Add()
     {
         Node element = _elementUi.Instantiate();
-
-        Add(element);
-        Creation?.Invoke(element);
+        Add(element, true);
     }
     ///
     /// <summary>
     /// Add pre-existing <paramref name="element"/> to the UI.
     /// </summary>
-    public void Add(Node element)
+    /// <param name="triggerCreation">Use to trigger the event <see cref="Creation"/>. Use it when you need to customise a new node before adding it, and still trigger creation functionality.</param>
+    public void Add(Node element, bool triggerCreation = false)
     {
         AddChild(element, false, InternalMode.Back);
 
@@ -63,6 +68,8 @@ public partial class UiList : VBoxContainer
         _hBox.MoveToFront();
 
         _removeButton.Disabled = false;
+
+        if (triggerCreation) { Creation?.Invoke(element); }
     }
 
     /// <summary>
@@ -72,8 +79,8 @@ public partial class UiList : VBoxContainer
     public void Remove(Node element)
     {
         RemoveChild(element);
-
         _elements.Remove(element);
+
         if (_elements.Count == 0) { _removeButton.Disabled = true; }
     }
     /// <summary>
@@ -84,11 +91,8 @@ public partial class UiList : VBoxContainer
     {
         foreach (Node element in _elements)
         {
-            RemoveChild(element);
+            Remove(element);
         }
-        _elements.Clear();
-
-        _removeButton.Disabled = true;
     }
 
     /// <summary>
@@ -114,10 +118,7 @@ public partial class UiList : VBoxContainer
     {
         foreach (Node element in _elements)
         {
-            element.QueueFree();
+            Delete(element);
         }
-        _elements.Clear();
-
-        _removeButton.Disabled = true;
     }
 }

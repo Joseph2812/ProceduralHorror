@@ -16,28 +16,28 @@ public partial class InteriorObject : Resource
         Ceiling
     }
 
-    public PackedScene Scene { get; private set; }
+    public PackedScene Scene { get; set; }
 
     /// <summary>
     /// Likelihood of <see cref="Scene"/> appearing in a cell depending on its proxmity to the middle, from 0 (edge) to 1 (middle).
     /// </summary>
-    public float WeightToMiddle { get; private set; }
+    public float WeightToMiddle { get; set; }
 
     /// <summary>
     /// If true, <see cref="Scene"/> will have a chance to appear in a cell only if <see cref="WeightToMiddle"/> is equal to normalised distance.<para/>
     /// Mainly only useful for <see cref="WeightToMiddle"/> = 0 or 1, as inbetween values aren't guaranteed to appear among the cells.
     /// </summary>
-    public bool Exact { get; private set; }
+    public bool Exact { get; set; }
 
     /// <summary>
     /// Minimum height <see cref="Scene"/> needs to be at/above for it to be placed.
     /// </summary>
-    public int MinimumHeight { get; private set; } = 1;
+    public int MinimumHeight { get; set; } = 1;
 
     /// <summary>
     /// Maximum height <see cref="Scene"/> needs to be at/below for it to be placed.
     /// </summary>
-    public int MaximumHeight { get; private set; } = int.MaxValue - 1;
+    public int MaximumHeight { get; set; } = int.MaxValue - 1;
 
     /// <summary>
     /// Sets what <see cref="MinimumHeight"/> and <see cref="MaximumHeight"/> will be relative to with their values.<para/>
@@ -45,68 +45,67 @@ public partial class InteriorObject : Resource
     /// 1 <![CDATA[->]]> (<see cref="int.MaxValue"/> - 1): <see cref="Relative.Floor"/> and <see cref="Relative.Ceiling"/><br/>
     /// -(<see cref="int.MaxValue"/> - 1) <![CDATA[<- 0 ->]]> (<see cref="int.MaxValue"/> - 1): <see cref="Relative.Middle"/>
     /// </summary>
-    public Relative RelativeTo { get; private set; }
+    public Relative RelativeTo { get; set; }
 
     /// <summary>
     /// Maximum times of <see cref="Scene"/> that can be placed from this <see cref="InteriorObject"/> instance.<br/>
     /// Use to set limits across all the rooms.<br/>
     /// 0 = There is no maximum count restriction.
     /// </summary>
-    private int _maximumCountBtwRooms;
-    private int _currentCountBtwRooms; 
+    public int MaximumCountBtwRooms { get; set; }
 
     /// <summary>
     /// String that represents a boolean expression. Should only be passed to <see cref="_neighbourConditions"/> to parse.
     /// </summary>
-    private string _neighbourConditionsText
+    public string NeighbourConditionsText
     {
-        get => p_neighbourConditionsText;
+        get => _neighbourConditionsText;
         set
         {
-            p_neighbourConditionsText = value;
+            _neighbourConditionsText = value;
             if (Engine.IsEditorHint()) { return; }
 
             _neighbourConditions.ParseIntoTree(value);
         }
     }
-    private string p_neighbourConditionsText;
+    private string _neighbourConditionsText;
 
     /// <summary>
     /// Used to mark what relative positions it will take up when placed. (0, 0, 0) will already be added for any <see cref="Scene"/>.<para/>
     /// Godot doesn't support exporting Vector3I[] :(
     /// </summary>
-    private Vector3[] _clearancePositions = Array.Empty<Vector3>();
+    public Vector3[] ClearancePositions { get; set; } = Array.Empty<Vector3>();
 
     /// <summary>
     /// Used to mark what relative positions it would want clear, but doesn't take up that space itself.
     /// </summary>
-    private Vector3[] _semiClearancePositions = Array.Empty<Vector3>();
-
-    private bool _onlyCeiling;
-    private readonly NeighbourConditions _neighbourConditions = new();
+    public Vector3[] SemiClearancePositions { get; set; } = Array.Empty<Vector3>();
 
     // Random offset that should be added to the proximity-based rotation. (Difference of 360 makes it completely random)
-    private float _minimumRotationalYOffset;
-    private float _maximumRotationalYOffset;
+    public float MinimumRotationalYOffset { get; set; }
+    public float MaximumRotationalYOffset { get; set; }
+
+    private int _currentCountBtwRooms;
+    private readonly NeighbourConditions _neighbourConditions = new();
 
     public override bool _PropertyCanRevert(StringName property) => true;
     public override Variant _PropertyGetRevert(StringName property)
     {
         switch (property)
         {
-            case nameof(Scene)                       : return default;
-            case nameof(WeightToMiddle)              : return 0f;
-            case nameof(Exact)                       : return false;
-            case nameof(MinimumHeight)               : return 1;
-            case nameof(MaximumHeight)               : return int.MaxValue - 1;
-            case nameof(RelativeTo)                  : return 0;
-            case nameof(_maximumCountBtwRooms)       : return 0;
-            case nameof(_neighbourConditionsText)    : return string.Empty;
-            case nameof(_clearancePositions)         : return Array.Empty<Vector3>();
-            case nameof(_semiClearancePositions)     : return Array.Empty<Vector3>();
-            case nameof(_minimumRotationalYOffset)   : return 0f;
-            case nameof(_maximumRotationalYOffset)   : return 0f;
-            default                                  : return base._PropertyGetRevert(property);
+            case nameof(Scene)                   : return default;
+            case nameof(WeightToMiddle)          : return 0f;
+            case nameof(Exact)                   : return false;
+            case nameof(MinimumHeight)           : return 1;
+            case nameof(MaximumHeight)           : return int.MaxValue - 1;
+            case nameof(RelativeTo)              : return 0;
+            case nameof(MaximumCountBtwRooms)    : return 0;
+            case nameof(NeighbourConditionsText) : return string.Empty;
+            case nameof(ClearancePositions)      : return Array.Empty<Vector3>();
+            case nameof(SemiClearancePositions)  : return Array.Empty<Vector3>();
+            case nameof(MinimumRotationalYOffset): return 0f;
+            case nameof(MaximumRotationalYOffset): return 0f;
+            default                              : return base._PropertyGetRevert(property);
         }
     }
 
@@ -131,7 +130,7 @@ public partial class InteriorObject : Resource
                     { "name"       , nameof(WeightToMiddle) },
                     { "type"       , (int)Variant.Type.Float },
                     { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", "0,1,0.01" }
+                    { "hint_string", "0,1" }
                 },
                 new Godot.Collections.Dictionary
                 {
@@ -164,51 +163,51 @@ public partial class InteriorObject : Resource
 
                 new Godot.Collections.Dictionary
                 {
-                    { "name"       , nameof(_maximumCountBtwRooms) },
+                    { "name"       , nameof(MaximumCountBtwRooms) },
                     { "type"       , (int)Variant.Type.Int },
                     { "hint"       , (int)PropertyHint.Range },
                     { "hint_string", $"0,{int.MaxValue}" }
                 },
                 new Godot.Collections.Dictionary
                 {
-                    { "name"       , nameof(_neighbourConditionsText) },
+                    { "name"       , nameof(NeighbourConditionsText) },
                     { "type"       , (int)Variant.Type.String },
                     { "hint"       , (int)PropertyHint.MultilineText },
                 },
                 new Godot.Collections.Dictionary
                 {
-                    { "name", nameof(_clearancePositions) },
+                    { "name", nameof(ClearancePositions) },
                     { "type", (int)Variant.Type.PackedVector3Array }
                 },
                 new Godot.Collections.Dictionary
                 {
-                    { "name", nameof(_semiClearancePositions) },
+                    { "name", nameof(SemiClearancePositions) },
                     { "type", (int)Variant.Type.PackedVector3Array }
                 },
 
                 CommonMethods.GetGroup("Rotation"),
                 new Godot.Collections.Dictionary
                 {
-                    { "name"       , nameof(_minimumRotationalYOffset) },
+                    { "name"       , nameof(MinimumRotationalYOffset) },
                     { "type"       , (int)Variant.Type.Float },
                     { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", "-360,360,1,radians" }
+                    { "hint_string", "-360,360,radians" }
                 },
                 new Godot.Collections.Dictionary
                 {
-                    { "name"       , nameof(_maximumRotationalYOffset) },
+                    { "name"       , nameof(MaximumRotationalYOffset) },
                     { "type"       , (int)Variant.Type.Float },
                     { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", "-360,360,1,radians" }
+                    { "hint_string", "-360,360,radians" }
                 }
             }
         );
     }
 
     /// <summary>
-    /// Proximity determined rotationY with random offset. (Offset will not effect clearance positions, so make sure the object still fits in its assigned space)
+    /// Proximity determined rotationY with random offset. (Offset will not affect clearance positions, so make sure the object still fits in its assigned space)
     /// </summary>
-    public float GetRotationWithOffset(float rotationY) => rotationY + MapGenerator.Inst.Rng.RandfRange(_minimumRotationalYOffset, _maximumRotationalYOffset);
+    public float GetRotationWithOffset(float rotationY) => rotationY + MapGenerator.Inst.Rng.RandfRange(MinimumRotationalYOffset, MaximumRotationalYOffset);
 
     /// <returns>(Whether it can be placed, Clearance Positions, Semi-Clearance Positions)</returns>
     public (bool, HashSet<Vector3I>, HashSet<Vector3I>) CanBePlaced(Vector3I position, float rotationY, Dictionary<Vector3I, bool> emptyPosS)
@@ -250,7 +249,7 @@ public partial class InteriorObject : Resource
     private HashSet<Vector3I> GetClearancePositions(Vector3I originPos, float rotationY)
     {
         HashSet<Vector3I> clearancePosS = new() { originPos };
-        foreach (Vector3I relativePos in _clearancePositions)
+        foreach (Vector3I relativePos in ClearancePositions)
         {
             clearancePosS.Add(originPos + relativePos.RotatedY(rotationY));
         }
@@ -266,7 +265,7 @@ public partial class InteriorObject : Resource
     private HashSet<Vector3I> GetSemiClearancePositions(Vector3I originPos, float rotationY)
     {
         HashSet<Vector3I> semiClearancePosS = new();
-        foreach (Vector3I relativePos in _semiClearancePositions)
+        foreach (Vector3I relativePos in SemiClearancePositions)
         {
             semiClearancePosS.Add(originPos + relativePos.RotatedY(rotationY));
         }
@@ -278,9 +277,9 @@ public partial class InteriorObject : Resource
     /// </summary>
     private bool IsNotMaxCountAndIncrement()
     {
-        if (_maximumCountBtwRooms == 0) { return true; }
+        if (MaximumCountBtwRooms == 0) { return true; }
 
-        if (_currentCountBtwRooms == _maximumCountBtwRooms) { return false; }
+        if (_currentCountBtwRooms >= MaximumCountBtwRooms) { return false; }
         else
         {
             _currentCountBtwRooms++;

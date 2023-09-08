@@ -7,23 +7,29 @@ namespace Scripts.Generation.Interior.Extension;
 /// Use to specify <see cref="InteriorObject"/>s and their shared placement positions. Root <see cref="InteriorObject"/>s use this data to randomly pick and place them relative to itself.
 /// </summary>
 [GlobalClass]
+[Tool]
 public partial class InteriorObjectExtension : Resource
 {
-    [Export(PropertyHint.Range, "0,1,0.01")]
-    public float ChanceToSkipAPosition { get; private set; }
+    [Export(PropertyHint.Range, "0,1")]
+    public float ChanceToSkipAPosition { get; set; }
 
     [Export]
-    public PlacementData[] PlacementData { get; private set; }
+    public PlacementData[] PlacementData { get; set; }
 
     /// <summary>
     /// Other <see cref="InteriorObject"/>s that pair with the root <see cref="InteriorObject"/> (meant to generate together). 
     /// </summary>
     public InteriorObjectWithWeight[] InteriorObjectWithWeightS { get; private set; }
 
-    public InteriorObjectExtension() { CallDeferred(nameof(LoadInteriorObjectWithWeightS)); }
+    public InteriorObjectExtension()
+    {
+        if (Addons.InteriorObjectCreator.InteriorObjectCreator.HandlingResources || Engine.IsEditorHint()) { return; }
+
+        CallDeferred(nameof(LoadInteriorObjectWithWeightS));
+    }
 
     private void LoadInteriorObjectWithWeightS()
     {
-        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryUpFromResource<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
+        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToResource<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
     }
 }

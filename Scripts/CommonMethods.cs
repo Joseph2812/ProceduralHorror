@@ -50,14 +50,14 @@ public static class CommonMethods
     }
 
     /// <summary>
-    /// Loads sub-directory located outside of the resource path.<para/>
+    /// Loads sub-directory located next to the resource path.<para/>
     /// Don't use this if loading multiple sub-directories in the same main directory.<br/>Since <see cref="GetPathWithoutEndDirectory(string)"/> will be called more times than needed, and you should cache the result for reuse.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="resourcePath">Path of resource.</param>
     /// <param name="subDir">Sub-directory that is one up from the <paramref name="resourcePath"/> with forward slash (e.g. <c>SubDir/</c>).</param>
     /// <returns>Resources loaded from the sub-directory.</returns>
-    public static T[] LoadSubDirectoryUpFromResource<T>(string resourcePath, string subDir) where T : Resource
+    public static T[] LoadSubDirectoryNextToResource<T>(string resourcePath, string subDir) where T : Resource
     {
         string fullPath = GetPathWithoutEndDirectory(resourcePath) + subDir;
         return LoadPaths<T>

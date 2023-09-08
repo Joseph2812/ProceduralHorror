@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://bg8m0hokurie3"]
+
+[ext_resource type="PackedScene" uid="uid://depig04iqbqld" path="res://addons/InteriorObjectCreator/Dock/Elements/Element_Vector3.tscn" id="1_jk6kt"]
+
+[node name="Element_PlacementData" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Element_Vector3" parent="." instance=ExtResource("1_jk6kt")]
+layout_mode = 2
+
+[node name="RotationY" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="RotationY"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Rotation-Y"
+clip_text = true
+
+[node name="LineEdit" type="LineEdit" parent="RotationY"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "[0°, 270°, 90°], Default = 0°"
+caret_blink = true
+caret_blink_interval = 0.5
+
+[node name="HSeparator" type="HSeparator" parent="."]
+layout_mode = 2

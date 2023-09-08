@@ -14,7 +14,7 @@ public partial class InteriorObjectExtended : InteriorObject
 
     public InteriorObjectExtended()
     {
-        if (Engine.IsEditorHint()) { return; }
+        if (Addons.InteriorObjectCreator.InteriorObjectCreator.HandlingResources || Engine.IsEditorHint()) { return; }
         CallDeferred(nameof(LoadExtensions));
     }
 

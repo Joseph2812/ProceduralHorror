@@ -52,6 +52,6 @@ public partial class Room : Resource
     private void LoadInteriorObjectWithWeightS()
     {
         if (ChanceOfEmptyCell == 1f) { return; }
-        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryUpFromResource<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
+        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToResource<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
     }
 }

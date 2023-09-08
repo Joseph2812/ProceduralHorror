@@ -1,14 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://dpbxfwfqcug2j"]
+[gd_scene load_steps=7 format=3 uid="uid://dpbxfwfqcug2j"]
 
+[ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/InteriorObjectCreator.cs" id="1_4ts21"]
 [ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/FoldingButton.cs" id="1_s3s22"]
 [ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/UiList.cs" id="2_puh2l"]
-[ext_resource type="PackedScene" uid="uid://depig04iqbqld" path="res://addons/InteriorObjectCreator/Dock/Element_Vector3.tscn" id="2_ulx6r"]
-[ext_resource type="PackedScene" uid="uid://b44uba3yukl4v" path="res://addons/InteriorObjectCreator/Dock/Element_IObjWithWeight.tscn" id="4_bmm6c"]
-[ext_resource type="PackedScene" uid="uid://bg8m0hokurie3" path="res://addons/InteriorObjectCreator/Dock/Element_PlacementData.tscn" id="4_k1yhx"]
-[ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/ExtensionSelector.cs" id="4_rodgd"]
-
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_0d7jm"]
-color = Color(1, 1, 1, 1)
+[ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/ExtensionReferences.cs" id="4_gqoqe"]
+[ext_resource type="PackedScene" uid="uid://depig04iqbqld" path="res://addons/InteriorObjectCreator/Dock/Elements/Element_Vector3.tscn" id="4_ym3xh"]
+[ext_resource type="PackedScene" uid="uid://dp0073bwaejea" path="res://addons/InteriorObjectCreator/Dock/Elements/Element_Extension.tscn" id="6_44v6r"]
 
 [node name="IObjCreator" type="VBoxContainer"]
 anchors_preset = 15
@@ -18,6 +15,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource("1_4ts21")
 metadata/_edit_vertical_guides_ = []
 
 [node name="TabContainer" type="TabContainer" parent="."]
@@ -192,7 +190,7 @@ size_flags_vertical = 1
 text = "Neighbour Conditions Text"
 clip_text = true
 
-[node name="LineEdit" type="TextEdit" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/NeighbourConditionsText"]
+[node name="TextEdit" type="TextEdit" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/NeighbourConditionsText"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "DIRECTIONS: left[i], forward[i], right[i], back[i], fl[i], fr[i], br[i], bl[i]. Where [i] = 0 or 1 or 2, to represent relative y (1 = Middle). OPERATORS: ! (not), & (and), | (or), ^ (xor)."
@@ -212,7 +210,7 @@ clip_text = true
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("2_puh2l")
-_elementUi = ExtResource("2_ulx6r")
+_elementUi = ExtResource("4_ym3xh")
 
 [node name="SemiClearancePositions" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2
@@ -228,7 +226,7 @@ clip_text = true
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("2_puh2l")
-_elementUi = ExtResource("2_ulx6r")
+_elementUi = ExtResource("4_ym3xh")
 
 [node name="Folding_Rotation" type="Button" parent="TabContainer/InteriorObject/VBoxContainer" node_paths=PackedStringArray("_itemToFold")]
 layout_mode = 2
@@ -258,7 +256,7 @@ clip_text = true
 [node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Rotation/VBoxContainer/MinimumRotationalYOffset"]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "[-360, 360], Default = 0"
+placeholder_text = "[-360°, 360°], Default = 0°"
 
 [node name="MaximumRotationalYOffset" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Rotation/VBoxContainer"]
 layout_mode = 2
@@ -272,39 +270,18 @@ clip_text = true
 [node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Rotation/VBoxContainer/MaximumRotationalYOffset"]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "[-360, 360], Default = 0"
+placeholder_text = "[-360°, 360°], Default = 0°"
 
 [node name="Extensions" type="ScrollContainer" parent="TabContainer"]
 visible = false
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Extensions"]
+[node name="ExtensionList" type="VBoxContainer" parent="TabContainer/Extensions"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource("4_rodgd")
-
-[node name="PlacementDataList" type="VBoxContainer" parent="TabContainer/Extensions/VBoxContainer"]
-layout_mode = 2
-script = ExtResource("2_puh2l")
-_elementUi = ExtResource("4_k1yhx")
-
-[node name="HSeparator" type="HSeparator" parent="TabContainer/Extensions/VBoxContainer"]
-layout_mode = 2
-theme_override_styles/separator = SubResource("StyleBoxLine_0d7jm")
-
-[node name="Label" type="Label" parent="TabContainer/Extensions/VBoxContainer"]
-visible = false
-layout_mode = 2
-text = "Interior Object With Weight List"
-horizontal_alignment = 1
-clip_text = true
-
-[node name="IObjWithWeightList" type="VBoxContainer" parent="TabContainer/Extensions/VBoxContainer"]
-visible = false
-layout_mode = 2
-script = ExtResource("2_puh2l")
-_elementUi = ExtResource("4_bmm6c")
+script = ExtResource("4_gqoqe")
+_elementUi = ExtResource("6_44v6r")
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 2
