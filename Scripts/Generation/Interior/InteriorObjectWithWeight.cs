@@ -1,4 +1,5 @@
 using Godot;
+using Scripts.Generation.Interior.Extension;
 using System;
 
 namespace Scripts.Generation.Interior;
@@ -20,8 +21,8 @@ public partial class InteriorObjectWithWeight : Resource
         {
             _interiorObjectPath = value;
 
-            if (Addons.InteriorObjectCreator.InteriorObjectCreator.HandlingResources || Engine.IsEditorHint()) { return; }
-            CallDeferred(nameof(LoadInteriorObject)); // Load slightly later than other InteriorObject loading to avoid errors
+            if (Addons.InteriorObjectCreator.Creator.HandlingResources || Engine.IsEditorHint()) { return; }
+            LoadInteriorObject();
         }
     }
     private string _interiorObjectPath;
@@ -33,5 +34,11 @@ public partial class InteriorObjectWithWeight : Resource
     [Export(PropertyHint.Range, "0,100,or_greater")]
     public int WeightOfPlacement { get; set; } = 1;
 
-    private void LoadInteriorObject() { InteriorObject = GD.Load<InteriorObject>(InteriorObjectPath); }
+    private void LoadInteriorObject()
+    {
+        InteriorObject = GD.Load<InteriorObject>(InteriorObjectPath);
+
+        if (InteriorObject is not InteriorObjectExtended ext || Addons.InteriorObjectCreator.Creator.HandlingResources || Engine.IsEditorHint()) { return; }
+        ext.LoadExtensions();
+    }
 }

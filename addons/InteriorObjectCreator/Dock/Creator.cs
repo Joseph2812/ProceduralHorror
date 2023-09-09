@@ -9,7 +9,7 @@ using System.IO;
 namespace Addons.InteriorObjectCreator;
 
 [Tool]
-public partial class InteriorObjectCreator : VBoxContainer
+public partial class Creator : VBoxContainer
 {
     public const string InteriorObjectDirectory = "res://Generation/InteriorObjects/";
     public const string InteriorObjectFileName = "InteriorObject.tres";
@@ -121,7 +121,7 @@ public partial class InteriorObjectCreator : VBoxContainer
             }
             catch (Exception e)
             {
-                GD.PushError($"Failed to load data in \"{objDir}\". Exception: {e.Message}.");
+                GD.PushError($"Failed to load data in \"{objDir}\". Exception: {e.Message}");
             }
             HandlingResources = false;
         }
@@ -135,7 +135,7 @@ public partial class InteriorObjectCreator : VBoxContainer
 
         // Scene //
         iObj.Scene = GD.Load<PackedScene>(_scenePath.Text);
-        if (iObj.Scene == null) { throw new Exception($"Failed to load \"{_scenePath.Text}\". Make sure it's a valid absolute path"); }
+        if (iObj.Scene == null) { throw new Exception($"Failed to load \"{_scenePath.Text}\". Make sure it's a valid absolute path."); }
 
         // Weight To Middle //
         if (float.TryParse(_weightToMiddle.Text, out floatResult))
@@ -402,7 +402,7 @@ public partial class InteriorObjectCreator : VBoxContainer
         }
         catch (Exception e)
         {
-            GD.PushError($"Failed to setup {nameof(InteriorObject)} files. Exception: {e.Message}.");
+            GD.PushError($"Failed to setup {nameof(InteriorObject)} files. Exception: {e.Message}");
         }
         HandlingResources = false;
     }

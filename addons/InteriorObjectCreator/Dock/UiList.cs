@@ -1,3 +1,4 @@
+#if TOOLS
 using Godot;
 using System;
 using System.Collections;
@@ -122,3 +123,4 @@ public partial class UiList : VBoxContainer, IEnumerable<Node>
         }
     }
 }
+#endif

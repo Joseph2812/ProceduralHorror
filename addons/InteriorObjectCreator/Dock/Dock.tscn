@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://dpbxfwfqcug2j"]
 
-[ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/InteriorObjectCreator.cs" id="1_4ts21"]
+[ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/Creator.cs" id="1_4ts21"]
 [ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/FoldingButton.cs" id="1_s3s22"]
 [ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/UiList.cs" id="2_puh2l"]
 [ext_resource type="Script" path="res://addons/InteriorObjectCreator/Dock/ExtensionReferences.cs" id="4_gqoqe"]
@@ -142,7 +142,7 @@ clip_text = true
 [node name="LineEdit" type="LineEdit" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer/MaximumHeight"]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "[1, IntMax-1], Default = IntMaxMinusOne"
+placeholder_text = "[1, IntMax-1], Default = IntMax-1"
 
 [node name="RelativeTo" type="HBoxContainer" parent="TabContainer/InteriorObject/VBoxContainer/Constraints/VBoxContainer"]
 layout_mode = 2

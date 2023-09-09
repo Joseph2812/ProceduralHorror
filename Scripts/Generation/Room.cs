@@ -12,7 +12,7 @@ public partial class Room : Resource
     [Export] public ItemManager.Id CeilingId { get; private set; }
 
     [Export(PropertyHint.Range, "0,1,0.01")]
-    public float ChanceOfEmptyCell { get; private set; } = 1; // Set to 1 for an empty room.
+    public float ChanceOfEmptyCell { get; private set; } = 1f; // Set to 1 for an empty room.
 
     [ExportGroup("Extrusions")]
     [ExportSubgroup("Outer Width (width either side of a doorway|middle)")]
@@ -47,9 +47,7 @@ public partial class Room : Resource
 
     public InteriorObjectWithWeight[] InteriorObjectWithWeightS { get; private set; }
 
-    public Room() { CallDeferred(nameof(LoadInteriorObjectWithWeightS)); }
-
-    private void LoadInteriorObjectWithWeightS()
+    public void LoadIObjWithWeightS()
     {
         if (ChanceOfEmptyCell == 1f) { return; }
         InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToResource<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");

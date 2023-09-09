@@ -21,14 +21,7 @@ public partial class InteriorObjectExtension : Resource
     /// </summary>
     public InteriorObjectWithWeight[] InteriorObjectWithWeightS { get; private set; }
 
-    public InteriorObjectExtension()
-    {
-        if (Addons.InteriorObjectCreator.InteriorObjectCreator.HandlingResources || Engine.IsEditorHint()) { return; }
-
-        CallDeferred(nameof(LoadInteriorObjectWithWeightS));
-    }
-
-    private void LoadInteriorObjectWithWeightS()
+    public void LoadInteriorObjectWithWeightS()
     {
         InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToResource<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
     }

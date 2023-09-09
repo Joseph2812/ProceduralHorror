@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="Room" load_steps=2 format=3 uid="uid://dvwg6ampw3sc3"]
 
-[ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="1_c4mmd"]
+[ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="1_0fp2f"]
 
 [resource]
-script = ExtResource("1_c4mmd")
+script = ExtResource("1_0fp2f")
 FloorId = 0
 WallId = 1
 CeilingId = 0

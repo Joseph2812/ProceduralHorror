@@ -29,7 +29,10 @@ public class RoomManager
             strBuilder.Append('/');
             strBuilder.Append(DirAccess.GetFilesAt(strBuilder.ToString())[0]);
 
-            _rooms[i] = GD.Load<Room>(strBuilder.ToString());
+            Room room = GD.Load<Room>(strBuilder.ToString());
+            room.LoadIObjWithWeightS();
+
+            _rooms[i] = room;
         }
         SelectedRoom = _rooms[0];
     }

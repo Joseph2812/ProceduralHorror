@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://c44d7m8ku65a5"]
+
+[ext_resource type="PackedScene" uid="uid://c15enste8xslg" path="res://Scenes/ForInteriorObjects/Sofa.tscn" id="1_fk628"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_3clqg"]
+
+[resource]
+script = ExtResource("2_3clqg")
+Scene = ExtResource("1_fk628")
+WeightToMiddle = 0.5
+Exact = false
+MinimumHeight = 1
+MaximumHeight = 1
+RelativeTo = 0
+MaximumCountBtwRooms = 0
+NeighbourConditionsText = ""
+ClearancePositions = PackedVector3Array(1, 0, 0)
+SemiClearancePositions = PackedVector3Array()
+MinimumRotationalYOffset = 0.0
+MaximumRotationalYOffset = 0.0

@@ -12,7 +12,7 @@ namespace Scripts.Generation.Interior;
 /// Used to specify the conditions around a cell and whether they are satisfied.<br/>
 /// Builds a tree from a given string which contains a boolean expression, that can then be reused with different values for the directions.<para/>
 /// 
-/// Call <see cref="ParseIntoTree(string)"/> first before calling <see cref="IsSatisfied(Scripts.Generation.NeighbourInfo[], float)"/> to initialise the tree.
+/// Call <see cref="ParseIntoTree(string)"/> first before calling <see cref="IsSatisfied(NeighbourInfo[], float)"/> to initialise the tree.
 /// </summary>
 public class NeighbourConditions
 {
@@ -27,7 +27,7 @@ public class NeighbourConditions
     }
 
     /// <summary>
-    /// Converts the given string into a tree of nodes for dynamic boolean expression computation. Use <see cref="IsSatisfied(Scripts.Generation.NeighbourInfo[], float)"/> to get the result based on the neighbours.<br/>
+    /// Converts the given string into a tree of nodes for dynamic boolean expression computation. Use <see cref="IsSatisfied(NeighbourInfo[], float)"/> to get the result based on the neighbours.<br/>
     /// <paramref name="conditionsToParse"/> is a string that represents a boolean expression, with directions (lower-case), operators, and brackets.<para/>
     /// 
     /// Directions: left[i], forward[i], right[i], back[i], fl[i], fr[i], br[i], bl[i]. Where [i] = 0 or 1 or 2, to represent relative y (1 = Middle).<br/>

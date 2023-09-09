@@ -72,7 +72,7 @@ public class Extension
             // Set Properties //
             Scripts.Generation.Interior.InteriorObjectWithWeight iObjWithWeight = new();
 
-            iObjWithWeight.InteriorObjectPath = $"{InteriorObjectCreator.InteriorObjectDirectory}{iObjWithWeightRef.Name.Text}/{InteriorObjectCreator.InteriorObjectFileName}";
+            iObjWithWeight.InteriorObjectPath = $"{Creator.InteriorObjectDirectory}{iObjWithWeightRef.Name.Text}/{Creator.InteriorObjectFileName}";
             if (!FileAccess.FileExists(iObjWithWeight.InteriorObjectPath))
             {
                 throw new Exception($"\"{iObjWithWeight.InteriorObjectPath}\" of {nameof(iObjWithWeight.InteriorObjectPath)} is not a valid path");

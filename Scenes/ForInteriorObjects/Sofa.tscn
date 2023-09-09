@@ -14,4 +14,5 @@ normal_texture = ExtResource("3_71neg")
 [node name="Sofa" instance=ExtResource("1_apsjg")]
 
 [node name="Sofa_Obj" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0.5)
 surface_material_override/0 = SubResource("ORMMaterial3D_o4j7s")

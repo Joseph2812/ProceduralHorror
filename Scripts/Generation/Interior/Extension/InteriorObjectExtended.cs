@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Collections.Generic;
 using Scripts.Extensions;
 using System.Text;
 
@@ -10,13 +9,9 @@ namespace Scripts.Generation.Interior.Extension;
 [Tool]
 public partial class InteriorObjectExtended : InteriorObject
 {
-    private InteriorObjectExtension[] _extensions;
+    public static event Action ExtensionsLoaded;
 
-    public InteriorObjectExtended()
-    {
-        if (Addons.InteriorObjectCreator.InteriorObjectCreator.HandlingResources || Engine.IsEditorHint()) { return; }
-        CallDeferred(nameof(LoadExtensions));
-    }
+    private InteriorObjectExtension[] _extensions;
 
     public void CreateExtensionsRecursively(Vector3I pos, float rotationY)
     {
@@ -41,7 +36,7 @@ public partial class InteriorObjectExtended : InteriorObject
         }
     }
 
-    private void LoadExtensions()
+    public void LoadExtensions()
     {
         string extensionsDir = CommonMethods.GetPathWithoutEndDirectory(ResourcePath) + "Extensions/";
         string[] subDirs = DirAccess.GetDirectoriesAt(extensionsDir);
@@ -54,7 +49,10 @@ public partial class InteriorObjectExtended : InteriorObject
             strBuilder.Append('/');
             strBuilder.Append(DirAccess.GetFilesAt(strBuilder.ToString())[0]);
 
-            _extensions[i] = GD.Load<InteriorObjectExtension>(strBuilder.ToString());
+            InteriorObjectExtension extension = GD.Load<InteriorObjectExtension>(strBuilder.ToString());
+            extension.LoadInteriorObjectWithWeightS();
+
+            _extensions[i] = extension;
         }
     }
 }
