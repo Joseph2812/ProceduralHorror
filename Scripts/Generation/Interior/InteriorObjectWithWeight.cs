@@ -38,7 +38,7 @@ public partial class InteriorObjectWithWeight : Resource
     {
         InteriorObject = GD.Load<InteriorObject>(InteriorObjectPath);
 
-        if (InteriorObject is not InteriorObjectExtended ext || Addons.InteriorObjectCreator.Creator.HandlingResources || Engine.IsEditorHint()) { return; }
-        ext.LoadExtensions();
+        if (InteriorObject is not InteriorObjectExtended iObjExt) { return; }
+        iObjExt.LoadExtensions();
     }
 }

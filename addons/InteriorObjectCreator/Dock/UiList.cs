@@ -33,11 +33,11 @@ public partial class UiList : VBoxContainer, IEnumerable<Node>
         _removeButton = new() { Name = "Remove" };
 
         addButton.Text = "Add";
-        addButton.Pressed += Add;
+        addButton.Pressed += Create;
         
         _removeButton.Text = "Remove";
         _removeButton.Disabled = true;
-        _removeButton.Pressed += Delete;
+        _removeButton.Pressed += DeleteLast;
 
         _hBox.AddChild(addButton, false, InternalMode.Back);
         _hBox.AddChild(_removeButton,false, InternalMode.Back);
@@ -48,15 +48,6 @@ public partial class UiList : VBoxContainer, IEnumerable<Node>
 
     public int Count => _elements.Count;
 
-    /// <summary>
-    /// Instantiate new <see cref="_elementUi"/> and add to the UI.
-    /// </summary>
-    public void Add()
-    {
-        Node element = _elementUi.Instantiate();
-        Add(element, true);
-    }
-    ///
     /// <summary>
     /// Add pre-existing <paramref name="element"/> to the UI.
     /// </summary>
@@ -74,6 +65,11 @@ public partial class UiList : VBoxContainer, IEnumerable<Node>
     }
 
     /// <summary>
+    /// Instantiate new <see cref="_elementUi"/> and add to the UI.
+    /// </summary>
+    public void Create() { Add(_elementUi.Instantiate(), true); }
+
+    /// <summary>
     /// Remove <paramref name="element"/> from the UI.<para/>
     /// Note: This will NOT free the <paramref name="element"/>
     /// </summary>
@@ -84,23 +80,16 @@ public partial class UiList : VBoxContainer, IEnumerable<Node>
 
         if (_elements.Count == 0) { _removeButton.Disabled = true; }
     }
+    
     /// <summary>
     /// Remove all elements from the UI.<para/>
     /// Note: This will NOT free these elements.
     /// </summary>
     public void RemoveAll()
     {
-        foreach (Node element in _elements)
-        {
-            Remove(element);
-        }
+        foreach (Node element in _elements) { Remove(element); }
     }
 
-    /// <summary>
-    /// Both removes and frees the last element in the UI.
-    /// </summary>
-    public void Delete() { Delete(_elements.Last()); }
-    ///
     /// <summary>
     /// Both removes and frees <paramref name="element"/> from the UI.
     /// </summary>
@@ -113,14 +102,16 @@ public partial class UiList : VBoxContainer, IEnumerable<Node>
     }
 
     /// <summary>
-    /// Removes and deletes all elements in the UI
+    /// Both removes and frees the last element from the UI.
     /// </summary>
-    public void Clear()
+    public void DeleteLast() { Delete(_elements.Last()); }
+
+    /// <summary>
+    /// Both removes and frees all elements from the UI.
+    /// </summary>
+    public void DeleteAll()
     {
-        foreach (Node element in _elements)
-        {
-            Delete(element);
-        }
+        foreach (Node element in _elements) { Delete(element); }
     }
 }
 #endif

@@ -5,10 +5,34 @@ namespace Scripts.Player;
 
 public partial class MovementController : CharacterBody3D
 {
-    private const float Speed = 4f;
+    private const float WalkSpeed = 4f;
+    private const float MaxSprintSpeed = WalkSpeed * 2f;
     private const float DownwardSpeed = 0f;
 
-    private bool _active;
+    private const float StaminaMaxTime = 15f;
+    private const float StaminaTireThreshold = 3f;
+    private const float StaminaGradient = (MaxSprintSpeed - WalkSpeed) / StaminaTireThreshold;
+    private const float StaminaRefillRate = 0.5f;
+
+    private static readonly StringName _moveLeftName = "move_left", _moveRightName = "move_right", _moveForwardName = "move_forward", _moveBackName = "move_back";
+    private static readonly StringName _sprintName = "sprint";
+
+    private float _sprintSpeed
+    {
+        get
+        {
+            float speed = (_staminaTimeLeft > StaminaTireThreshold) ? MaxSprintSpeed : (StaminaGradient * _staminaTimeLeft) + WalkSpeed;
+            if (speed == WalkSpeed) { _sprintHeld = false; }
+
+            return speed;
+        }
+    }
+
+    private float _staminaTimeLeft = StaminaMaxTime;
+    private bool _sprintHeld;
+
+    private bool _active = true;
+    private bool _controlled = true; 
 
     public override void _Ready()
     {
@@ -24,13 +48,34 @@ public partial class MovementController : CharacterBody3D
     {
         base._PhysicsProcess(delta);
 
-        Velocity =
-        ((
-            ((Input.GetActionStrength("move_right") - Input.GetActionStrength("move_left")) * Transform.Basis.X) +
-            ((Input.GetActionStrength("move_back") - Input.GetActionStrength("move_forward")) * Transform.Basis.Z)
-        ).Normalized() * Speed) + (Vector3.Down * DownwardSpeed);
+        Vector3 dir = 
+        (
+            (Input.GetAxis(_moveLeftName, _moveRightName) * Transform.Basis.X) +
+            (Input.GetAxis(_moveForwardName, _moveBackName) * Transform.Basis.Z)
+        ).Normalized();
 
+        bool sprinting = _sprintHeld && Transform.Basis.Z.Dot(-dir) >= 0.5f;
+
+        // Stamina //
+        if (sprinting)
+        {
+            _staminaTimeLeft -= (float)delta;
+            if (_staminaTimeLeft < 0f) { _staminaTimeLeft = 0f; }
+        }
+        else
+        {
+            _staminaTimeLeft += (float)delta * StaminaRefillRate;
+            if (_staminaTimeLeft > StaminaMaxTime) { _staminaTimeLeft = StaminaMaxTime; }
+        }
+        //
+
+        if (!_active) { return; }
+
+        Velocity = (dir * (sprinting ? _sprintSpeed : WalkSpeed)) + (Vector3.Down * DownwardSpeed);
         MoveAndSlide();
+
+        // FOR DEBUGGING
+        //GetNode<Label>("/root/Main/UI/DebugLabel").Text = $"Velocity: {Velocity}, Sprinting: {sprinting}, Stamina: {_staminaTimeLeft}";        
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -41,17 +86,23 @@ public partial class MovementController : CharacterBody3D
         {
             RotateY(-mouseMotion.Relative.X * CameraController.MouseSensitivity);
         }
+        else if (@event.IsActionPressed(_sprintName)) { _sprintHeld = true; }
+        else if (@event.IsActionReleased(_sprintName)) { _sprintHeld = false; }
     }
 
-    private void SetAllProcesses(bool state)
+    private void OnConsoleCmd_FreeCamera(string[] _) { _controlled = false; }
+    private void OnConsoleCmd_PlayerCamera(string[] _) { _controlled = true; }
+
+    private void OnConsole_Opened()
     {
-        SetPhysicsProcess(state);
-        SetProcessUnhandledInput(state);
+        _active = false;
+        SetProcessUnhandledInput(false);
+
+        _sprintHeld = false;
     }
-
-    private void OnConsoleCmd_FreeCamera(string[] _) { _active = false; }
-    private void OnConsoleCmd_PlayerCamera(string[] _) { _active = true; }
-
-    private void OnConsole_Opened() { SetAllProcesses(false); }
-    private void OnConsole_Closed() { SetAllProcesses(_active); }
+    private void OnConsole_Closed()
+    {
+        _active = _controlled;
+        SetProcessUnhandledInput(_controlled);
+    }
 }

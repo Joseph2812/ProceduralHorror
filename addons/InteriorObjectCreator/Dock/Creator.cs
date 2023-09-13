@@ -256,7 +256,7 @@ public partial class Creator : VBoxContainer
     }
     private void LoadExtensions(string objDir)
     {
-        _extReferences.Clear();
+        _extReferences.DeleteAll();
 
         DirAccess dir = DirAccess.Open($"{objDir}/{ExtensionsDirName}");
         if (dir == null) { return; }
@@ -292,7 +292,7 @@ public partial class Creator : VBoxContainer
 
     private void SetVector3UiList(UiList uiList, Dictionary<Node, UiElements.Vector3> dict, Vector3[] positions)
     {
-        uiList.Clear();
+        uiList.DeleteAll();
         foreach (Vector3 pos in positions)
         {
             Node node = _vector3Element.Instantiate();
@@ -306,7 +306,7 @@ public partial class Creator : VBoxContainer
     }
     private void SetPlacementDataUiList(UiElements.Extension extensionRef, PlacementData[] datas)
     {
-        extensionRef.PlacementDataList.Clear();
+        extensionRef.PlacementDataList.DeleteAll();
         foreach (PlacementData data in datas)
         {
             Node node = _placementDataElement.Instantiate();
@@ -321,7 +321,7 @@ public partial class Creator : VBoxContainer
     }
     private void SetIObjWithWeightSUiList(UiElements.Extension extensionRef, InteriorObjectWithWeight[] iObjWithWeightS)
     {
-        extensionRef.IObjWithWeightList.Clear();
+        extensionRef.IObjWithWeightList.DeleteAll();
         foreach (InteriorObjectWithWeight iObjWt in iObjWithWeightS)
         {
             Node node = _iObjWithWeightElement.Instantiate();

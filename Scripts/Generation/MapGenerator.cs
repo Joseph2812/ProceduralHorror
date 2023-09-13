@@ -13,7 +13,7 @@ public partial class MapGenerator : GridMap
     private const int MillisecondsBtwSteps = 50; // Slows down generation by adding this delay between steps
     private const int MaximumExtrusionRetries = 50;
 
-    private const string ConsoleSeedArgs = "'gen'|'enemy'|'item'";
+    private const string ConsoleSeedArgs = "\"gen\"|\"enemy\"|\"item\"";
 
     public enum OrthDir
     {
@@ -599,7 +599,7 @@ public partial class MapGenerator : GridMap
                 break;
 
             default:
-                Console.Inst.AppendLine($"Seed '{arg}' is not implemented.");
+                Console.Inst.AppendLine($"Seed \"{arg}\" is not implemented.");
                 break;
         }
     }

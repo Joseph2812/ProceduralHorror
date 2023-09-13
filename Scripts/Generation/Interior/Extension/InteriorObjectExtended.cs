@@ -9,8 +9,6 @@ namespace Scripts.Generation.Interior.Extension;
 [Tool]
 public partial class InteriorObjectExtended : InteriorObject
 {
-    public static event Action ExtensionsLoaded;
-
     private InteriorObjectExtension[] _extensions;
 
     public void CreateExtensionsRecursively(Vector3I pos, float rotationY)
