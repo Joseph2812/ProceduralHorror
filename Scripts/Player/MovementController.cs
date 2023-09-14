@@ -17,17 +17,6 @@ public partial class MovementController : CharacterBody3D
     private static readonly StringName _moveLeftName = "move_left", _moveRightName = "move_right", _moveForwardName = "move_forward", _moveBackName = "move_back";
     private static readonly StringName _sprintName = "sprint";
 
-    private float _sprintSpeed
-    {
-        get
-        {
-            float speed = (_staminaTimeLeft > StaminaTireThreshold) ? MaxSprintSpeed : (StaminaGradient * _staminaTimeLeft) + WalkSpeed;
-            if (speed == WalkSpeed) { _sprintHeld = false; }
-
-            return speed;
-        }
-    }
-
     private float _staminaTimeLeft = StaminaMaxTime;
     private bool _sprintHeld;
 
@@ -48,30 +37,30 @@ public partial class MovementController : CharacterBody3D
     {
         base._PhysicsProcess(delta);
 
-        Vector3 dir = 
-        (
-            (Input.GetAxis(_moveLeftName, _moveRightName) * Transform.Basis.X) +
-            (Input.GetAxis(_moveForwardName, _moveBackName) * Transform.Basis.Z)
-        ).Normalized();
-
+        Vector3 dir = GetGlobalMoveDirection();
         bool sprinting = _sprintHeld && Transform.Basis.Z.Dot(-dir) >= 0.5f;
 
-        // Stamina //
+        Velocity = Vector3.Down * DownwardSpeed;
         if (sprinting)
         {
             _staminaTimeLeft -= (float)delta;
             if (_staminaTimeLeft < 0f) { _staminaTimeLeft = 0f; }
+
+            if (_active)
+            {
+                float sprintSpeed = GetSprintSpeed();
+                if (sprintSpeed == WalkSpeed) { _sprintHeld = false; }
+
+                Velocity += dir * sprintSpeed;
+            }
         }
         else
         {
             _staminaTimeLeft += (float)delta * StaminaRefillRate;
             if (_staminaTimeLeft > StaminaMaxTime) { _staminaTimeLeft = StaminaMaxTime; }
+
+            if (_active) { Velocity += dir * WalkSpeed; }
         }
-        //
-
-        if (!_active) { return; }
-
-        Velocity = (dir * (sprinting ? _sprintSpeed : WalkSpeed)) + (Vector3.Down * DownwardSpeed);
         MoveAndSlide();
 
         // FOR DEBUGGING
@@ -89,6 +78,17 @@ public partial class MovementController : CharacterBody3D
         else if (@event.IsActionPressed(_sprintName)) { _sprintHeld = true; }
         else if (@event.IsActionReleased(_sprintName)) { _sprintHeld = false; }
     }
+
+    private Vector3 GetGlobalMoveDirection()
+    {
+        return
+        (
+            (Input.GetAxis(_moveLeftName, _moveRightName) * Transform.Basis.X) +
+            (Input.GetAxis(_moveForwardName, _moveBackName) * Transform.Basis.Z)
+        ).Normalized();
+    }
+
+    private float GetSprintSpeed() => (_staminaTimeLeft > StaminaTireThreshold) ? MaxSprintSpeed : (StaminaGradient * _staminaTimeLeft) + WalkSpeed;
 
     private void OnConsoleCmd_FreeCamera(string[] _) { _controlled = false; }
     private void OnConsoleCmd_PlayerCamera(string[] _) { _controlled = true; }
