@@ -5,8 +5,13 @@ namespace Scripts.Player;
 
 public partial class MovementController : CharacterBody3D
 {
+    private const float SwayIntensity = 0.025f;
+    private const float SwaySpeed = 4f;
+    private const float BobIntensity = 0.075f;
+    private const float BobSpeed = 3f;
+
     private const float CrouchSpeedMultiplier = 0.5f;
-    private const float WalkSpeed = 4f;
+    private const float WalkSpeed = 3f;
     private const float MaxSprintSpeed = WalkSpeed * 2f;
     private const float DownwardSpeed = 0f;
     private const float ToggleCrouchSpeed = 1.5f;
@@ -25,7 +30,7 @@ public partial class MovementController : CharacterBody3D
     private static readonly StringName _lookLeftName = "look_left", _lookRightName = "look_right";
     private static readonly StringName _sprintName = "sprint";
     private static readonly StringName _crouchName = "crouch";
-    private static readonly NodePath _positionYPath = "position:y";
+    private static readonly NodePath _positionYPath = "position:y", _rotationZPath = "rotation:z";
 
     private float _staminaTimeLeft = StaminaMaxTime;
     private bool _sprintHeld;
@@ -33,6 +38,10 @@ public partial class MovementController : CharacterBody3D
     private Node3D _camNode;
     private CollisionShape3D _colShape;
     private CapsuleShape3D _capShape;
+
+    private float _distanceTravelled; // Used with Sin wave for swaying/bobbing
+    private Tween _swayToRestTween;
+    private Tween _bobToRestTween;
 
     private Callable _setCollisionShapeYCall;
     private Tween _crouchCamTween, _crouchColTween;
@@ -49,10 +58,15 @@ public partial class MovementController : CharacterBody3D
         _colShape = GetNode<CollisionShape3D>("CollisionShape3D");
         _capShape = (CapsuleShape3D)_colShape.Shape;
 
+        _swayToRestTween = CreateTween();
+        _bobToRestTween = CreateTween();
+
         _setCollisionShapeYCall = Callable.From<float>(SetCollisionShapeY);
         _crouchCamTween = CreateTween();
         _crouchColTween = CreateTween();
 
+        _swayToRestTween.Kill();
+        _bobToRestTween.Kill();
         _crouchCamTween.Kill();
         _crouchColTween.Kill();
 
@@ -67,6 +81,14 @@ public partial class MovementController : CharacterBody3D
         base._Process(delta);
 
         RotateY(Input.GetAxis(_lookRightName, _lookLeftName) * CameraController.JoystickSensitivity * (float)delta);
+        
+        if (_crouchCamTween.IsRunning()) { _bobToRestTween.Kill(); }
+        else
+        {
+            _distanceTravelled += Velocity.Length() * (float)delta;
+            if (_crouching) { Sway(); }
+            else            { Bob(); }
+        }
     }
 
     public override void _PhysicsProcess(double delta)
@@ -129,10 +151,75 @@ public partial class MovementController : CharacterBody3D
 
     private float GetSprintSpeed() => (_staminaTimeLeft > StaminaTireThreshold) ? MaxSprintSpeed : (StaminaGradient * _staminaTimeLeft) + WalkSpeed;
 
+    private float GetCrouchTime(float target, float current) => Mathf.Abs(target - current) * (1f / ToggleCrouchSpeed);
+
+    private float GetCameraSwayZ() => Mathf.Sin(_distanceTravelled * SwaySpeed) * SwayIntensity;
+    private float GetDistanceFromCameraRotZ() => Mathf.Asin(_camNode.Rotation.Z * (1f / SwayIntensity)) * (1f / SwaySpeed);
+
+    private float GetCameraBobY() => CameraStandY + (Mathf.Sin(_distanceTravelled * BobSpeed) * BobIntensity);
+    private float GetDistanceFromCameraY() => Mathf.Asin((_camNode.Position.Y - CameraStandY) * (1f / BobIntensity)) * (1f / BobSpeed);
+
     private void SetCollisionShapeY(float posY)
     {
         _colShape.Position = new(_colShape.Position.X, posY, _colShape.Position.Z);
         _capShape.Height = posY * 2f;
+    }
+    
+    private void SetProcesses(bool state)
+    {
+        SetProcess(state);
+        SetProcessUnhandledInput(state);
+    }
+
+    private void Sway()
+    {
+        if (Velocity.IsZeroApprox())
+        {
+            if (_camNode.Rotation.Z != 0f && !_swayToRestTween.IsRunning())
+            {
+                StartSwayToRest();
+                _distanceTravelled = 0f;
+            }
+        }
+        else
+        {
+            if (_swayToRestTween.IsRunning())
+            {
+                _swayToRestTween.Kill();
+                _distanceTravelled = GetDistanceFromCameraRotZ();
+            }
+            _camNode.Rotation = new(_camNode.Rotation.X, _camNode.Rotation.Y, GetCameraSwayZ());
+        }
+    }
+    private void Bob()
+    {
+        if (Velocity.IsZeroApprox())
+        {
+            if (_camNode.Position.Y != CameraStandY && !_bobToRestTween.IsRunning())
+            {
+                _bobToRestTween.Kill();
+                _bobToRestTween = CreateTween();
+                _bobToRestTween.TweenProperty(_camNode, _positionYPath, CameraStandY, 0.5f);
+
+                _distanceTravelled = 0f;
+            }
+        }
+        else
+        {
+            if (_bobToRestTween.IsRunning())
+            {
+                _bobToRestTween.Kill();
+                _distanceTravelled = GetDistanceFromCameraY();
+            }
+            _camNode.Position = new(_camNode.Position.X, GetCameraBobY(), _camNode.Position.Z);
+        }
+    }
+
+    private void StartSwayToRest()
+    {
+        _swayToRestTween.Kill();
+        _swayToRestTween = CreateTween();
+        _swayToRestTween.TweenProperty(_camNode, _rotationZPath, 0f, 0.5f);
     }
 
     private void ToggleCrouch()
@@ -157,7 +244,10 @@ public partial class MovementController : CharacterBody3D
             easeType = Tween.EaseType.InOut;
             camTargetY = CameraStandY;
             colTargetY = ColliderStandY;
+
+            StartSwayToRest();
         }
+        _distanceTravelled = 0f;
 
         _crouchCamTween.Kill();
         _crouchColTween.Kill();
@@ -170,14 +260,6 @@ public partial class MovementController : CharacterBody3D
 
         _crouchCamTween.TweenProperty(_camNode, _positionYPath, camTargetY, GetCrouchTime(camTargetY, _camNode.Position.Y));
         _crouchColTween.TweenMethod(_setCollisionShapeYCall, _colShape.Position.Y, colTargetY, GetCrouchTime(colTargetY, _colShape.Position.Y));
-    }
-
-    private float GetCrouchTime(float target, float current) => Mathf.Abs(target - current) * (1f / ToggleCrouchSpeed);
-
-    private void SetProcesses(bool state)
-    {
-        SetProcess(state);
-        SetProcessUnhandledInput(state);
     }
 
     private void OnConsoleCmd_FreeCamera(string[] _) { _controlled = false; }

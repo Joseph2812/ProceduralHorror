@@ -43,7 +43,7 @@ public partial class CameraController : Camera3D
         }
     }
 
-    private Vector3 GetCameraRotation(float moveY) => Vector3.Right * Mathf.Clamp(Rotation.X - moveY, -HalfPi, HalfPi);
+    private Vector3 GetCameraRotation(float moveY) => new(Mathf.Clamp(Rotation.X - moveY, -HalfPi, HalfPi), Rotation.Y, Rotation.Z);
 
     private void SetProcesses(bool state)
     {
