@@ -6,8 +6,13 @@ namespace Scripts.Player;
 public partial class CameraController : Camera3D
 {
     public const float MouseSensitivity = 0.02f;
+    public const float JoystickSensitivity = 5f;
+
+    private const float HalfPi = Mathf.Pi * 0.5f;
 
     public static CameraController Inst { get; private set; }
+
+    private static readonly StringName _lookUpName = "look_up", _lookDownName = "look_down";
 
     public CameraController() { Inst = this; }
 
@@ -21,15 +26,29 @@ public partial class CameraController : Camera3D
         Console.Inst.Closed += OnConsole_Closed;
     }
 
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+
+        Rotation = GetCameraRotation(Input.GetAxis(_lookUpName, _lookDownName) * JoystickSensitivity * (float)delta);
+    }
+
     public override void _UnhandledInput(InputEvent @event)
     {
         base._UnhandledInput(@event);
 
         if (@event is InputEventMouseMotion mouseMotion)
         {
-            const float HalfPi = Mathf.Pi * 0.5f;
-            Rotation = Vector3.Right * Mathf.Clamp(Rotation.X - (mouseMotion.Relative.Y * MouseSensitivity), -HalfPi, HalfPi);
+            Rotation = GetCameraRotation(mouseMotion.Relative.Y * MouseSensitivity);
         }
+    }
+
+    private Vector3 GetCameraRotation(float moveY) => Vector3.Right * Mathf.Clamp(Rotation.X - moveY, -HalfPi, HalfPi);
+
+    private void SetProcesses(bool state)
+    {
+        SetProcess(state);
+        SetProcessUnhandledInput(state);
     }
 
     private void OnConsoleCmd_FreeCamera(string[] _) { Current = false; }
@@ -39,6 +58,6 @@ public partial class CameraController : Camera3D
         Console.Inst.AppendLine("Switched to player-camera.");
     }
 
-    private void OnConsole_Opened() { SetProcessUnhandledInput(false); }
-    private void OnConsole_Closed() { SetProcessUnhandledInput(Current); }
+    private void OnConsole_Opened() { SetProcesses(false); }
+    private void OnConsole_Closed() { SetProcesses(Current); }
 }
