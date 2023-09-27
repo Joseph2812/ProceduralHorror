@@ -10,11 +10,6 @@ namespace Scripts.Generation;
 
 public partial class MapGenerator : GridMap
 {  
-    private const int MillisecondsBtwSteps = 50; // Slows down generation by adding this delay between steps
-    private const int MaximumExtrusionRetries = 50;
-
-    private const string ConsoleSeedArgs = "\"gen\"|\"enemy\"|\"item\"";
-
     public enum OrthDir
     {
         Left,
@@ -86,6 +81,11 @@ public partial class MapGenerator : GridMap
         BL2
     }
 
+    private const int MillisecondsBtwSteps = 50; // Slows down generation by adding this delay between steps
+    private const int MaximumExtrusionRetries = 50;
+
+    private const string ConsoleSeedArgs = "\"gen\"|\"enemy\"|\"item\"";
+
     public static MapGenerator Inst { get; private set; }
 
     public RandomNumberGenerator Rng { get; private set; } = new();
@@ -147,7 +147,7 @@ public partial class MapGenerator : GridMap
         for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i + (All3x3Dirs.Length * 2)] = All3x3Dirs[i] + Vector3I.Up; }
         //
 
-        //Rng.Seed = 184690118043452219;
+        Rng.Seed = 16005123932967406760;
 
         bool success = false;
         while (!success) { success = await StartGeneration(); }

@@ -39,15 +39,15 @@ public partial class MovementController : CharacterBody3D
     private CollisionShape3D _colShape;
     private CapsuleShape3D _capShape;
 
-    private float _distanceTravelled; // Used with Sin wave for swaying/bobbing
     private Tween _swayToRestTween;
     private Tween _bobToRestTween;
+    private float _distanceTravelled; // Used with Sin wave for swaying/bobbing
 
     private Callable _setCollisionShapeYCall;
     private Tween _crouchCamTween, _crouchColTween;
     private bool _crouching;
 
-    private bool _active = true;
+    private bool _canMove = true;
     private bool _controlled = true;
 
     public override void _Ready()
@@ -74,6 +74,21 @@ public partial class MovementController : CharacterBody3D
         Console.Inst.AddCommand("player-cam", new(OnConsoleCmd_PlayerCamera));
         Console.Inst.Opened += OnConsole_Opened;
         Console.Inst.Closed += OnConsole_Closed;
+
+        ((InteractionController)_camNode).EnteredInteractable += OnInteractionController_EnteredInteractable;
+        ((InteractionController)_camNode).ExitedInteractable += OnInteractionController_ExitedInteractable;
+    }
+
+    private void OnInteractionController_ExitedInteractable()
+    {
+        _canMove = true;
+        GD.Print("EXITED");
+    }
+
+    private void OnInteractionController_EnteredInteractable()
+    {
+        _canMove = false;
+        GD.Print("ENTERED: Exitable!!!");
     }
 
     public override void _Process(double delta)
@@ -82,6 +97,8 @@ public partial class MovementController : CharacterBody3D
 
         RotateY(Input.GetAxis(_lookRightName, _lookLeftName) * CameraController.JoystickSensitivity * (float)delta);
         
+        if (!_canMove) { return; }
+
         if (_crouchCamTween.IsRunning()) { _bobToRestTween.Kill(); }
         else
         {
@@ -96,7 +113,7 @@ public partial class MovementController : CharacterBody3D
         base._PhysicsProcess(delta);
 
         Vector3 input = GetGlobalMoveInput();
-        bool sprinting = _sprintHeld && Transform.Basis.Z.Dot(-input) >= (1f / Mathf.Sqrt2) - Mathf.Epsilon;
+        bool sprinting = _sprintHeld && GlobalTransform.Basis.Z.Dot(-input) >= (1f / Mathf.Sqrt2) - Mathf.Epsilon;
 
         Velocity = Vector3.Down * DownwardSpeed;
         if (sprinting)
@@ -108,7 +125,7 @@ public partial class MovementController : CharacterBody3D
                 _sprintHeld = false;
             }
 
-            if (_active)
+            if (_canMove)
             {
                 float sprintSpeed = GetSprintSpeed();
                 Velocity += input * (_crouching ? sprintSpeed * CrouchSpeedMultiplier : sprintSpeed);
@@ -119,9 +136,9 @@ public partial class MovementController : CharacterBody3D
             _staminaTimeLeft += (float)delta * StaminaRefillRate;
             if (_staminaTimeLeft > StaminaMaxTime) { _staminaTimeLeft = StaminaMaxTime; }
 
-            if (_active) { Velocity += input * (_crouching ? WalkSpeed * CrouchSpeedMultiplier : WalkSpeed); }
+            if (_canMove) { Velocity += input * (_crouching ? WalkSpeed * CrouchSpeedMultiplier : WalkSpeed); }
         }
-        MoveAndSlide();
+        if (_canMove) { MoveAndSlide(); }
 
         // FOR DEBUGGING
         GetNode<Label>("/root/Main/UI/DebugLabel").Text = $"Input: {input}, Velocity: {Velocity}, Sprinting: {sprinting}, Stamina: {_staminaTimeLeft}";        
@@ -151,7 +168,7 @@ public partial class MovementController : CharacterBody3D
 
     private float GetSprintSpeed() => (_staminaTimeLeft > StaminaTireThreshold) ? MaxSprintSpeed : (StaminaGradient * _staminaTimeLeft) + WalkSpeed;
 
-    private float GetCrouchTime(float target, float current) => Mathf.Abs(target - current) * (1f / ToggleCrouchSpeed);
+    private float GetCrouchTime(float current, float target) => Mathf.Abs(target - current) * (1f / ToggleCrouchSpeed);
 
     private float GetCameraSwayZ() => Mathf.Sin(_distanceTravelled * SwaySpeed) * SwayIntensity;
     private float GetDistanceFromCameraRotZ() => Mathf.Asin(_camNode.Rotation.Z * (1f / SwayIntensity)) * (1f / SwaySpeed);
@@ -258,8 +275,9 @@ public partial class MovementController : CharacterBody3D
         _crouchColTween.SetTrans(transType).SetEase(easeType);
         _crouchColTween.SetProcessMode(Tween.TweenProcessMode.Physics);
 
-        _crouchCamTween.TweenProperty(_camNode, _positionYPath, camTargetY, GetCrouchTime(camTargetY, _camNode.Position.Y));
-        _crouchColTween.TweenMethod(_setCollisionShapeYCall, _colShape.Position.Y, colTargetY, GetCrouchTime(colTargetY, _colShape.Position.Y));
+        float time = GetCrouchTime(_camNode.Position.Y, camTargetY);
+        _crouchCamTween.TweenProperty(_camNode, _positionYPath, camTargetY, time);
+        _crouchColTween.TweenMethod(_setCollisionShapeYCall, _colShape.Position.Y, colTargetY, time);
     }
 
     private void OnConsoleCmd_FreeCamera(string[] _) { _controlled = false; }
@@ -267,14 +285,14 @@ public partial class MovementController : CharacterBody3D
 
     private void OnConsole_Opened()
     {
-        _active = false;
+        _canMove = false;
         SetProcesses(false);
 
         _sprintHeld = false;
     }
     private void OnConsole_Closed()
     {
-        _active = _controlled;
+        _canMove = _controlled;
         SetProcesses(_controlled);
     }
 }

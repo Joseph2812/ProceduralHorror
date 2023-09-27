@@ -6,10 +6,6 @@ namespace Scripts;
  
 public partial class Console : Panel
 {
-    private const int HistoryLineCount = 5;
-    private const int HistoryLineCountMinusOne = HistoryLineCount - 1;
-    private const float TweenDuration = 0.2f;
-
     public struct CommandData
     {
         public readonly Action<string[]> ActionToUse;
@@ -26,6 +22,10 @@ public partial class Console : Panel
             Description = description;
         }
     }
+
+    private const int HistoryLineCount = 5;
+    private const int HistoryLineCountMinusOne = HistoryLineCount - 1;
+    private const float TweenDuration = 0.2f;
 
     public static Console Inst { get; private set; }
 

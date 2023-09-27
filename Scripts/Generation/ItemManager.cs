@@ -6,10 +6,6 @@ namespace Scripts.Generation;
 
 public class ItemManager
 {
-    private const string CubeTexturePath = "res://Textures/Cubes/";
-    private const string MixedCubeShaderPath = "res://Shaders/MixedCube.gdshader";
-    private const int PureItemCount = 8;
-
     public enum Id
     {
         Empty = -1,
@@ -61,8 +57,6 @@ public class ItemManager
         WallpaperPlaster
     }
 
-    public MeshLibrary MeshLibrary { get; private set; }
-
     private class MixedItemIdComparer : EqualityComparer<(Id, Id)>
     {
         public override bool Equals((Id, Id) x, (Id, Id) y)
@@ -73,6 +67,12 @@ public class ItemManager
 
         public override int GetHashCode((Id, Id) obj) => ((int)obj.Item1) ^ ((int)obj.Item2);
     }
+
+    private const string CubeTexturePath = "res://Textures/Cubes/";
+    private const string MixedCubeShaderPath = "res://Shaders/MixedCube.gdshader";
+    private const int PureItemCount = 8;
+
+    public MeshLibrary MeshLibrary { get; private set; }
 
     private readonly Dictionary<(Id, Id), Id> _mixedItems = new(new MixedItemIdComparer());
     private readonly Dictionary<Id, (Id, Id)> _reverseMixedItems = new();

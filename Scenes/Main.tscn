@@ -1,11 +1,12 @@
-[gd_scene load_steps=12 format=3 uid="uid://dduxddcquhrp1"]
+[gd_scene load_steps=15 format=3 uid="uid://dduxddcquhrp1"]
 
 [ext_resource type="Script" path="res://Scripts/FreeViewController.cs" id="1_n1o8o"]
 [ext_resource type="Theme" uid="uid://bmbx06aggy0cl" path="res://Theme.tres" id="3_a65xu"]
 [ext_resource type="Script" path="res://Scripts/Generation/MapGenerator.cs" id="3_xb8fi"]
 [ext_resource type="Script" path="res://Scripts/Console.cs" id="4_egocs"]
-[ext_resource type="Script" path="res://Scripts/Player/MovementController.cs" id="5_ofh15"]
-[ext_resource type="Script" path="res://Scripts/Player/CameraController.cs" id="6_2pppc"]
+[ext_resource type="Script" path="res://Scripts/Player/Player.cs" id="5_ql3me"]
+[ext_resource type="Script" path="res://Scripts/Player/InteractionController.cs" id="6_oq56r"]
+[ext_resource type="Script" path="res://Scripts/InteractionDebug.cs" id="7_gpdo7"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
 
@@ -28,6 +29,10 @@ height = 1.9
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_kpy6l"]
 radius = 0.4
 height = 1.9
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_cu83u"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_ey0t1"]
 
 [node name="Main" type="Node3D"]
 
@@ -107,7 +112,7 @@ placeholder_text = "Enter a command..."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, 0.5)
 axis_lock_angular_x = true
 axis_lock_angular_z = true
-script = ExtResource("5_ofh15")
+script = ExtResource("5_ql3me")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
@@ -121,7 +126,21 @@ mesh = SubResource("CapsuleMesh_kpy6l")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
 current = true
 fov = 90.0
-script = ExtResource("6_2pppc")
+script = ExtResource("6_oq56r")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Player/Camera3D"]
 spot_range = 20.0
+
+[node name="Arm_L" type="MeshInstance3D" parent="Player/Camera3D"]
+
+[node name="Arm_R" type="MeshInstance3D" parent="Player/Camera3D"]
+
+[node name="StaticBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, -0.5)
+script = ExtResource("7_gpdo7")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("SphereShape3D_cu83u")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("SphereMesh_ey0t1")

@@ -8,10 +8,10 @@ namespace Scripts.Generation;
 /// </summary>
 public struct NeighbourInfo
 {
-    public Vector3I Position { get; private set; }
-    public Vector3I Direction { get; private set; }
-    public ItemManager.Id ItemId { get; private set; }
-    public bool Empty { get; private set; }
+    public readonly Vector3I Position;
+    public readonly Vector3I Direction;
+    public readonly ItemManager.Id ItemId;
+    public readonly bool Empty;
 
     public NeighbourInfo(Vector3I position, Vector3I direction, int itemIdx)
     {

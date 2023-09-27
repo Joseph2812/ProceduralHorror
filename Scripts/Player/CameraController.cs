@@ -43,7 +43,8 @@ public partial class CameraController : Camera3D
         }
     }
 
-    private Vector3 GetCameraRotation(float moveY) => new(Mathf.Clamp(Rotation.X - moveY, -HalfPi, HalfPi), Rotation.Y, Rotation.Z);
+    protected virtual void OnConsole_Opened() { SetProcesses(false); }
+    protected virtual void OnConsole_Closed() { SetProcesses(Current); }
 
     private void SetProcesses(bool state)
     {
@@ -51,13 +52,12 @@ public partial class CameraController : Camera3D
         SetProcessUnhandledInput(state);
     }
 
+    private Vector3 GetCameraRotation(float moveY) => new(Mathf.Clamp(Rotation.X - moveY, -HalfPi, HalfPi), Rotation.Y, Rotation.Z);
+
     private void OnConsoleCmd_FreeCamera(string[] _) { Current = false; }
     private void OnConsoleCmd_PlayerCamera(string[] _)
     {
         Current = true;
         Console.Inst.AppendLine("Switched to player-camera.");
     }
-
-    private void OnConsole_Opened() { SetProcesses(false); }
-    private void OnConsole_Closed() { SetProcesses(Current); }
 }
