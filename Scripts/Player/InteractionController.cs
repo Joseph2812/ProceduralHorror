@@ -10,7 +10,7 @@ public partial class InteractionController : CameraController
     private const float MinimumReach = 1f;
     private const float MaximumReach = 2f;
 
-    private const float MaxGrabForce = 25f;
+    private const float PGain = 150f, DGain = 25f, MaxGrabForce = 250f;
     private const int GrabHoldMilliseconds = 125;
 
     private static readonly StringName _interactName = "interact", _colliderName = "collider";
@@ -21,9 +21,9 @@ public partial class InteractionController : CameraController
     public event Action EnteredInteractable;
     public event Action ExitedInteractable;
 
-    private readonly PidController _pidX = new(pGain: 15f, iGain: 3f, dGain: 6f, integralSaturation: 50f, maxResult: MaxGrabForce);
-    private readonly PidController _pidY = new(pGain: 15f, iGain: 3f, dGain: 6f, integralSaturation: 50f, maxResult: MaxGrabForce);
-    private readonly PidController _pidZ = new(pGain: -15f, iGain: -3f, dGain: -6f, integralSaturation: 50f, maxResult: MaxGrabForce);
+    private readonly PidController _pidX = new(pGain: PGain, dGain: DGain, maxResult: MaxGrabForce);
+    private readonly PidController _pidY = new(pGain: PGain, dGain: DGain, maxResult: MaxGrabForce);
+    private readonly PidController _pidZ = new(pGain: PGain * 3f, dGain: DGain * 1.5f, maxResult: MaxGrabForce * 3f);
 
     private PhysicsDirectSpaceState3D _space;
     private IInteractable _activeInteractable;
@@ -49,21 +49,22 @@ public partial class InteractionController : CameraController
 
         if (_activeRigidbody != null || (_grabQueued && TryGrab()))
         {
-            Vector3 rb = _activeRigidbody.GlobalPosition;
-            Vector3 camToRb = rb - GlobalPosition;
+            Vector3 camPos = GlobalPosition;
+            Vector3 rbPos = _activeRigidbody.GlobalPosition;
+            Vector3 targetPos = camPos - (GlobalTransform.Basis.Z * _targetReach);
 
-            Basis camToRbBasis = Basis.LookingAt(camToRb, Vector3.Up);
-            Vector3 rotatedRbToTarget = (GetPointOnPlane() - rb) * camToRbBasis;
-
-            Debug.Clear();
-            Debug.CreatePoint(GetTree().Root, Colors.Purple, GlobalPosition + (-_targetReach * camToRbBasis.Z));
-
+            // Rotate to act on local axis. Produces smoother movement (especially when changing _targetReach)
+            Basis camToRbBasis = Basis.LookingAt(rbPos - camPos, Vector3.Up);
+            Vector3 rotatedRbToTarget = (targetPos - rbPos) * camToRbBasis;
             _activeRigidbody.ApplyCentralForce
             (
                  _pidX.GetNextValue((float)delta, rotatedRbToTarget.X) * camToRbBasis.X +
                  _pidY.GetNextValue((float)delta, rotatedRbToTarget.Y) * camToRbBasis.Y +
-                 _pidZ.GetNextValue((float)delta, camToRb.Length(), _targetReach) * camToRbBasis.Z
+                 _pidZ.GetNextValue((float)delta, rotatedRbToTarget.Z) * camToRbBasis.Z
             );
+
+            Debug.Clear();
+            Debug.CreatePoint(GetTree().Root, Colors.Purple, targetPos);
         }
         else if (_interactQueued && !TryInteract() && _activeInteractable != null)
         {
@@ -108,19 +109,6 @@ public partial class InteractionController : CameraController
         base.OnConsole_Closed();
 
         SetProcessUnhandledInput(Current);
-    }
-
-    private Vector3 GetPointOnPlane()
-    {
-        Vector3 camPos = GlobalPosition;
-        Vector3 camDir = -GlobalTransform.Basis.Z;
-        Vector3 rbPos = _activeRigidbody.GlobalPosition;
-
-        Vector3 normal = (rbPos - camPos).Normalized();
-        float k = rbPos.Dot(normal);
-        float t = (k - camPos.Dot(normal)) / camDir.Dot(normal);
-
-        return camPos + (camDir * t);
     }
 
     private Godot.Collections.Dictionary RaycastFromCamera()
