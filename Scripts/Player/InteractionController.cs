@@ -7,14 +7,16 @@ namespace Scripts.Player;
 
 public partial class InteractionController : CameraController
 {
-    private const float MinimumReach = 1f;
-    private const float MaximumReach = 2f;
+    private const float ReachMinimum = 1f;
+    private const float ReachMaximum = 2f;
+    private const float ReachSensitivity = 0.1f;
 
     private const float PGain = 150f, DGain = 25f, MaxGrabForce = 250f;
+    private const float GrabDropSqrThresholdZ = (ReachMaximum + 0.5f) * (ReachMaximum + 0.5f);
     private const int GrabHoldMilliseconds = 125;
 
     private static readonly StringName _interactName = "interact", _colliderName = "collider";
-    private static readonly StringName _pushName = "push", _pullName = "pull";
+    private static readonly StringName _extendName = "extend", _retractName = "retract";
     private static readonly PhysicsRayQueryParameters3D _rayParams = new();
 
     // Events run only for interactables that require exit
@@ -52,9 +54,10 @@ public partial class InteractionController : CameraController
             Vector3 camPos = GlobalPosition;
             Vector3 rbPos = _activeRigidbody.GlobalPosition;
             Vector3 targetPos = camPos - (GlobalTransform.Basis.Z * _targetReach);
+            Vector3 camToRb = rbPos - camPos;
 
             // Rotate to act on local axis. Produces smoother movement (especially when changing _targetReach)
-            Basis camToRbBasis = Basis.LookingAt(rbPos - camPos, Vector3.Up);
+            Basis camToRbBasis = Basis.LookingAt(camToRb, Vector3.Up);
             Vector3 rotatedRbToTarget = (targetPos - rbPos) * camToRbBasis;
             _activeRigidbody.ApplyCentralForce
             (
@@ -62,6 +65,12 @@ public partial class InteractionController : CameraController
                  _pidY.GetNextValue((float)delta, rotatedRbToTarget.Y) * camToRbBasis.Y +
                  _pidZ.GetNextValue((float)delta, rotatedRbToTarget.Z) * camToRbBasis.Z
             );
+
+            if (camToRb.LengthSquared() >= GrabDropSqrThresholdZ)
+            {
+                ReleaseGrab();
+                return;
+            }
 
             Debug.Clear();
             Debug.CreatePoint(GetTree().Root, Colors.Purple, targetPos);
@@ -85,15 +94,15 @@ public partial class InteractionController : CameraController
             ReleaseGrab();
             _interactQueued = !_heldInteract;
         }
-        else if (@event.IsActionPressed(_pushName))
+        else if (@event.IsActionPressed(_extendName))
         {
-            _targetReach += 0.1f;
-            if (_targetReach > MaximumReach) { _targetReach = MaximumReach; }
+            _targetReach += ReachSensitivity;
+            if (_targetReach > ReachMaximum) { _targetReach = ReachMaximum; }
         }
-        else if (@event.IsActionPressed(_pullName))
+        else if (@event.IsActionPressed(_retractName))
         {
-            _targetReach -= 0.1f;
-            if (_targetReach < MinimumReach) { _targetReach = MinimumReach; }
+            _targetReach -= ReachSensitivity;
+            if (_targetReach < ReachMinimum) { _targetReach = ReachMinimum; }
         }
     }
 
@@ -114,7 +123,7 @@ public partial class InteractionController : CameraController
     private Godot.Collections.Dictionary RaycastFromCamera()
     {
         _rayParams.From = GlobalPosition;
-        _rayParams.To = GlobalPosition + (-GlobalTransform.Basis.Z * MaximumReach);
+        _rayParams.To = GlobalPosition + (-GlobalTransform.Basis.Z * ReachMaximum);
 
         return _space.IntersectRay(_rayParams);
     }
