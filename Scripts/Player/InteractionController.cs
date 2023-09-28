@@ -1,7 +1,5 @@
 using Godot;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Scripts.Player;
 
@@ -13,10 +11,10 @@ public partial class InteractionController : CameraController
 
     private const float PGain = 150f, DGain = 25f, MaxGrabForce = 250f;
     private const float GrabDropSqrThresholdZ = (ReachMaximum + 0.5f) * (ReachMaximum + 0.5f);
-    private const int GrabHoldMilliseconds = 125;
 
-    private static readonly StringName _interactName = "interact", _colliderName = "collider";
+    private static readonly StringName _interactName = "interact", _grabName = "grab";
     private static readonly StringName _extendName = "extend", _retractName = "retract";
+    private static readonly StringName _colliderName = "collider";
     private static readonly PhysicsRayQueryParameters3D _rayParams = new();
 
     // Events run only for interactables that require exit
@@ -32,8 +30,6 @@ public partial class InteractionController : CameraController
     private RigidBody3D _activeRigidbody;
     private float _targetReach;
 
-    private CancellationTokenSource _holdTokenSrc;
-    private bool _heldInteract; // Used to check if it was held throughout the delay time after being released
     private bool _interactQueued;
     private bool _grabQueued;
 
@@ -88,11 +84,14 @@ public partial class InteractionController : CameraController
     {
         base._UnhandledInput(@event);
         
-        if (@event.IsActionPressed(_interactName)) { WaitForGrab(); }
-        else if (@event.IsActionReleased(_interactName))
+        if (@event.IsActionPressed(_interactName) && _activeRigidbody == null)
         { 
-            ReleaseGrab();
-            _interactQueued = !_heldInteract;
+            _interactQueued = true;
+        }
+        else if (@event.IsActionPressed(_grabName))
+        {
+            if (_activeRigidbody == null) { _grabQueued = true; }
+            else                          { ReleaseGrab(); }
         }
         else if (@event.IsActionPressed(_extendName))
         {
@@ -111,7 +110,7 @@ public partial class InteractionController : CameraController
         base.OnConsole_Opened();
 
         SetProcessUnhandledInput(false);
-        ReleaseGrab();
+        if (_activeRigidbody != null) { ReleaseGrab(); }
     }
     protected override void OnConsole_Closed()
     {
@@ -128,24 +127,10 @@ public partial class InteractionController : CameraController
         return _space.IntersectRay(_rayParams);
     }
 
-    private async void WaitForGrab()
-    {
-        _heldInteract = false;
-        _holdTokenSrc = new();
-        try                           { await Task.Delay(GrabHoldMilliseconds, _holdTokenSrc.Token); }
-        catch (TaskCanceledException) { return; }
-
-        _grabQueued = true;
-        _heldInteract = true;
-    }
     private void ReleaseGrab()
     {
-        _holdTokenSrc.Cancel();
-        if (_activeRigidbody != null)
-        {
-            _activeRigidbody.Sleeping = false;
-            _activeRigidbody = null;
-        }
+        _activeRigidbody.Sleeping = false;
+        _activeRigidbody = null;
     }
 
     private bool TryInteract()
