@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="InteriorObjectWithWeight" load_steps=2 format=3 uid="uid://diu56io2i24c8"]
+
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_hwhfe"]
+
+[resource]
+script = ExtResource("1_hwhfe")
+InteriorObjectPath = "res://Generation/InteriorObjects/Kitchen\\Microwave/InteriorObject.tres"
+WeightOfPlacement = 1

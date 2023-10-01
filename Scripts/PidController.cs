@@ -6,12 +6,12 @@ namespace Scripts;
 public class PidController
 {
     /// <summary>
-    /// Clamps stored integration value to prevent wind-up in the range: (-<see cref="IntegralSaturation"/>, <see cref="IntegralSaturation"/>).
+    /// Clamps stored integration value to prevent wind-up in the range: [-<see cref="IntegralSaturation"/>, <see cref="IntegralSaturation"/>].
     /// </summary>
     public float IntegralSaturation;
 
     /// <summary>
-    /// Clamps result in the range: (-<see cref="MaxResult"/>, <see cref="MaxResult"/>).
+    /// Clamps result in the range: [-<see cref="MaxResult"/>, <see cref="MaxResult"/>].
     /// </summary>
     public float MaxResult;
 

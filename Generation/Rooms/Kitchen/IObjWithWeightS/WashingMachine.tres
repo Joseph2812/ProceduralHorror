@@ -4,5 +4,5 @@
 
 [resource]
 script = ExtResource("1_tdmfy")
+InteriorObjectPath = "res://Generation/InteriorObjects/Kitchen/WashingMachine/InteriorObject.tres"
 WeightOfPlacement = 5
-_interiorObjectPath = "res://Generation/InteriorObjects/Kitchen/WashingMachine/InteriorObject.tres"

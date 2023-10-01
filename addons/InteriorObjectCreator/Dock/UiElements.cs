@@ -75,7 +75,7 @@ public class Extension
             iObjWithWeight.InteriorObjectPath = $"{Creator.InteriorObjectDirectory}{iObjWithWeightRef.Name.Text}/{Creator.InteriorObjectFileName}";
             if (!FileAccess.FileExists(iObjWithWeight.InteriorObjectPath))
             {
-                throw new Exception($"\"{iObjWithWeight.InteriorObjectPath}\" of {nameof(iObjWithWeight.InteriorObjectPath)} is not a valid path");
+                throw new Exception($"\"{iObjWithWeight.InteriorObjectPath}\" of {nameof(iObjWithWeight.InteriorObjectPath)} is not a valid path.");
             }
             if (parsed) { iObjWithWeight.WeightOfPlacement = weightOfPlacement; }
             //

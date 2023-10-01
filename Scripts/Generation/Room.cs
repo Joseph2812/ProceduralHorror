@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using Scripts.Generation.Interior;
+using System.Collections.Generic;
 
 namespace Scripts.Generation;
 
@@ -50,6 +51,8 @@ public partial class Room : Resource
     public void LoadIObjWithWeightS()
     {
         if (ChanceOfEmptyCell == 1f) { return; }
-        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToResource<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
+
+        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToPath<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/", ResourceLoader.CacheMode.Replace);
+        foreach (InteriorObjectWithWeight iObjWithWt in InteriorObjectWithWeightS) { iObjWithWt.LoadDependencies(); }
     }
 }

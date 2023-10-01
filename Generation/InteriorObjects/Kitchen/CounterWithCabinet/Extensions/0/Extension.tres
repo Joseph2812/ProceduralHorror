@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="InteriorObjectExtension" load_steps=5 format=3 uid="uid://bytm4anv23uwv"]
+
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/Extension/PlacementData.cs" id="1_7rad6"]
+[ext_resource type="Script" path="res://Scripts/Generation/Interior/Extension/InteriorObjectExtension.cs" id="2_aafus"]
+
+[sub_resource type="Resource" id="Resource_mcjqc"]
+script = ExtResource("1_7rad6")
+Position = Vector3i(-1, 0, 0)
+RotationY = 0.0
+
+[sub_resource type="Resource" id="Resource_pekxw"]
+script = ExtResource("1_7rad6")
+Position = Vector3i(1, 0, 0)
+RotationY = 0.0
+
+[resource]
+script = ExtResource("2_aafus")
+ChanceToSkipAPosition = 0.0
+PlacementData = [SubResource("Resource_mcjqc"), SubResource("Resource_pekxw")]

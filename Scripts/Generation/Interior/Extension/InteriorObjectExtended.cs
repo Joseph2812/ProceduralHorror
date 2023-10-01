@@ -11,6 +11,28 @@ public partial class InteriorObjectExtended : InteriorObject
 {
     private InteriorObjectExtension[] _extensions;
 
+    public override void LoadDependencies()
+    {
+        base.LoadDependencies();
+
+        string extensionsDir = CommonMethods.GetPathWithoutEndDirectory(ResourcePath) + "Extensions/";
+        string[] subDirs = DirAccess.GetDirectoriesAt(extensionsDir);
+
+        _extensions = new InteriorObjectExtension[subDirs.Length];
+        for (int i = 0; i < subDirs.Length; i++)
+        {
+            StringBuilder strBuilder = new(extensionsDir);
+            strBuilder.Append(subDirs[i]);
+            strBuilder.Append('/');
+            strBuilder.Append(DirAccess.GetFilesAt(strBuilder.ToString())[0]);
+
+            InteriorObjectExtension extension = ResourceLoader.Load<InteriorObjectExtension>(strBuilder.ToString(), cacheMode: ResourceLoader.CacheMode.Replace);
+            extension.LoadDependencies();
+
+            _extensions[i] = extension;
+        }
+    }
+
     public void CreateExtensionsRecursively(Vector3I pos, float rotationY)
     {
         for (int i = 0; i < _extensions.Length; i++)
@@ -31,26 +53,6 @@ public partial class InteriorObjectExtended : InteriorObject
                 if (!MapGenerator.Inst.TryCreateInteriorNode(randomObj, nextPos, nextRotationY)) { continue; }
                 if (randomObj is InteriorObjectExtended extendedObj) { extendedObj.CreateExtensionsRecursively(nextPos, nextRotationY); }
             }
-        }
-    }
-
-    public void LoadExtensions()
-    {
-        string extensionsDir = CommonMethods.GetPathWithoutEndDirectory(ResourcePath) + "Extensions/";
-        string[] subDirs = DirAccess.GetDirectoriesAt(extensionsDir);
-
-        _extensions = new InteriorObjectExtension[subDirs.Length];
-        for (int i = 0; i < subDirs.Length; i++)
-        {
-            StringBuilder strBuilder = new(extensionsDir);
-            strBuilder.Append(subDirs[i]);
-            strBuilder.Append('/');
-            strBuilder.Append(DirAccess.GetFilesAt(strBuilder.ToString())[0]);
-
-            InteriorObjectExtension extension = GD.Load<InteriorObjectExtension>(strBuilder.ToString());
-            extension.LoadInteriorObjectWithWeightS();
-
-            _extensions[i] = extension;
         }
     }
 }

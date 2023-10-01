@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="InteriorObjectExtended" load_steps=3 format=3 uid="uid://btb26gppou4yl"]
+[gd_resource type="Resource" script_class="InteriorObjectExtended" load_steps=3 format=3 uid="uid://bvvacui8m5qtd"]
 
 [ext_resource type="PackedScene" uid="uid://cvklhplc6lu3p" path="res://Scenes/ForInteriorObjects/CounterWithCabinet.tscn" id="1_2thqq"]
 [ext_resource type="Script" path="res://Scripts/Generation/Interior/Extension/InteriorObjectExtended.cs" id="2_qut8u"]
@@ -11,9 +11,9 @@ Exact = true
 MinimumHeight = 1
 MaximumHeight = 1
 RelativeTo = 0
-_maximumCountBtwRooms = 0
-_neighbourConditionsText = "forward0"
-_clearancePositions = PackedVector3Array()
-_semiClearancePositions = PackedVector3Array(0, 0, 1)
-_minimumRotationalYOffset = 0.0
-_maximumRotationalYOffset = 0.0
+MaximumCountBtwRooms = 0
+NeighbourConditionsText = "forward0"
+ClearancePositions = PackedVector3Array()
+SemiClearancePositions = PackedVector3Array()
+MinimumRotationalYOffset = 0.0
+MaximumRotationalYOffset = 0.0

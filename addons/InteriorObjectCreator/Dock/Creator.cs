@@ -391,14 +391,12 @@ public partial class Creator : VBoxContainer
         HandlingResources = true;
         try
         {
-            InteriorObject iObj;
-            if (validExtensions.Count == 0) { iObj = new(); }
+            if (validExtensions.Count == 0) { SetupInteriorObject(dir, new()); }
             else
             {
-                iObj = new InteriorObjectExtended();
+                SetupInteriorObject(dir, new InteriorObjectExtended());
                 SetupExtensions(dir, validExtensions);
             }
-            SetupInteriorObject(dir, iObj);
         }
         catch (Exception e)
         {

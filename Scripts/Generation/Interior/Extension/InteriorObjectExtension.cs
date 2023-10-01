@@ -21,8 +21,9 @@ public partial class InteriorObjectExtension : Resource
     /// </summary>
     public InteriorObjectWithWeight[] InteriorObjectWithWeightS { get; private set; }
 
-    public void LoadInteriorObjectWithWeightS()
+    public void LoadDependencies()
     {
-        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToResource<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
+        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToPath<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/", ResourceLoader.CacheMode.Replace);
+        foreach (InteriorObjectWithWeight iObjWithWt in InteriorObjectWithWeightS) { iObjWithWt.LoadDependencies(); }
     }
 }

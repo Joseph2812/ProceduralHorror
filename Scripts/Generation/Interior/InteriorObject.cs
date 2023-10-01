@@ -57,18 +57,7 @@ public partial class InteriorObject : Resource
     /// <summary>
     /// String that represents a boolean expression. Should only be passed to <see cref="_neighbourConditions"/> to parse.
     /// </summary>
-    public string NeighbourConditionsText
-    {
-        get => _neighbourConditionsText;
-        set
-        {
-            _neighbourConditionsText = value;
-            if (Engine.IsEditorHint()) { return; }
-
-            _neighbourConditions.ParseIntoTree(value);
-        }
-    }
-    private string _neighbourConditionsText;
+    public string NeighbourConditionsText { get; set; } = string.Empty;
 
     /// <summary>
     /// Used to mark what relative positions it will take up when placed. (0, 0, 0) will already be added for any <see cref="Scene"/>.<para/>
@@ -87,6 +76,10 @@ public partial class InteriorObject : Resource
 
     private int _currentCountBtwRooms;
     private readonly NeighbourConditions _neighbourConditions = new();
+
+    public static bool IsDependenciesLoaded(InteriorObject iObj) => RoomManager.LoadedInteriorObjects.Contains(iObj);
+
+    ~InteriorObject() { RoomManager.LoadedInteriorObjects.Remove(this); }
 
     public override bool _PropertyCanRevert(StringName property) => true;
     public override Variant _PropertyGetRevert(StringName property)
@@ -202,6 +195,16 @@ public partial class InteriorObject : Resource
                 }
             }
         );
+    }
+
+    /// <summary>
+    /// Use to load any dependencies after this object has been loaded from file.<para/>
+    /// If using <see cref="ResourceLoader.CacheMode.Reuse"/>, then call <see cref="IsDependenciesLoaded(InteriorObject)"/> to first check if it hasn't already been loaded before using this.
+    /// </summary>
+    public virtual void LoadDependencies()
+    {
+        RoomManager.LoadedInteriorObjects.Add(this);
+        _neighbourConditions.ParseIntoTree(NeighbourConditionsText);
     }
 
     /// <summary>

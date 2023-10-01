@@ -1,5 +1,4 @@
 using Godot;
-using Scripts.Generation.Interior.Extension;
 using System;
 
 namespace Scripts.Generation.Interior;
@@ -8,24 +7,11 @@ namespace Scripts.Generation.Interior;
 [Tool]
 public partial class InteriorObjectWithWeight : Resource
 {
-    public InteriorObject InteriorObject { get; private set; }
-
     /// <summary>
     /// Use <see cref="InteriorObject"/> when this object is loaded.
     /// </summary>
     [Export(PropertyHint.File, "*.tres")]
-    public string InteriorObjectPath
-    {
-        get => _interiorObjectPath;
-        set
-        {
-            _interiorObjectPath = value;
-
-            if (Addons.InteriorObjectCreator.Creator.HandlingResources || Engine.IsEditorHint()) { return; }
-            LoadInteriorObject();
-        }
-    }
-    private string _interiorObjectPath;
+    public string InteriorObjectPath { get; set; }
 
     /// <summary>
     /// Weight of appearance compared to other assigned <see cref="InteriorObjectWithWeight"/>s.
@@ -34,11 +20,18 @@ public partial class InteriorObjectWithWeight : Resource
     [Export(PropertyHint.Range, "0,100,or_greater")]
     public int WeightOfPlacement { get; set; } = 1;
 
-    private void LoadInteriorObject()
-    {
-        InteriorObject = GD.Load<InteriorObject>(InteriorObjectPath);
+    public InteriorObject InteriorObject { get; private set; }
 
-        if (InteriorObject is not InteriorObjectExtended iObjExt) { return; }
-        iObjExt.LoadExtensions();
+    public void LoadDependencies()
+    {
+        if (InteriorObject.IsDependenciesLoaded(InteriorObject))
+        {
+            InteriorObject = ResourceLoader.Load<InteriorObject>(InteriorObjectPath);
+        }
+        else
+        {
+            InteriorObject = ResourceLoader.Load<InteriorObject>(InteriorObjectPath, cacheMode: ResourceLoader.CacheMode.Replace);
+            InteriorObject.LoadDependencies();
+        }
     }
 }

@@ -4,5 +4,5 @@
 
 [resource]
 script = ExtResource("1_jt76o")
+InteriorObjectPath = "res://Generation/InteriorObjects/Kitchen/Trashcan/InteriorObject.tres"
 WeightOfPlacement = 1
-_interiorObjectPath = "res://Generation/InteriorObjects/Kitchen/Trashcan/InteriorObject.tres"

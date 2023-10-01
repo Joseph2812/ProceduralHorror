@@ -40,7 +40,7 @@ public class NeighbourConditions
 #if ENABLE_PRINT
         GD.Print($"=== Parsing ===\n{conditionsToParse}\n");
 #endif
-        if (conditionsToParse.Length == 0)
+        if (conditionsToParse == string.Empty)
         {
             _root = _alwaysTrueNode;
             return;
