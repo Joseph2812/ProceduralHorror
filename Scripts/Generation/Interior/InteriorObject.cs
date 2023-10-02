@@ -77,8 +77,6 @@ public partial class InteriorObject : Resource
     private int _currentCountBtwRooms;
     private readonly NeighbourConditions _neighbourConditions = new();
 
-    public static bool IsDependenciesLoaded(InteriorObject iObj) => RoomManager.LoadedIObjDependencies.Contains(iObj);
-
     ~InteriorObject() { RoomManager.LoadedIObjDependencies.Remove(this); }
 
     public override bool _PropertyCanRevert(StringName property) => true;
@@ -201,10 +199,14 @@ public partial class InteriorObject : Resource
     /// Use to load any dependencies after this object has been loaded from file.<para/>
     /// If using <see cref="ResourceLoader.CacheMode.Reuse"/>, then call <see cref="IsDependenciesLoaded(InteriorObject)"/> to first check if it hasn't already been loaded before using this.
     /// </summary>
-    public virtual void LoadDependencies()
+    protected virtual void LoadDependencies() { _neighbourConditions.ParseIntoTree(NeighbourConditionsText); }
+
+    public void CheckDependencies()
     {
+        if (RoomManager.LoadedIObjDependencies.Contains(this)) { return; }
         RoomManager.LoadedIObjDependencies.Add(this);
-        _neighbourConditions.ParseIntoTree(NeighbourConditionsText);
+
+        LoadDependencies();
     }
 
     /// <summary>

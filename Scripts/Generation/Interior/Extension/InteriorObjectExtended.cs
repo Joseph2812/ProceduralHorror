@@ -11,7 +11,7 @@ public partial class InteriorObjectExtended : InteriorObject
 {
     private InteriorObjectExtension[] _extensions;
 
-    public override void LoadDependencies()
+    protected override void LoadDependencies()
     {
         base.LoadDependencies();
 
