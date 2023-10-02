@@ -24,14 +24,7 @@ public partial class InteriorObjectWithWeight : Resource
 
     public void LoadDependencies()
     {
-        if (InteriorObject.IsDependenciesLoaded(InteriorObject))
-        {
-            InteriorObject = ResourceLoader.Load<InteriorObject>(InteriorObjectPath);
-        }
-        else
-        {
-            InteriorObject = ResourceLoader.Load<InteriorObject>(InteriorObjectPath, cacheMode: ResourceLoader.CacheMode.Replace);
-            InteriorObject.LoadDependencies();
-        }
+        InteriorObject = GD.Load<InteriorObject>(InteriorObjectPath);
+        if (!InteriorObject.IsDependenciesLoaded(InteriorObject)) { InteriorObject.LoadDependencies(); }
     }
 }

@@ -11,7 +11,7 @@ public class RoomManager
 {
     private const string RoomsDirectory = "res://Generation/Rooms/";
     
-    public static readonly HashSet<InteriorObject> LoadedInteriorObjects = new(); // Tracks what's already reloaded once, to stop cyclic looping (must be outside [Tool], so it reloads at every run in the editor)
+    public static readonly HashSet<InteriorObject> LoadedIObjDependencies = new(); // Tracks what dependencies are loaded once, to stop cyclic looping (must be outside [Tool], so it resets at every run when using the editor to run it)
 
     // TODO: Change to use configurations of room types
     public int MaximumRoomCount { get; private set; } = 30; // Max where generation will stop

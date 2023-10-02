@@ -127,6 +127,12 @@ public partial class Creator : VBoxContainer
         }
     }
    
+    private void SaveResource(Resource resource, string path)
+    {
+        ResourceSaver.Save(resource, path);
+        resource.TakeOverPath(path); // Replaces cache made by the editor
+    }
+
     private void SetupInteriorObject(DirAccess dir, InteriorObject iObj)
     {
         int intResult;
@@ -196,7 +202,7 @@ public partial class Creator : VBoxContainer
         }
         else { PrintParseWarning(nameof(_maximumRotationalYOffset)); }
 
-        ResourceSaver.Save(iObj, $"{dir.GetCurrentDir()}/{InteriorObjectFileName}");
+        SaveResource(iObj, $"{dir.GetCurrentDir()}/{InteriorObjectFileName}");
     }
     private void SetupExtensions(DirAccess dir, List<UiElements.Extension> validExtensions)
     {
@@ -223,14 +229,14 @@ public partial class Creator : VBoxContainer
             if (!extensionRef.GetPlacementData(out PlacementData[] datas)) { PrintParseWarning(nameof(iObjExtension.PlacementData)); }
             iObjExtension.PlacementData = datas;
 
-            ResourceSaver.Save(iObjExtension, $"{dir.GetCurrentDir()}/{extensionDir}/{ExtensionFileName}");
+            SaveResource(iObjExtension, $"{dir.GetCurrentDir()}/{extensionDir}/{ExtensionFileName}");
 
             // InteriorObjectWithWeight Directory Inside Extension //
             if (!extensionRef.GetIObjWithWeightS(out InteriorObjectWithWeight[] iObjWithWeightS)) { PrintParseWarning(nameof(iObjExtension.InteriorObjectWithWeightS)); }
 
-            foreach (InteriorObjectWithWeight iObjWithWeight in iObjWithWeightS)
+            foreach (InteriorObjectWithWeight iObjWithWt in iObjWithWeightS)
             {
-                ResourceSaver.Save(iObjWithWeight, $"{dir.GetCurrentDir()}/{iObjWithWeightDir}/{Directory.GetParent(iObjWithWeight.InteriorObjectPath).Name}.tres");
+                SaveResource(iObjWithWt, $"{dir.GetCurrentDir()}/{iObjWithWeightDir}/{Directory.GetParent(iObjWithWt.InteriorObjectPath).Name}.tres");
             }
         }
     }

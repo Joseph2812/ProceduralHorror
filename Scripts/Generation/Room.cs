@@ -52,7 +52,7 @@ public partial class Room : Resource
     {
         if (ChanceOfEmptyCell == 1f) { return; }
 
-        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToPath<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/", ResourceLoader.CacheMode.Replace);
+        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToPath<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
         foreach (InteriorObjectWithWeight iObjWithWt in InteriorObjectWithWeightS) { iObjWithWt.LoadDependencies(); }
     }
 }

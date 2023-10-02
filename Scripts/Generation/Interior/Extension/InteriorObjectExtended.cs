@@ -26,7 +26,7 @@ public partial class InteriorObjectExtended : InteriorObject
             strBuilder.Append('/');
             strBuilder.Append(DirAccess.GetFilesAt(strBuilder.ToString())[0]);
 
-            InteriorObjectExtension extension = ResourceLoader.Load<InteriorObjectExtension>(strBuilder.ToString(), cacheMode: ResourceLoader.CacheMode.Replace);
+            InteriorObjectExtension extension = ResourceLoader.Load<InteriorObjectExtension>(strBuilder.ToString());
             extension.LoadDependencies();
 
             _extensions[i] = extension;

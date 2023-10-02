@@ -77,9 +77,9 @@ public partial class InteriorObject : Resource
     private int _currentCountBtwRooms;
     private readonly NeighbourConditions _neighbourConditions = new();
 
-    public static bool IsDependenciesLoaded(InteriorObject iObj) => RoomManager.LoadedInteriorObjects.Contains(iObj);
+    public static bool IsDependenciesLoaded(InteriorObject iObj) => RoomManager.LoadedIObjDependencies.Contains(iObj);
 
-    ~InteriorObject() { RoomManager.LoadedInteriorObjects.Remove(this); }
+    ~InteriorObject() { RoomManager.LoadedIObjDependencies.Remove(this); }
 
     public override bool _PropertyCanRevert(StringName property) => true;
     public override Variant _PropertyGetRevert(StringName property)
@@ -203,7 +203,7 @@ public partial class InteriorObject : Resource
     /// </summary>
     public virtual void LoadDependencies()
     {
-        RoomManager.LoadedInteriorObjects.Add(this);
+        RoomManager.LoadedIObjDependencies.Add(this);
         _neighbourConditions.ParseIntoTree(NeighbourConditionsText);
     }
 
