@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://dduxddcquhrp1"]
+[gd_scene load_steps=16 format=3 uid="uid://dduxddcquhrp1"]
 
 [ext_resource type="Script" path="res://Scripts/FreeViewController.cs" id="1_n1o8o"]
 [ext_resource type="Theme" uid="uid://bmbx06aggy0cl" path="res://Theme.tres" id="3_a65xu"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://Scripts/Player/Player.cs" id="5_ql3me"]
 [ext_resource type="Script" path="res://Scripts/Player/InteractionController.cs" id="6_oq56r"]
 [ext_resource type="Script" path="res://Scripts/InteractionDebug.cs" id="7_gpdo7"]
+[ext_resource type="Script" path="res://Scripts/Player/Inventory.cs" id="7_pvyt2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
 
@@ -135,6 +136,10 @@ spot_range = 20.0
 [node name="Arm_L" type="MeshInstance3D" parent="Player/Camera3D"]
 
 [node name="Arm_R" type="MeshInstance3D" parent="Player/Camera3D"]
+
+[node name="Inventory" type="Node3D" parent="Player/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+script = ExtResource("7_pvyt2")
 
 [node name="StaticBody3D" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, -0.5)

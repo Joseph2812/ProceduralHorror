@@ -31,7 +31,7 @@ public struct NeighbourInfo
                 return true;
             }
         }
-        filledNeighbour = new NeighbourInfo();
+        filledNeighbour = new();
         return false;
     }
 
@@ -45,7 +45,7 @@ public struct NeighbourInfo
                 return true;
             }
         }
-        emptyNeighbour = new NeighbourInfo();
+        emptyNeighbour = new();
         return false;
     }
 
@@ -60,7 +60,8 @@ public struct NeighbourInfo
     }
 
     /// <summary>
-    /// Rotates contents by offseting all the values, and assigning them to a new array.<para/>
+    /// Rotates contents by offsetting all the values, and assigning them to a new array.<br/>
+    /// Restricted to 0.5<c>PI</c>, <c>PI</c>, 1.5<c>PI</c>, and their negative counterparts (+CCW, -CW to match Godot).<para/>
     /// NOTE: Compatible only with arrays containing groups of 4 directions (e.g. Orthogonal/Diagonal, or 3x3/3x3x3).
     /// </summary>
     /// <returns>Offset <see cref="NeighbourInfo"/>[]</returns>
@@ -94,7 +95,7 @@ public struct NeighbourInfo
         NeighbourInfo[] rotated = new NeighbourInfo[neighbours.Length];
         for (int i = 0; i < rotated.Length; i += 4)
         {
-            rotated[i] = neighbours[i + offset0];
+            rotated[i]     = neighbours[i + offset0];
             rotated[i + 1] = neighbours[i + offset1];
             rotated[i + 2] = neighbours[i + offset2];
             rotated[i + 3] = neighbours[i + offset3];

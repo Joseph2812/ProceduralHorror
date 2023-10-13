@@ -20,24 +20,24 @@ public partial class MapGenerator : GridMap
     /// <summary>
     /// Creates a <see cref="Node3D"/> from the <see cref="InteriorObject"/>, if it meets the conditions required.
     /// </summary>
-    /// <param name="obj"></param>
+    /// <param name="iObj"></param>
     /// <param name="position"></param>
     /// <param name="rotationY"></param>
     /// <returns>Whether creation was successful.</returns>
-    public bool TryCreateInteriorNode(InteriorObject obj, Vector3I position, float rotationY)
+    public bool TryCreateInteriorNode(InteriorObject iObj, Vector3I position, float rotationY)
     {
-        (bool canPlace, HashSet<Vector3I> clearancePosS, HashSet<Vector3I> semiClearancePosS) = obj.CanBePlaced(position, rotationY, _emptyPosS);
+        (bool canPlace, HashSet<Vector3I> clearancePosS, HashSet<Vector3I> semiClearancePosS) = iObj.CanBePlaced(position, rotationY, _emptyPosS);
         if (!canPlace) { return false; }
 
         // Create Node //
-        Node3D node = obj.Scene.Instantiate<Node3D>();
+        Node3D node = iObj.Scene.Instantiate<Node3D>();
         Node3D childNode = node.GetChild<Node3D>(0);
 
         _interiorNodeParent.AddChild(node);
 
         childNode.Position -= _interiorNodeOffset;
         node.Position = position + _interiorNodeOffset;
-        node.Rotation = obj.GetRotationWithOffset(rotationY) * Vector3.Up;
+        node.Rotation = iObj.GetRotationWithOffset(rotationY) * Vector3.Up;
 
         foreach (Vector3I pos in semiClearancePosS) { _emptyPosS[pos] = true; } // Set new & existing to semi-empty
         foreach (Vector3I pos in clearancePosS)     { _emptyPosS.Remove(pos); } // Remove fully occupied
@@ -290,24 +290,24 @@ public partial class MapGenerator : GridMap
 
     private void PlaceRandomInteriorNode(Vector3I pos, int heightLvl, int maxHeightLvl, float minNormalisedProx, float rotationY, int totalDist)
     {
-        InteriorObject obj = _roomManager.GetRandomInteriorObject();
+        InteriorObject iObj = _roomManager.GetRandomInteriorObject();
 
         // Height Constraint Check //
         bool satisfiedHeightConstraint = false;
-        switch (obj.RelativeTo)
+        switch (iObj.RelativeTo)
         {
             case InteriorObject.Relative.Floor:
-                satisfiedHeightConstraint = heightLvl >= obj.MinimumHeight && heightLvl <= obj.MaximumHeight;
+                satisfiedHeightConstraint = heightLvl >= iObj.MinimumHeight && heightLvl <= iObj.MaximumHeight;
                 break;
 
             case InteriorObject.Relative.Middle:
                 int middleToHeightLvl = heightLvl - Mathf.RoundToInt(maxHeightLvl * 0.5f);
-                satisfiedHeightConstraint = middleToHeightLvl >= obj.MinimumHeight && middleToHeightLvl <= obj.MaximumHeight;
+                satisfiedHeightConstraint = middleToHeightLvl >= iObj.MinimumHeight && middleToHeightLvl <= iObj.MaximumHeight;
                 break;
 
             case InteriorObject.Relative.Ceiling:
                 int reverseHeightLvl = maxHeightLvl - (heightLvl - 1);
-                satisfiedHeightConstraint = reverseHeightLvl >= obj.MinimumHeight && reverseHeightLvl <= obj.MaximumHeight;
+                satisfiedHeightConstraint = reverseHeightLvl >= iObj.MinimumHeight && reverseHeightLvl <= iObj.MaximumHeight;
                 break;
         }
 
@@ -318,18 +318,18 @@ public partial class MapGenerator : GridMap
                 satisfiedHeightConstraint &&
                 (
                     (totalDist < 2)                                         || // Weighting doesn't matter below this value (too thin for a middle to exist)
-                    ( obj.Exact && obj.WeightToMiddle == minNormalisedProx) ||
-                    (!obj.Exact && Rng.Randf() < GetProximityProbability(obj.WeightToMiddle, minNormalisedProx))
+                    ( iObj.Exact && iObj.WeightToMiddle == minNormalisedProx) ||
+                    (!iObj.Exact && Rng.Randf() < GetProximityProbability(iObj.WeightToMiddle, minNormalisedProx))
                 ) &&
-                TryCreateInteriorNode(obj, pos, rotationY)
+                TryCreateInteriorNode(iObj, pos, rotationY)
             )
         )
         { return; }
 
         // Extend With Potential Extensions //
-        if (obj is InteriorObjectExtended extendedObj)
+        if (iObj is InteriorObjectExtended extendedIObj)
         {
-            extendedObj.CreateExtensionsRecursively(pos, rotationY);
+            extendedIObj.CreateExtensionsRecursively(pos, rotationY);
         }
     }
 

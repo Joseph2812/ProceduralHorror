@@ -77,6 +77,12 @@ public partial class InteriorObject : Resource
     private int _currentCountBtwRooms;
     private readonly NeighbourConditions _neighbourConditions = new();
 
+    /// <summary>
+    /// Use to load any dependencies after this object has been loaded from file.<para/>
+    /// If using <see cref="ResourceLoader.CacheMode.Reuse"/>, then call <see cref="IsDependenciesLoaded(InteriorObject)"/> to first check if it hasn't already been loaded before using this.
+    /// </summary>
+    protected virtual void LoadDependencies() { _neighbourConditions.ParseIntoTree(NeighbourConditionsText); }
+
     ~InteriorObject() { RoomManager.LoadedIObjDependencies.Remove(this); }
 
     public override bool _PropertyCanRevert(StringName property) => true;
@@ -195,12 +201,6 @@ public partial class InteriorObject : Resource
         );
     }
 
-    /// <summary>
-    /// Use to load any dependencies after this object has been loaded from file.<para/>
-    /// If using <see cref="ResourceLoader.CacheMode.Reuse"/>, then call <see cref="IsDependenciesLoaded(InteriorObject)"/> to first check if it hasn't already been loaded before using this.
-    /// </summary>
-    protected virtual void LoadDependencies() { _neighbourConditions.ParseIntoTree(NeighbourConditionsText); }
-
     public void CheckDependencies()
     {
         if (RoomManager.LoadedIObjDependencies.Contains(this)) { return; }
@@ -222,9 +222,9 @@ public partial class InteriorObject : Resource
 
         return
         (
-            IsClearanceFullyContainedInEmptyPosS(emptyPosS, clearancePosS)                                                                       &&
-            (semiClearancePosS.Count == 0 || semiClearancePosS.IsProperSubsetOf(emptyPosS.Keys) || semiClearancePosS.IsSubsetOf(emptyPosS.Keys)) &&
-            _neighbourConditions.IsSatisfied(MapGenerator.Inst.GetNeighbours(position, MapGenerator.Inst.All3x3x3Dirs), rotationY)               &&
+            IsClearanceFullyContainedInEmptyPosS(emptyPosS, clearancePosS)                                                         &&
+            (semiClearancePosS.Count == 0 || semiClearancePosS.IsSubsetOf(emptyPosS.Keys))                                         &&
+            _neighbourConditions.IsSatisfied(MapGenerator.Inst.GetNeighbours(position, MapGenerator.Inst.All3x3x3Dirs), rotationY) &&
             IsNotMaxCountAndIncrement(),
 
             clearancePosS,

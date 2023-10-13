@@ -67,9 +67,6 @@ public partial class InteractionController : CameraController
                 ReleaseGrab();
                 return;
             }
-
-            Debug.Clear();
-            Debug.CreatePoint(GetTree().Root, Colors.Purple, targetPos);
         }
         else if (_interactQueued && !TryInteract() && _activeInteractable != null)
         {

@@ -17,9 +17,9 @@ public static class Vector3IExtensions
         rotationY %= Mathf.Tau;
         if (rotationY < 0f) { rotationY += Mathf.Tau; }
 
-        if      (rotationY >= Mathf.Pi * 0.25f && rotationY <= Mathf.Pi * 0.75f) { return new( v.Z, v.Y, -v.X); }
-        else if (rotationY >  Mathf.Pi * 0.75f && rotationY <= Mathf.Pi * 1.25f) { return new(-v.X, v.Y, -v.Z); }
-        else if (rotationY >  Mathf.Pi * 1.25f && rotationY <= Mathf.Pi * 1.75f) { return new(-v.Z, v.Y,  v.X); }
+        if (rotationY >= Mathf.Pi * 0.25f && rotationY <= Mathf.Pi * 0.75f) { return new( v.Z, v.Y, -v.X); }
+        if (rotationY >  Mathf.Pi * 0.75f && rotationY <= Mathf.Pi * 1.25f) { return new(-v.X, v.Y, -v.Z); }
+        if (rotationY >  Mathf.Pi * 1.25f && rotationY <= Mathf.Pi * 1.75f) { return new(-v.Z, v.Y,  v.X); }
         
         return v;
     }

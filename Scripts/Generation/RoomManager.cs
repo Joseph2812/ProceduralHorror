@@ -10,8 +10,9 @@ namespace Scripts.Generation;
 public class RoomManager
 {
     private const string RoomsDirectory = "res://Generation/Rooms/";
-    
-    public static readonly HashSet<InteriorObject> LoadedIObjDependencies = new(); // Tracks what dependencies are loaded once, to stop cyclic looping (must be outside [Tool], so it resets at every run when using the editor to run it)
+
+    // Tracks what dependencies are loaded once, to stop cyclic looping (must be outside [Tool], so it resets at every run when using the editor to run it)
+    public static readonly HashSet<InteriorObject> LoadedIObjDependencies = new();
 
     // TODO: Change to use configurations of room types
     public int MaximumRoomCount { get; private set; } = 30; // Max where generation will stop

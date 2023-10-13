@@ -14,6 +14,9 @@ public partial class CameraController : Camera3D
 
     private static readonly StringName _lookUpName = "look_up", _lookDownName = "look_down";
 
+    protected virtual void OnConsole_Opened() { SetProcesses(false); }
+    protected virtual void OnConsole_Closed() { SetProcesses(Current); }
+
     public CameraController() { Inst = this; }
 
     public override void _Ready()
@@ -42,9 +45,6 @@ public partial class CameraController : Camera3D
             Rotation = GetCameraRotation(mouseMotion.Relative.Y * MouseSensitivity);
         }
     }
-
-    protected virtual void OnConsole_Opened() { SetProcesses(false); }
-    protected virtual void OnConsole_Closed() { SetProcesses(Current); }
 
     private void SetProcesses(bool state)
     {
