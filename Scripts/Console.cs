@@ -35,6 +35,8 @@ public partial class Console : Panel
 
     public event Action Opened;
     public event Action Closed;
+    
+    public bool IsOpen { get; private set; }
 
     private RichTextLabel _output;
     private LineEdit _input;
@@ -107,6 +109,7 @@ public partial class Console : Panel
                 _input.CallDeferred(_grabFocusName); // Focus after (so nothing is typed)
                 Input.MouseMode = Input.MouseModeEnum.Visible;
 
+                IsOpen = true;
                 Opened?.Invoke();
             }
             else
@@ -117,6 +120,7 @@ public partial class Console : Panel
                 _input.ReleaseFocus();
                 Input.MouseMode = Input.MouseModeEnum.Captured;
 
+                IsOpen = false;
                 Closed?.Invoke();
             }         
         }

@@ -47,11 +47,16 @@ public partial class Inventory : Node3D
     private const float GridSpace = 0.175f;
     private const float GridThickness = 0.01f;
 
+    private static readonly StringName _toggleName = "inventory_toggle";
     private static readonly StringName _leftName = "inventory_left", _rightName = "inventory_right", _upName = "inventory_up", _downName = "inventory_down";
     private static readonly StringName _useName = "inventory_use", _dropName = "inventory_drop", _moveName = "inventory_move", _rotateName = "inventory_rotate";
 
     private static readonly Vector2I _gridSize = new(6, 4);
-    private static readonly Vector2 _bottomLeftPos = new(_gridSize.X * (GridSpace + GridThickness) * -0.5f, _gridSize.Y * (GridSpace + GridThickness) * -0.5f);
+    private static readonly Vector2 _bottomLeftPos = new
+    (
+        _gridSize.X * (GridSpace + GridThickness) * -0.5f,
+        _gridSize.Y * (GridSpace + GridThickness) * -0.5f
+    );
     private static readonly QuadMesh _selectorMesh = new() { Size = Vector2.One * GridSpace };
 
     public event Action<Item> ItemRemoved;
@@ -62,10 +67,12 @@ public partial class Inventory : Node3D
 
     private GridData _selectedGridData;
 
+    // Selector //
     private MeshInstance3D _selectorMeshInst;
     private OrmMaterial3D _selectorMaterial;
     private Vector2I _selectorGridPos;
 
+    // Used To Cancel Move, Then Revert //
     private Vector2I _oldGridPos;
     private Vector3 _oldRotation;
 
@@ -119,24 +126,24 @@ public partial class Inventory : Node3D
     {
         base._UnhandledInput(@event);
 
+        if (Console.Inst.IsOpen || FreeCameraController.Inst.Current) { return; }
+
+        if (@event.IsActionPressed(_toggleName))
+        {
+            Visible = !Visible;
+            CancelMove();
+            // TODO: Play animation
+        }
+
+        if (!Visible) { return; }
+
         if      (@event.IsActionPressed(_leftName))   { MoveSelection(Vector2I.Left); }
         else if (@event.IsActionPressed(_rightName))  { MoveSelection(Vector2I.Right); }
         else if (@event.IsActionPressed(_upName))     { MoveSelection(Vector2I.Down); }
         else if (@event.IsActionPressed(_downName))   { MoveSelection(Vector2I.Up); }
         else if (@event.IsActionPressed(_moveName))   { ToggleMove(); }
         else if (@event.IsActionPressed(_rotateName)) { Rotate(); }
-        else if (@event.IsActionPressed(_dropName))
-        {
-            _selectedGridData.SetGridPosition(_oldGridPos);
-            _selectedGridData.MeshInstance.Rotation = _oldRotation;
-
-            SetSelectorGridPosition(_oldGridPos);
-            _selectorMeshInst.Rotation = _oldRotation;
-
-            ToggleMove();
-        }
-        // Add selector controls
-        // Decide on camera or key selection
+        else if (@event.IsActionPressed(_dropName))   { CancelMove(); }
     }
 
     public bool TryAddItem(Item item)
@@ -300,6 +307,23 @@ public partial class Inventory : Node3D
             _selectorMeshInst.Mesh = _selectorMesh;
             _selectorMaterial.AlbedoColor = Colors.Yellow;
         }
+    }
+
+    private void RevertMove()
+    {
+        _selectedGridData.SetGridPosition(_oldGridPos);
+        _selectedGridData.MeshInstance.Rotation = _oldRotation;
+
+        SetSelectorGridPosition(_oldGridPos);
+        _selectorMeshInst.Rotation = _oldRotation;
+    }
+
+    private void CancelMove()
+    {
+        if (_selectedGridData == null) { return; }
+
+        RevertMove();
+        ToggleMove();
     }
 
     private void Rotate()

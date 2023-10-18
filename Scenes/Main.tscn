@@ -1,6 +1,6 @@
 [gd_scene load_steps=16 format=3 uid="uid://dduxddcquhrp1"]
 
-[ext_resource type="Script" path="res://Scripts/FreeViewController.cs" id="1_n1o8o"]
+[ext_resource type="Script" path="res://Scripts/FreeCameraController.cs" id="2_dhtrs"]
 [ext_resource type="Theme" uid="uid://bmbx06aggy0cl" path="res://Theme.tres" id="3_a65xu"]
 [ext_resource type="Script" path="res://Scripts/Generation/MapGenerator.cs" id="3_xb8fi"]
 [ext_resource type="Script" path="res://Scripts/Console.cs" id="4_egocs"]
@@ -54,7 +54,7 @@ metadata/_editor_floor_ = Vector3(0, 0, 0)
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 30, 0)
 fov = 90.0
 size = 150.0
-script = ExtResource("1_n1o8o")
+script = ExtResource("2_dhtrs")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="FreeViewCamera"]
 spot_range = 20.0
@@ -139,6 +139,7 @@ spot_range = 20.0
 
 [node name="Inventory" type="Node3D" parent="Player/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+visible = false
 script = ExtResource("7_pvyt2")
 
 [node name="StaticBody3D" type="RigidBody3D" parent="."]

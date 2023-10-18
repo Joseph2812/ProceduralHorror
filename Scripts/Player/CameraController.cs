@@ -58,6 +58,6 @@ public partial class CameraController : Camera3D
     private void OnConsoleCmd_PlayerCamera(string[] _)
     {
         Current = true;
-        Console.Inst.AppendLine("Switched to player-camera.");
+        Console.Inst.AppendLine("Switched to player camera.");
     }
 }

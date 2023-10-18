@@ -3,7 +3,7 @@ using System;
 
 namespace Scripts;
 
-public partial class FreeViewController : Camera3D
+public partial class FreeCameraController : Camera3D
 {
     private const float Speed = 10f;
 
@@ -14,13 +14,17 @@ public partial class FreeViewController : Camera3D
     private static readonly StringName _lookUpName = "look_up", _lookDownName = "look_down";
     private static readonly StringName _lookLeftName = "look_left", _lookRightName = "look_right";
 
+    public static FreeCameraController Inst { get; private set; }
+
+    public FreeCameraController() { Inst = this; }
+
     public override void _Ready()
     {
         base._Ready();
 
         SetProcesses(false);
 
-        Console.Inst.AddCommand("free-cam", new(OnConsoleCmd_FreeCamera, "Switch to free-view camera."));
+        Console.Inst.AddCommand("free-cam", new(OnConsoleCmd_FreeCamera, "Switch to free camera."));
         Console.Inst.AddCommand("player-cam", new(OnConsoleCmd_PlayerCamera));
         Console.Inst.Opened += OnConsole_Opened;
         Console.Inst.Closed += OnConsole_Closed;
@@ -65,7 +69,7 @@ public partial class FreeViewController : Camera3D
         GlobalPosition = Player.CameraController.Inst.GlobalPosition;
         GlobalRotation = Player.CameraController.Inst.GlobalRotation;
 
-        Console.Inst.AppendLine("Switched to free-camera.");
+        Console.Inst.AppendLine("Switched to free camera.");
     }
     private void OnConsoleCmd_PlayerCamera(string[] _) { Current = false; }
 

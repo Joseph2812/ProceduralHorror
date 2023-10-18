@@ -106,14 +106,7 @@ public partial class InteractionController : CameraController
     {
         base.OnConsole_Opened();
 
-        SetProcessUnhandledInput(false);
         if (_activeRigidbody != null) { ReleaseGrab(); }
-    }
-    protected override void OnConsole_Closed()
-    {
-        base.OnConsole_Closed();
-
-        SetProcessUnhandledInput(Current);
     }
 
     private Godot.Collections.Dictionary RaycastFromCamera()
