@@ -3,7 +3,7 @@ using System;
 
 namespace Scripts.Player;
 
-public partial class MovementController : CharacterBody3D
+public partial class MovementController : Node
 {
     private const float SwayIntensity = 0.025f;
     private const float SwaySpeed = 4f;
@@ -54,7 +54,7 @@ public partial class MovementController : CharacterBody3D
         base._Ready();
      
         _inventory = CameraController.Inst.GetNode<Inventory>("Inventory");
-        _colShape = GetNode<CollisionShape3D>("CollisionShape3D");
+        _colShape = Player.Inst.GetNode<CollisionShape3D>("CollisionShape3D");
         _capShape = (CapsuleShape3D)_colShape.Shape;
 
         _swayToRestTween = CreateTween();
@@ -72,19 +72,18 @@ public partial class MovementController : CharacterBody3D
         Console.Inst.Opened += OnConsole_Opened;
         Console.Inst.Closed += OnConsole_Closed;
 
-        ((InteractionController)CameraController.Inst).EnteredInteractable += OnInteractionController_EnteredInteractable;
-        ((InteractionController)CameraController.Inst).ExitedInteractable += OnInteractionController_ExitedInteractable;
+        InteractionController interactionController = CameraController.Inst.GetNode<InteractionController>("InteractionController");
+        interactionController.EnteredInteractable += OnInteractionController_EnteredInteractable;
+        interactionController.ExitedInteractable += OnInteractionController_ExitedInteractable;
     }
 
     public override void _Process(double delta)
     {
         base._Process(delta);
 
-        RotateY(Input.GetAxis(_lookRightName, _lookLeftName) * CameraController.JoystickSensitivity * (float)delta);
-        
-        if (!CanMove()) { return; }
+        Player.Inst.RotateY(Input.GetAxis(_lookRightName, _lookLeftName) * CameraController.JoystickSensitivity * (float)delta);
 
-        _distanceTravelled += Velocity.Length() * (float)delta;
+        _distanceTravelled += Player.Inst.Velocity.Length() * (float)delta;
         if (_crouching)                        { Sway(); }
         else if (!_crouchCamTween.IsRunning()) { Bob(); }
     }
@@ -94,9 +93,9 @@ public partial class MovementController : CharacterBody3D
         base._PhysicsProcess(delta);
 
         Vector3 input = GetGlobalMoveInput();
-        bool sprinting = _sprintHeld && GlobalTransform.Basis.Z.Dot(-input) >= (1f / Mathf.Sqrt2) - Mathf.Epsilon;
+        bool sprinting = _sprintHeld && Player.Inst.GlobalTransform.Basis.Z.Dot(-input) >= (1f / Mathf.Sqrt2) - Mathf.Epsilon;
 
-        Velocity = Vector3.Down * DownwardSpeed;
+        Player.Inst.Velocity = Vector3.Down * DownwardSpeed;
         if (sprinting)
         {
             _staminaTimeLeft -= (float)delta;
@@ -109,7 +108,7 @@ public partial class MovementController : CharacterBody3D
             if (CanMove())
             {
                 float sprintSpeed = GetSprintSpeed();
-                Velocity += input * (_crouching ? sprintSpeed * CrouchSpeedMultiplier : sprintSpeed);
+                Player.Inst.Velocity += input * (_crouching ? sprintSpeed * CrouchSpeedMultiplier : sprintSpeed);
             }
         }
         else
@@ -117,12 +116,12 @@ public partial class MovementController : CharacterBody3D
             _staminaTimeLeft += (float)delta * StaminaRefillRate;
             if (_staminaTimeLeft > StaminaMaxTime) { _staminaTimeLeft = StaminaMaxTime; }
 
-            if (CanMove()) { Velocity += input * (_crouching ? WalkSpeed * CrouchSpeedMultiplier : WalkSpeed); }
+            if (CanMove()) { Player.Inst.Velocity += input * (_crouching ? WalkSpeed * CrouchSpeedMultiplier : WalkSpeed); }
         }
-        MoveAndSlide();
+        Player.Inst.MoveAndSlide();
 
         // FOR DEBUGGING
-        GetNode<Label>("/root/Main/UI/DebugLabel").Text = $"Input: {input}, Velocity: {Velocity}, Sprinting: {sprinting}, Stamina: {_staminaTimeLeft}";        
+        GetNode<Label>("/root/Main/UI/DebugLabel").Text = $"Input: {input}, Velocity: {Player.Inst.Velocity}, Sprinting: {sprinting}, Stamina: {_staminaTimeLeft}";        
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -131,7 +130,7 @@ public partial class MovementController : CharacterBody3D
 
         if (@event is InputEventMouseMotion mouseMotion)
         {
-            RotateY(-mouseMotion.Relative.X * CameraController.MouseSensitivity);
+            Player.Inst.RotateY(-mouseMotion.Relative.X * CameraController.MouseSensitivity);
         }
         else if (@event.IsActionPressed(_sprintName)) { _sprintHeld = true; }
         else if (@event.IsActionReleased(_sprintName)) { _sprintHeld = false; }
@@ -142,8 +141,8 @@ public partial class MovementController : CharacterBody3D
     {
         return
         (
-            (Input.GetAxis(_moveLeftName, _moveRightName) * Transform.Basis.X) +
-            (Input.GetAxis(_moveForwardName, _moveBackName) * Transform.Basis.Z)
+            (Input.GetAxis(_moveLeftName, _moveRightName) * Player.Inst.Transform.Basis.X) +
+            (Input.GetAxis(_moveForwardName, _moveBackName) * Player.Inst.Transform.Basis.Z)
         ).LimitLength();
     }
 
@@ -173,7 +172,7 @@ public partial class MovementController : CharacterBody3D
 
     private void Sway()
     {
-        if (Velocity.IsZeroApprox())
+        if (Player.Inst.Velocity.IsZeroApprox())
         {
             if (CameraController.Inst.Rotation.Z != 0f && !_swayToRestTween.IsRunning())
             {
@@ -193,7 +192,7 @@ public partial class MovementController : CharacterBody3D
     }
     private void Bob()
     {
-        if (Velocity.IsZeroApprox())
+        if (Player.Inst.Velocity.IsZeroApprox())
         {
             if (CameraController.Inst.Position.Y != CameraStandY && !_bobToRestTween.IsRunning())
             {
@@ -269,7 +268,7 @@ public partial class MovementController : CharacterBody3D
     private void OnConsole_Opened()
     {
         SetProcesses(false); // Turns off all controls
-        _sprintHeld = false; // When input handling is off, turn off any held
+        _sprintHeld = false; // When input handling is off, turn off held button
     }
     private void OnConsole_Closed() { SetProcesses(CameraController.Inst.Current); }
 

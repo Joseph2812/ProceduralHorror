@@ -3,7 +3,7 @@ using System;
 
 namespace Scripts.Player;
 
-public partial class Player : MovementController
+public partial class Player : CharacterBody3D
 {
     public static Player Inst { get; private set; }
 

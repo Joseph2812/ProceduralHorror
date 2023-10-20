@@ -3,7 +3,7 @@ using System;
 
 namespace Scripts.Player;
 
-public partial class InteractionController : CameraController
+public partial class InteractionController : Node
 {
     private const float ReachMinimum = 1f;
     private const float ReachMaximum = 2f;
@@ -37,8 +37,16 @@ public partial class InteractionController : CameraController
     {
         base._Ready();
 
+        _space = CameraController.Inst.GetWorld3D().DirectSpaceState;
+
         _rayParams.Exclude = new() { Player.Inst.Rid };
-        _space = GetWorld3D().DirectSpaceState;
+
+        Console.Inst.Opened += OnConsole_Opened;
+        Console.Inst.Closed += OnConsole_Closed;
+
+        Inventory inv = CameraController.Inst.GetNode<Inventory>("Inventory");
+        inv.Opened += OnInventory_Opened;
+        inv.Closed += OnInventory_Closed;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -47,9 +55,9 @@ public partial class InteractionController : CameraController
 
         if (_activeRigidbody != null || (_grabQueued && TryGrab()))
         {
-            Vector3 camPos = GlobalPosition;
+            Vector3 camPos = CameraController.Inst.GlobalPosition;
             Vector3 rbPos = _activeRigidbody.GlobalPosition;
-            Vector3 targetPos = camPos - (GlobalTransform.Basis.Z * _targetReach);
+            Vector3 targetPos = camPos - (CameraController.Inst.GlobalTransform.Basis.Z * _targetReach);
             Vector3 camToRb = rbPos - camPos;
 
             // Rotate to act on local axis. Produces smoother movement (especially when changing _targetReach)
@@ -102,17 +110,10 @@ public partial class InteractionController : CameraController
         }
     }
 
-    protected override void OnConsole_Opened()
-    {
-        base.OnConsole_Opened();
-
-        if (_activeRigidbody != null) { ReleaseGrab(); }
-    }
-
     private Godot.Collections.Dictionary RaycastFromCamera()
     {
-        _rayParams.From = GlobalPosition;
-        _rayParams.To = GlobalPosition + (-GlobalTransform.Basis.Z * ReachMaximum);
+        _rayParams.From = CameraController.Inst.GlobalPosition;
+        _rayParams.To = CameraController.Inst.GlobalPosition + (-CameraController.Inst.GlobalTransform.Basis.Z * ReachMaximum);
 
         return _space.IntersectRay(_rayParams);
     }
@@ -158,10 +159,31 @@ public partial class InteractionController : CameraController
             _pidY.Reset();
             _pidZ.Reset();
 
-            _targetReach = (rb.GlobalPosition - GlobalPosition).Length();
+            _targetReach = CameraController.Inst.GlobalPosition.DistanceTo(rb.GlobalPosition);
 
             return true;
         }
         return false;
     }
+
+    private void Disable()
+    {
+        SetProcesses(false);
+
+        _interactQueued = false;
+        _grabQueued = false;
+        if (_activeRigidbody != null) { ReleaseGrab(); }
+    }
+
+    private void SetProcesses(bool state)
+    {
+        SetProcess(state);
+        SetProcessUnhandledInput(state);
+    }
+
+    private void OnConsole_Opened() { Disable(); }
+    private void OnConsole_Closed() { SetProcesses(CameraController.Inst.Current); }
+
+    private void OnInventory_Opened() { Disable(); }
+    private void OnInventory_Closed() { SetProcesses(CameraController.Inst.Current); }
 }

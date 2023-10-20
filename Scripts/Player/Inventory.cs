@@ -59,6 +59,8 @@ public partial class Inventory : Node3D
     );
     private static readonly QuadMesh _selectorMesh = new() { Size = Vector2.One * GridSpace };
 
+    public event Action Opened;
+    public event Action Closed;
     public event Action<Item> ItemRemoved;
 
     private readonly Dictionary<Item, GridData> _itemToGridData = new();
@@ -133,6 +135,9 @@ public partial class Inventory : Node3D
             Visible = !Visible;
             CancelMove();
             // TODO: Play animation
+
+            if (Visible) { Opened?.Invoke(); }
+            else         { Closed?.Invoke(); }
         }
 
         if (!Visible) { return; }

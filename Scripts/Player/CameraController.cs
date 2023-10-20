@@ -14,9 +14,6 @@ public partial class CameraController : Camera3D
 
     private static readonly StringName _lookUpName = "look_up", _lookDownName = "look_down";
 
-    protected virtual void OnConsole_Opened() { SetProcesses(false); }
-    protected virtual void OnConsole_Closed() { SetProcesses(Current); }
-
     public CameraController() { Inst = this; }
 
     public override void _Ready()
@@ -46,12 +43,6 @@ public partial class CameraController : Camera3D
         }
     }
 
-    private void SetProcesses(bool state)
-    {
-        SetProcess(state);
-        SetProcessUnhandledInput(state);
-    }
-
     private Vector3 GetCameraRotation(float moveY) => new(Mathf.Clamp(Rotation.X - moveY, -HalfPi, HalfPi), Rotation.Y, Rotation.Z);
 
     private void OnConsoleCmd_FreeCamera(string[] _) { Current = false; }
@@ -60,4 +51,13 @@ public partial class CameraController : Camera3D
         Current = true;
         Console.Inst.AppendLine("Switched to player camera.");
     }
+
+    private void SetProcesses(bool state)
+    {
+        SetProcess(state);
+        SetProcessUnhandledInput(state);
+    }
+
+    private void OnConsole_Opened() { SetProcesses(false); }
+    private void OnConsole_Closed() { SetProcesses(Current); }
 }
