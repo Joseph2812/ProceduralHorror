@@ -1,11 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://cvklhplc6lu3p"]
+[gd_scene load_steps=3 format=3 uid="uid://cvklhplc6lu3p"]
 
 [ext_resource type="PackedScene" uid="uid://b3c8fycf6lvv" path="res://Models/CounterWithCabinet.glb" id="1_8tu1o"]
+[ext_resource type="Material" uid="uid://cx8yamt4hog3k" path="res://Materials/Placeholders/BrownFallPolishedMarble.tres" id="2_aq0ps"]
 
 [node name="CounterWithCabinet" instance=ExtResource("1_8tu1o")]
 
 [node name="Counter" parent="." index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+surface_material_override/1 = ExtResource("2_aq0ps")
 
 [node name="Door_Linked1" parent="Counter" index="0"]
 transform = Transform3D(7.2529e-09, 0, -0.426547, 0, 0.396, 0, 0.0231046, 0, 1.339e-07, -0.424331, -0.0450693, 0.360264)

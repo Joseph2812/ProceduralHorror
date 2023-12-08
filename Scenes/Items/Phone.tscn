@@ -1,0 +1,25 @@
+[gd_scene load_steps=7 format=3 uid="uid://cv26pyhdxy6wq"]
+
+[ext_resource type="PackedScene" uid="uid://cx0p183airnv1" path="res://Models/Items/Phone.glb" id="1_g5t4l"]
+[ext_resource type="Script" path="res://Scripts/Items/Phone.cs" id="2_p0ks1"]
+[ext_resource type="Texture2D" uid="uid://b4a6xcfcf7n8m" path="res://Textures/Items/Phone/Albedo.png" id="2_q1d43"]
+[ext_resource type="Texture2D" uid="uid://cjx4bewkntqub" path="res://Textures/Items/Phone/ORM.png" id="3_rtloi"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_o1goy"]
+albedo_texture = ExtResource("2_q1d43")
+orm_texture = ExtResource("3_rtloi")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mg5uv"]
+size = Vector3(0.0777896, 0.164119, 0.0120389)
+
+[node name="Phone" instance=ExtResource("1_g5t4l")]
+script = ExtResource("2_p0ks1")
+
+[node name="Phone_Obj" parent="." index="0"]
+surface_material_override/0 = SubResource("ORMMaterial3D_o1goy")
+
+[node name="AnimationPlayer" parent="." index="1"]
+autoplay = "Default"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="2"]
+shape = SubResource("BoxShape3D_mg5uv")

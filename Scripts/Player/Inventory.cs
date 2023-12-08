@@ -68,6 +68,7 @@ public partial class Inventory : Node3D
     private readonly HashSet<Vector2I> _emptyPosS = new();
 
     private GridData _selectedGridData;
+    private ArmsManager _armsManager;
 
     // Selector //
     private MeshInstance3D _selectorMeshInst;
@@ -103,6 +104,8 @@ public partial class Inventory : Node3D
     {
         base._Ready();
 
+        _armsManager = GetParent().GetNode<ArmsManager>("Arms");
+
         _selectorMaterial = new OrmMaterial3D()
         {
             NoDepthTest = true,
@@ -121,7 +124,6 @@ public partial class Inventory : Node3D
         AddChild(_selectorMeshInst);
 
         CreateGrid();
-        TryAddItem(new());
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -146,9 +148,22 @@ public partial class Inventory : Node3D
         else if (@event.IsActionPressed(_rightName))  { MoveSelection(Vector2I.Right); }
         else if (@event.IsActionPressed(_upName))     { MoveSelection(Vector2I.Down); }
         else if (@event.IsActionPressed(_downName))   { MoveSelection(Vector2I.Up); }
+        else if (@event.IsActionPressed(_useName))
+        {
+            if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData gridData)) { return; }
+
+            _armsManager.AddChild(gridData.Item);
+            gridData.Item.Rotation = Vector3.Zero;
+
+            _armsManager.EquipRight(gridData.Item);
+        }
+        else if (@event.IsActionPressed(_dropName))
+        {
+            if (_selectedGridData == null) { RemoveItem(_gridPosToGridData[_selectorGridPos]); }
+            else                           { CancelMove(); }       
+        }
         else if (@event.IsActionPressed(_moveName))   { ToggleMove(); }
         else if (@event.IsActionPressed(_rotateName)) { Rotate(); }
-        else if (@event.IsActionPressed(_dropName))   { CancelMove(); }
     }
 
     public bool TryAddItem(Item item)
@@ -162,15 +177,31 @@ public partial class Inventory : Node3D
         data.SetGridPosition(gridPos);
 
         _itemToGridData.Add(item, data);
-        foreach (Vector2I pos in occupiedPosS) { _gridPosToGridData.Add(pos, data); }
-        _emptyPosS.ExceptWith(occupiedPosS);
+        RegisterGridDataSpace(data, occupiedPosS);
 
         return true;
     }
-    public void RemoveItem(Item item)
+    public void RemoveItem(Item item) { RemoveItem(_itemToGridData[item]); }
+    private void RemoveItem(GridData gridData)
     {
+        gridData.MeshInstance.QueueFree();
 
-        ItemRemoved?.Invoke(item);
+        _itemToGridData.Remove(gridData.Item);
+        DeregisterGridDataSpace(gridData.GetOccupiedPositions());
+
+        gridData.Item.QueueFree();
+        ItemRemoved?.Invoke(gridData.Item);
+    }
+
+    private void RegisterGridDataSpace(GridData data, HashSet<Vector2I> occupiedPosS)
+    {
+        foreach (Vector2I pos in occupiedPosS) { _gridPosToGridData.Add(pos, data); }
+        _emptyPosS.ExceptWith(occupiedPosS);
+    }
+    private void DeregisterGridDataSpace(HashSet<Vector2I> occupiedPosS)
+    {
+        foreach (Vector2I pos in occupiedPosS) { _gridPosToGridData.Remove(pos); }
+        _emptyPosS.UnionWith(occupiedPosS);
     }
 
     private void SetSelectorGridPosition(Vector2I gridPos)
@@ -235,7 +266,7 @@ public partial class Inventory : Node3D
 
         foreach (Vector2I pos in clearancePosS)
         {
-            Vector3 bottomLeftPos = new Vector3
+            Vector3 bottomLeftPos = new
             (
                 (GridThickness * 0.5f) + ((pos.X - 0.5f) * (GridSpace + GridThickness)),
                 (GridThickness * 0.5f) + ((pos.Y - 0.5f) * (GridSpace + GridThickness)),
@@ -289,8 +320,7 @@ public partial class Inventory : Node3D
             _selectedGridData = data;
 
             HashSet<Vector2I> occupiedPositions = _selectedGridData.GetOccupiedPositions();
-            foreach (Vector2I pos in occupiedPositions) { _gridPosToGridData.Remove(pos); }
-            _emptyPosS.UnionWith(_selectedGridData.GetOccupiedPositions());
+            DeregisterGridDataSpace(occupiedPositions);
 
             SetSelectorGridPosition(data.GridPosition);
             _selectorMeshInst.Rotation = data.MeshInstance.Rotation;
@@ -305,8 +335,7 @@ public partial class Inventory : Node3D
             HashSet<Vector2I> occupiedPositions = _selectedGridData.GetOccupiedPositions();
             if (!occupiedPositions.IsSubsetOf(_emptyPosS)) { return; }
 
-            foreach (Vector2I pos in occupiedPositions) { _gridPosToGridData.Add(pos, _selectedGridData); }
-            _emptyPosS.ExceptWith(occupiedPositions);
+            RegisterGridDataSpace(_selectedGridData, occupiedPositions);
             _selectedGridData = null;
 
             _selectorMeshInst.Mesh = _selectorMesh;

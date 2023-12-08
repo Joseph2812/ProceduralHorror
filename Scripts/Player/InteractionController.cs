@@ -25,6 +25,7 @@ public partial class InteractionController : Node
     private readonly PidController _pidY = new(pGain: PGain, dGain: DGain, maxResult: MaxGrabForce);
     private readonly PidController _pidZ = new(pGain: PGain * 3f, dGain: DGain * 1.5f, maxResult: MaxGrabForce * 3f);
 
+    private Inventory _inventory;
     private PhysicsDirectSpaceState3D _space;
     private IInteractable _activeInteractable;
     private RigidBody3D _activeRigidbody;
@@ -37,6 +38,7 @@ public partial class InteractionController : Node
     {
         base._Ready();
 
+        _inventory = CameraController.Inst.GetNode<Inventory>("Inventory");
         _space = CameraController.Inst.GetWorld3D().DirectSpaceState;
 
         _rayParams.Exclude = new() { Player.Inst.Rid };
@@ -44,16 +46,21 @@ public partial class InteractionController : Node
         Console.Inst.Opened += OnConsole_Opened;
         Console.Inst.Closed += OnConsole_Closed;
 
-        Inventory inv = CameraController.Inst.GetNode<Inventory>("Inventory");
-        inv.Opened += OnInventory_Opened;
-        inv.Closed += OnInventory_Closed;
+        _inventory.Opened += OnInventory_Opened;
+        _inventory.Closed += OnInventory_Closed;
     }
 
     public override void _PhysicsProcess(double delta)
     {
         base._PhysicsProcess(delta);
 
-        if (_activeRigidbody != null || (_grabQueued && TryGrab()))
+        // Check For Raycast Collision //
+        Godot.Collections.Dictionary rayResult = RaycastFromCamera();
+        GodotObject colliderObj = null;
+        if (rayResult.Count > 0) { colliderObj = rayResult[_colliderName].AsGodotObject(); }
+
+        // Try Grabbing/Interacting //
+        if (_activeRigidbody != null || (_grabQueued && TryGrab(colliderObj)))
         {
             Vector3 camPos = CameraController.Inst.GlobalPosition;
             Vector3 rbPos = _activeRigidbody.GlobalPosition;
@@ -70,19 +77,18 @@ public partial class InteractionController : Node
                  _pidZ.GetNextValue((float)delta, rotatedRbToTarget.Z) * camToRbBasis.Z
             );
 
-            if (camToRb.LengthSquared() >= GrabDropSqrThresholdZ)
-            {
-                ReleaseGrab();
-                return;
-            }
+            if (camToRb.LengthSquared() >= GrabDropSqrThresholdZ) { ReleaseGrab(); }
         }
-        else if (_interactQueued && !TryInteract() && _activeInteractable != null)
+        else if (_interactQueued && !(TryInteract(colliderObj) || TryPickupItem(colliderObj)) && _activeInteractable != null)
         {
             _activeInteractable.Exit();
             _activeInteractable = null;
 
             ExitedInteractable?.Invoke();
         }
+
+        _interactQueued = false;
+        _grabQueued = false;
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -124,12 +130,26 @@ public partial class InteractionController : Node
         _activeRigidbody = null;
     }
 
-    private bool TryInteract()
+    private bool TryPickupItem(GodotObject colliderObj)
     {
-        _interactQueued = false;
+        if (colliderObj is Items.Item item)
+        {
+            if (_inventory.TryAddItem(item))
+            {
+                item.Visible = false;
+                item.Freeze = true;
+                item.CollisionShape.SetDeferred("disabled", true);
+                item.GetParent().RemoveChild(item);
 
-        Godot.Collections.Dictionary dict = RaycastFromCamera();
-        if (dict.Count != 0 && dict[_colliderName].AsGodotObject() is IInteractable interactable)
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool TryInteract(GodotObject colliderObj)
+    {
+        if (colliderObj is IInteractable interactable)
         {
             if (interactable.ExitRequired)
             {
@@ -147,12 +167,9 @@ public partial class InteractionController : Node
         return false;
     }
 
-    private bool TryGrab()
+    private bool TryGrab(GodotObject colliderObj)
     {
-        _grabQueued = false;
-
-        Godot.Collections.Dictionary dict = RaycastFromCamera();
-        if (dict.Count != 0 && dict[_colliderName].AsGodotObject() is RigidBody3D rb)
+        if (colliderObj is RigidBody3D rb)
         {
             _activeRigidbody = rb;
             _pidX.Reset();

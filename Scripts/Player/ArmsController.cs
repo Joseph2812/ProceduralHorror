@@ -29,15 +29,15 @@ public partial class ArmsController : Node
 
         Vector3 parentGlobalRotation = _parentNode.GlobalRotation;
         Vector3 deltaAngle = (parentGlobalRotation - _lastParentGlobalRotation).EnsureAngles();
-        Vector3 smoothedDeltaRotation = _lastInterpDeltaRotation.Lerp(deltaAngle, WeightToCurrent).Clamp
+        Vector3 interpDeltaRotation = _lastInterpDeltaRotation.Lerp(deltaAngle, WeightToCurrent).Clamp
         (
             Vector3.One * -MaximumDeltaRotation,
             Vector3.One * MaximumDeltaRotation
         );
 
         _lastParentGlobalRotation = parentGlobalRotation;
-        _lastInterpDeltaRotation = smoothedDeltaRotation;
+        _lastInterpDeltaRotation = interpDeltaRotation;
 
-        _nodeToRotate.Rotation = smoothedDeltaRotation;
+        _nodeToRotate.Rotation = interpDeltaRotation;
     }
 }
