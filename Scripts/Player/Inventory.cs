@@ -113,7 +113,7 @@ public partial class Inventory : Node3D
     public event Action Opened, Closed;
     public event Action<Item> ItemRemoved;
 
-    private Item[] _assignedItems = new Item[HotkeyCount];
+    private GridData[] _assignedGridData = new GridData[HotkeyCount];
 
     private readonly Dictionary<Item, GridData> _itemToGridData = new();
     private readonly Dictionary<Vector2I, GridData> _gridPosToGridData = new();
@@ -201,10 +201,10 @@ public partial class Inventory : Node3D
         else if (@event.IsActionPressed(_hotkey2Name, exactMatch: true)) { UseHotkey(1); }
         else if (@event.IsActionPressed(_hotkey3Name, exactMatch: true)) { UseHotkey(2); }
         else if (@event.IsActionPressed(_hotkey4Name, exactMatch: true)) { UseHotkey(3); }
-        else if (@event.IsActionPressed(_hotkeyAlt1Name) && !Visible) { EquipAlt(_assignedItems[0]); }
-        else if (@event.IsActionPressed(_hotkeyAlt2Name) && !Visible) { EquipAlt(_assignedItems[1]); }
-        else if (@event.IsActionPressed(_hotkeyAlt3Name) && !Visible) { EquipAlt(_assignedItems[2]); }
-        else if (@event.IsActionPressed(_hotkeyAlt4Name) && !Visible) { EquipAlt(_assignedItems[3]); }
+        else if (@event.IsActionPressed(_hotkeyAlt1Name) && !Visible) { EquipAlt(_assignedGridData[0].Item); }
+        else if (@event.IsActionPressed(_hotkeyAlt2Name) && !Visible) { EquipAlt(_assignedGridData[1].Item); }
+        else if (@event.IsActionPressed(_hotkeyAlt3Name) && !Visible) { EquipAlt(_assignedGridData[2].Item); }
+        else if (@event.IsActionPressed(_hotkeyAlt4Name) && !Visible) { EquipAlt(_assignedGridData[3].Item); }
 
         if (!Visible) { return; }
 
@@ -380,7 +380,8 @@ public partial class Inventory : Node3D
             OutlineSize = 0,
             DoubleSided = false,
             NoDepthTest = true,
-            RenderPriority = 3
+            RenderPriority = 3,
+            Visible = false
         };
         AddChild(label);
 
@@ -390,19 +391,20 @@ public partial class Inventory : Node3D
     private void UseHotkey(int idx)
     {
         if (Visible) { Assign(idx); }
-        else         { Equip(_assignedItems[idx]); }
+        else         { Equip(_assignedGridData[idx].Item); }
     }
 
     private void Assign(int idx)
     {
         if (!_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
-        for (int i = 0; i < _assignedItems.Length; i++)
-        {
-            if (_assignedItems[i] == data.Item) { _assignedItems[i] = null; }
-        }
-        _assignedItems[idx] = data.Item;
 
+        GridData oldData = _assignedGridData[idx];
+        if (oldData != null) { oldData.HotkeyLabel.Visible = false; }
+
+        _assignedGridData[idx] = data;
+        data.HotkeyLabel.Visible = true;
         data.HotkeyLabel.Text = GetHotkeyString(idx);
+
         data.CallDeferred(_updateLabelPositionName);
     }
     private string GetHotkeyString(int idx)
