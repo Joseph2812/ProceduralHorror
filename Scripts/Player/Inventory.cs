@@ -8,11 +8,13 @@ namespace Scripts.Player;
 
 public partial class Inventory : Node3D
 {
-    private class GridData
+    private partial class GridData : GodotObject
     {
         public readonly Item Item;
         public readonly MeshInstance3D MeshInstance;
         public readonly ArrayMesh SelectionMesh;
+        public readonly Label3D EquippedLabel;
+        public readonly Label3D HotkeyLabel;
 
         public Vector2I GridPosition { get; private set; }
 
@@ -26,11 +28,22 @@ public partial class Inventory : Node3D
             return positions;
         }
 
-        public GridData(Item item, MeshInstance3D meshInstance, ArrayMesh selectionMesh)
+        public GridData(Item item, MeshInstance3D meshInstance, ArrayMesh selectionMesh, Label3D equippedLabel, Label3D hotkeyLabel)
         {
             Item = item;
             MeshInstance = meshInstance;
             SelectionMesh = selectionMesh;
+            EquippedLabel = equippedLabel;
+            HotkeyLabel = hotkeyLabel;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            MeshInstance.QueueFree();
+            EquippedLabel.QueueFree();
+            HotkeyLabel.QueueFree();
         }
 
         public HashSet<Vector2I> GetOccupiedPositions() => GetOccupiedPositions(Item.ClearancePositions, GridPosition, MeshInstance.Rotation.Z);
@@ -39,29 +52,68 @@ public partial class Inventory : Node3D
 
         public void SetGridPosition(Vector2I gridPos)
         {
+            Vector3 pos = GetCentrePosFromGridPos(gridPos);
+
             GridPosition = gridPos;
-            MeshInstance.Position = GetPosFromGridPos(gridPos);
+            MeshInstance.Position = pos;
+
+            UpdateLabelPosition(pos);
+        }
+
+        /// <summary>
+        /// NOTE: Call deferred when changing label contents, so AABB can update first.
+        /// </summary>
+        public void UpdateLabelPosition() => UpdateLabelPosition(GetCentrePosFromGridPos(GridPosition));
+        private void UpdateLabelPosition(Vector3 centrePos)
+        {
+            const float HalfGridSpace = GridSpace * 0.5f;
+            Vector3 equippedLabelSize = EquippedLabel.GetAabb().Size;
+            Vector3 hotkeyLabelSize = HotkeyLabel.GetAabb().Size;
+
+            EquippedLabel.Position = new
+            (
+                centrePos.X + (equippedLabelSize.X * 0.5f) - HalfGridSpace,
+                centrePos.Y + (equippedLabelSize.Y * 0.5f) - HalfGridSpace,
+                centrePos.Z
+            );
+            HotkeyLabel.Position = new
+            (
+                centrePos.X + (hotkeyLabelSize.X * 0.5f) - HalfGridSpace,
+                centrePos.Y - (hotkeyLabelSize.Y * 0.5f) + HalfGridSpace,
+                centrePos.Z
+            );
         }
     }
 
     private const float GridSpace = 0.175f;
     private const float GridThickness = 0.01f;
+    private const int HotkeyCount = 4; // Numbered Hotkeys
 
     private static readonly StringName _toggleName = "inventory_toggle";
     private static readonly StringName _leftName = "inventory_left", _rightName = "inventory_right", _upName = "inventory_up", _downName = "inventory_down";
-    private static readonly StringName _useName = "inventory_use", _dropName = "inventory_drop", _moveName = "inventory_move", _rotateName = "inventory_rotate";
+    private static readonly StringName _useName = "inventory_use", _useAltName = "inventory_use_alt", _dropName = "inventory_drop", _moveName = "inventory_move", _rotateName = "inventory_rotate";
+    private static readonly StringName _hotkey1Name = "hotkey_1", _hotkey2Name = "hotkey_2", _hotkey3Name = "hotkey_3", _hotkey4Name = "hotkey_4";
+    private static readonly StringName _hotkeyAlt1Name = "hotkey_alt_1", _hotkeyAlt2Name = "hotkey_alt_2", _hotkeyAlt3Name = "hotkey_alt_3", _hotkeyAlt4Name = "hotkey_alt_4";
+    private static readonly StringName _updateLabelPositionName = nameof(GridData.UpdateLabelPosition);
 
     private static readonly Vector2I _gridSize = new(6, 4);
-    private static readonly Vector2 _bottomLeftPos = new
+
+    /// <summary>
+    /// Applied to the grid MeshInstance to centre it on the screen.
+    /// </summary>
+    private static readonly Vector3 _offset = new
     (
         _gridSize.X * (GridSpace + GridThickness) * -0.5f,
-        _gridSize.Y * (GridSpace + GridThickness) * -0.5f
+        _gridSize.Y * (GridSpace + GridThickness) * -0.5f,
+        0f
     );
     private static readonly QuadMesh _selectorMesh = new() { Size = Vector2.One * GridSpace };
+    private static Node _sceneRoot;
 
-    public event Action Opened;
-    public event Action Closed;
+    public event Action Opened, Closed;
     public event Action<Item> ItemRemoved;
+
+    private Item[] _assignedItems = new Item[HotkeyCount];
 
     private readonly Dictionary<Item, GridData> _itemToGridData = new();
     private readonly Dictionary<Vector2I, GridData> _gridPosToGridData = new();
@@ -79,12 +131,13 @@ public partial class Inventory : Node3D
     private Vector2I _oldGridPos;
     private Vector3 _oldRotation;
 
-    public static Vector3 GetPosFromGridPos(Vector2I gridPos)
+    /// <returns>Centre position of the grid square at <paramref name="gridPos"/>.</returns>
+    public static Vector3 GetCentrePosFromGridPos(Vector2I gridPos)
     {
         return new
         (
-            _bottomLeftPos.X + (GridThickness * 0.5f) + ((gridPos.X + 0.5f) * (GridSpace + GridThickness)),
-            _bottomLeftPos.Y + (GridThickness * 0.5f) + ((gridPos.Y + 0.5f) * (GridSpace + GridThickness)),
+            _offset.X + (GridThickness * 0.5f) + ((gridPos.X + 0.5f) * (GridSpace + GridThickness)),
+            _offset.Y + (GridThickness * 0.5f) + ((gridPos.Y + 0.5f) * (GridSpace + GridThickness)),
             0f
         );
     }
@@ -104,7 +157,8 @@ public partial class Inventory : Node3D
     {
         base._Ready();
 
-        _armsManager = GetParent().GetNode<ArmsManager>("Arms");
+        _sceneRoot = GetTree().Root.GetNode("Main");
+        _armsManager = GetParent().GetNode<ArmsManager>("ArmsManager");
 
         _selectorMaterial = new OrmMaterial3D()
         {
@@ -115,15 +169,17 @@ public partial class Inventory : Node3D
 
         _selectorMeshInst = new()
         {
-            Name = "Selector",
-            Position = GetPosFromGridPos(Vector2I.Zero),
+            Name             = "Selector",
+            Position         = GetCentrePosFromGridPos(Vector2I.Zero),
             MaterialOverride = _selectorMaterial,
-            Mesh = _selectorMesh,
-            CastShadow = GeometryInstance3D.ShadowCastingSetting.Off
+            Mesh             = _selectorMesh,
+            CastShadow       = GeometryInstance3D.ShadowCastingSetting.Off
         };
         AddChild(_selectorMeshInst);
 
         CreateGrid();
+
+        _armsManager.EquippedStateChanged += OnArmsManager_EquippedStateChanged;
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -141,21 +197,31 @@ public partial class Inventory : Node3D
             if (Visible) { Opened?.Invoke(); }
             else         { Closed?.Invoke(); }
         }
+        else if (@event.IsActionPressed(_hotkey1Name, exactMatch: true)) { UseHotkey(0); }
+        else if (@event.IsActionPressed(_hotkey2Name, exactMatch: true)) { UseHotkey(1); }
+        else if (@event.IsActionPressed(_hotkey3Name, exactMatch: true)) { UseHotkey(2); }
+        else if (@event.IsActionPressed(_hotkey4Name, exactMatch: true)) { UseHotkey(3); }
+        else if (@event.IsActionPressed(_hotkeyAlt1Name) && !Visible) { EquipAlt(_assignedItems[0]); }
+        else if (@event.IsActionPressed(_hotkeyAlt2Name) && !Visible) { EquipAlt(_assignedItems[1]); }
+        else if (@event.IsActionPressed(_hotkeyAlt3Name) && !Visible) { EquipAlt(_assignedItems[2]); }
+        else if (@event.IsActionPressed(_hotkeyAlt4Name) && !Visible) { EquipAlt(_assignedItems[3]); }
 
         if (!Visible) { return; }
 
-        if      (@event.IsActionPressed(_leftName))   { MoveSelection(Vector2I.Left); }
-        else if (@event.IsActionPressed(_rightName))  { MoveSelection(Vector2I.Right); }
-        else if (@event.IsActionPressed(_upName))     { MoveSelection(Vector2I.Down); }
-        else if (@event.IsActionPressed(_downName))   { MoveSelection(Vector2I.Up); }
-        else if (@event.IsActionPressed(_useName))
+        // Inventory Only Controls //
+        if      (@event.IsActionPressed(_leftName))  { MoveSelection(Vector2I.Left); }
+        else if (@event.IsActionPressed(_rightName)) { MoveSelection(Vector2I.Right); }
+        else if (@event.IsActionPressed(_upName))    { MoveSelection(Vector2I.Down); }
+        else if (@event.IsActionPressed(_downName))  { MoveSelection(Vector2I.Up); }
+        else if (@event.IsActionPressed(_useName, exactMatch: true))
         {
-            if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData gridData)) { return; }
-
-            _armsManager.AddChild(gridData.Item);
-            gridData.Item.Rotation = Vector3.Zero;
-
-            _armsManager.EquipRight(gridData.Item);
+            if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
+            Equip(data.Item);
+        }
+        else if (@event.IsActionPressed(_useAltName))
+        {
+            if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
+            EquipAlt(data.Item);
         }
         else if (@event.IsActionPressed(_dropName))
         {
@@ -166,6 +232,13 @@ public partial class Inventory : Node3D
         else if (@event.IsActionPressed(_rotateName)) { Rotate(); }
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+
+        foreach (GridData data in _itemToGridData.Values) { data.Free(); }
+    }
+
     public bool TryAddItem(Item item)
     {
         (Vector2I, float, HashSet<Vector2I>)? gridPos_rotZ_occupiedPosS = FindValidPositioning(item.ClearancePositions);
@@ -173,10 +246,21 @@ public partial class Inventory : Node3D
 
         (Vector2I gridPos, float rotZ, HashSet<Vector2I> occupiedPosS) = gridPos_rotZ_occupiedPosS.Value;
 
-        GridData data = new(item, CreateItemMeshInstance(gridPos, rotZ), CreateSelectorMesh(item.ClearancePositions));
+        GridData data = new
+        (
+            item,
+            CreateItemMeshInstance(gridPos, rotZ), 
+            CreateSelectorMesh(item.ClearancePositions), 
+            CreateLabel(),
+            CreateLabel()
+        );
         data.SetGridPosition(gridPos);
 
         _itemToGridData.Add(item, data);
+
+        item.GetParent()?.RemoveChild(item);
+        _armsManager.AddChild(item);
+
         RegisterGridDataSpace(data, occupiedPosS);
 
         return true;
@@ -184,13 +268,17 @@ public partial class Inventory : Node3D
     public void RemoveItem(Item item) { RemoveItem(_itemToGridData[item]); }
     private void RemoveItem(GridData gridData)
     {
-        gridData.MeshInstance.QueueFree();
-
         _itemToGridData.Remove(gridData.Item);
+
+        _armsManager.RemoveChild(gridData.Item);
+        _sceneRoot.AddChild(gridData.Item);
+
         DeregisterGridDataSpace(gridData.GetOccupiedPositions());
 
-        gridData.Item.QueueFree();
+        // TODO: Drop item physically on ground
         ItemRemoved?.Invoke(gridData.Item);
+
+        gridData.Free();
     }
 
     private void RegisterGridDataSpace(GridData data, HashSet<Vector2I> occupiedPosS)
@@ -206,16 +294,16 @@ public partial class Inventory : Node3D
 
     private void SetSelectorGridPosition(Vector2I gridPos)
     {
-        _selectorMeshInst.Position = GetPosFromGridPos(gridPos);
+        _selectorMeshInst.Position = GetCentrePosFromGridPos(gridPos);
         _selectorGridPos = gridPos;
     }
 
-    private MeshInstance3D CreateGrid()
+    private void CreateGrid()
     {
         MeshInstance3D meshInst = new()
         {
             Name = "Grid",
-            Position = new(_bottomLeftPos.X, _bottomLeftPos.Y, 0f),
+            Position = _offset,
             Mesh = new GridMesh(_gridSize, GridSpace, GridThickness)
             {
                 Material = new OrmMaterial3D()
@@ -229,16 +317,11 @@ public partial class Inventory : Node3D
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off
         };
         AddChild(meshInst);
-
-        return meshInst;
     }
-
     private MeshInstance3D CreateItemMeshInstance(Vector2I gridPos, float rotationZ)
     {
         MeshInstance3D meshInst = new()
         {
-            Position = GetPosFromGridPos(gridPos),
-            Rotation = Vector3.Back * rotationZ,
             Mesh = new BoxMesh()
             {
                 Material = new OrmMaterial3D()
@@ -254,7 +337,6 @@ public partial class Inventory : Node3D
 
         return meshInst;
     }
-
     private ArrayMesh CreateSelectorMesh(Vector2I[] clearancePosS)
     {
         SurfaceTool st = new();
@@ -272,6 +354,7 @@ public partial class Inventory : Node3D
                 (GridThickness * 0.5f) + ((pos.Y - 0.5f) * (GridSpace + GridThickness)),
                 0f
             );
+
             Vector3 topLeftPos = bottomLeftPos + spaceUp;
             Vector3 bottomRightPos = bottomLeftPos + spaceRight;
 
@@ -287,6 +370,67 @@ public partial class Inventory : Node3D
         }
 
         return st.Commit();
+    }
+    private Label3D CreateLabel()
+    {
+        Label3D label = new()
+        {
+            FontSize = 64,
+            PixelSize = 0.00075f,
+            OutlineSize = 0,
+            DoubleSided = false,
+            NoDepthTest = true,
+            RenderPriority = 3
+        };
+        AddChild(label);
+
+        return label;
+    }
+
+    private void UseHotkey(int idx)
+    {
+        if (Visible) { Assign(idx); }
+        else         { Equip(_assignedItems[idx]); }
+    }
+
+    private void Assign(int idx)
+    {
+        if (!_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
+        for (int i = 0; i < _assignedItems.Length; i++)
+        {
+            if (_assignedItems[i] == data.Item) { _assignedItems[i] = null; }
+        }
+        _assignedItems[idx] = data.Item;
+
+        data.HotkeyLabel.Text = GetHotkeyString(idx);
+        data.CallDeferred(_updateLabelPositionName);
+    }
+    private string GetHotkeyString(int idx)
+    {
+        switch (idx)
+        {
+            case 0: return "1";
+            case 1: return "2";
+            case 2: return "3";
+            case 3: return "4";
+            default:
+                throw new ArgumentException($"Index: {idx}, is not a hotkey.");
+        }      
+    }
+
+    private void Equip(Item item)
+    {
+        if (item == null) { return; }
+
+        if (item.TwoHanded) { _armsManager.EquipBoth(item); }
+        else                { _armsManager.EquipRight(item); }
+    }
+    private void EquipAlt(Item item)
+    {
+        if (item == null) { return; }
+
+        if (item.TwoHanded) { _armsManager.EquipBoth(item); }
+        else                { _armsManager.EquipLeft(item); }
     }
 
     /// <summary>
@@ -342,7 +486,6 @@ public partial class Inventory : Node3D
             _selectorMaterial.AlbedoColor = Colors.Yellow;
         }
     }
-
     private void RevertMove()
     {
         _selectedGridData.SetGridPosition(_oldGridPos);
@@ -351,7 +494,6 @@ public partial class Inventory : Node3D
         SetSelectorGridPosition(_oldGridPos);
         _selectorMeshInst.Rotation = _oldRotation;
     }
-
     private void CancelMove()
     {
         if (_selectedGridData == null) { return; }
@@ -451,5 +593,37 @@ public partial class Inventory : Node3D
             }
         }
         return null;
+    }
+
+    private void OnArmsManager_EquippedStateChanged(Item item, ArmsManager.Arm arm)
+    {
+        GridData data = _itemToGridData[item];
+        switch (arm)
+        {
+            case ArmsManager.Arm.None:
+                data.EquippedLabel.Visible = false;
+                break;
+
+            case ArmsManager.Arm.Left:
+                data.EquippedLabel.Visible = true;
+                data.EquippedLabel.Text = "L";
+                data.CallDeferred(_updateLabelPositionName);
+                break;
+
+            case ArmsManager.Arm.Right:
+                data.EquippedLabel.Visible = true;
+                data.EquippedLabel.Text = "R";
+                data.CallDeferred(_updateLabelPositionName);
+                break;
+
+            case ArmsManager.Arm.Both:
+                data.EquippedLabel.Visible = true;
+                data.EquippedLabel.Text = "B";
+                data.CallDeferred(_updateLabelPositionName);
+                break;
+
+            default:
+                throw new ArgumentException("Invalid arm.");
+        }
     }
 }

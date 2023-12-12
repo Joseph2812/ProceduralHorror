@@ -272,6 +272,6 @@ public partial class MovementController : Node
     }
     private void OnConsole_Closed() { SetProcesses(CameraController.Inst.Current); }
 
-    private void OnInteractionController_EnteredInteractable() { _interacting = false; }
-    private void OnInteractionController_ExitedInteractable() { _interacting = true; }
+    private void OnInteractionController_EnteredInteractable() { _interacting = true; }
+    private void OnInteractionController_ExitedInteractable() { _interacting = false; }
 }

@@ -317,7 +317,7 @@ public partial class MapGenerator : GridMap
             !(
                 satisfiedHeightConstraint &&
                 (
-                    (totalDist < 2)                                         || // Weighting doesn't matter below this value (too thin for a middle to exist)
+                    (totalDist < 2)                                           || // Weighting doesn't matter below this value (too thin for a middle to exist)
                     ( iObj.Exact && iObj.WeightToMiddle == minNormalisedProx) ||
                     (!iObj.Exact && Rng.Randf() < GetProximityProbability(iObj.WeightToMiddle, minNormalisedProx))
                 ) &&

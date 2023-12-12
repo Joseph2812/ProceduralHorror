@@ -139,7 +139,6 @@ public partial class InteractionController : Node
                 item.Visible = false;
                 item.Freeze = true;
                 item.CollisionShape.SetDeferred("disabled", true);
-                item.GetParent().RemoveChild(item);
 
                 return true;
             }

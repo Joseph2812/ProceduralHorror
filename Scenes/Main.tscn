@@ -115,7 +115,7 @@ selection_enabled = true
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.05
-placeholder_text = "Enter a command..."
+placeholder_text = "Enter a command... (type \"help\" for the list)"
 
 [node name="Player" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, 0.5)
@@ -144,17 +144,17 @@ script = ExtResource("6_0qrqr")
 [node name="SpotLight3D" type="SpotLight3D" parent="Player/Camera3D"]
 spot_range = 20.0
 
-[node name="Arms" type="Node3D" parent="Player/Camera3D"]
+[node name="ArmsManager" type="Node3D" parent="Player/Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.075)
 script = ExtResource("8_ku1aq")
 
-[node name="ArmsController" type="Node" parent="Player/Camera3D/Arms"]
+[node name="ArmsController" type="Node" parent="Player/Camera3D/ArmsManager"]
 script = ExtResource("8_dphlw")
 
-[node name="Arm_L" parent="Player/Camera3D/Arms" instance=ExtResource("10_bkjxv")]
+[node name="Arm_L" parent="Player/Camera3D/ArmsManager" instance=ExtResource("10_bkjxv")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, 1, -0.145, -0.15, 0)
 
-[node name="Arm_R" parent="Player/Camera3D/Arms" instance=ExtResource("10_bkjxv")]
+[node name="Arm_R" parent="Player/Camera3D/ArmsManager" instance=ExtResource("10_bkjxv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.145, -0.15, 0)
 
 [node name="Inventory" type="Node3D" parent="Player/Camera3D"]

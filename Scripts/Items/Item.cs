@@ -10,6 +10,7 @@ public abstract partial class Item : RigidBody3D
     private static readonly StringName _equipName = "Equip", _unequipName = "Unequip";
     private static readonly StringName _idleName = "Idle";
 
+    public abstract bool TwoHanded { get; }
     protected abstract StringName FullEquipName { get; }
     protected abstract StringName FullUnequipName { get; }
     protected abstract StringName FullIdleName { get; }
@@ -32,7 +33,7 @@ public abstract partial class Item : RigidBody3D
         _otherAnims = otherAnims;
 
         Visible = true;
-        PlayAnimation(_equipName, FullEquipName);
+        //PlayAnimation(_equipName, FullEquipName);
         PlayAnimation(_idleName, FullIdleName);
 
     }
