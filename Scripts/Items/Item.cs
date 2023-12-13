@@ -11,15 +11,19 @@ public abstract partial class Item : RigidBody3D
     private static readonly StringName _idleName = "Idle";
 
     public abstract bool TwoHanded { get; }
+
     protected abstract StringName FullEquipName { get; }
     protected abstract StringName FullUnequipName { get; }
     protected abstract StringName FullIdleName { get; }
+    protected abstract string MeshInstPath { get; }
 
     /// <summary>
     /// Local grid coordinates used by <see cref="Player.Inventory"/> to indicate the positions it takes up.
     /// </summary>
     public virtual Vector2I[] ClearancePositions => _defaultClearancePositions;
 
+    public Mesh InventoryMesh { get; private set; }
+    public Material InventoryMaterial { get; private set; }
     public CollisionShape3D CollisionShape { get; private set; }
 
     protected bool Equipped { get; private set; }
@@ -50,6 +54,10 @@ public abstract partial class Item : RigidBody3D
     public override void _Ready()
     {
         base._Ready();
+
+        MeshInstance3D meshInst = GetNode<MeshInstance3D>(MeshInstPath);
+        InventoryMesh = meshInst.Mesh;
+        InventoryMaterial = meshInst.GetActiveMaterial(0);
 
         CollisionShape = GetNode<CollisionShape3D>("CollisionShape3D");
         _itemAnim = GetNode<AnimationPlayer>("AnimationPlayer");

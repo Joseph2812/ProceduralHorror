@@ -249,14 +249,14 @@ public partial class Inventory : Node3D
         GridData data = new
         (
             item,
-            CreateItemMeshInstance(gridPos, rotZ), 
+            CreateItemMeshInstance(item.InventoryMesh, item.InventoryMaterial, rotZ), 
             CreateSelectorMesh(item.ClearancePositions), 
             CreateLabel(),
             CreateLabel()
         );
-        data.SetGridPosition(gridPos);
-
         _itemToGridData.Add(item, data);
+
+        data.SetGridPosition(gridPos);
 
         item.GetParent()?.RemoveChild(item);
         _armsManager.AddChild(item);
@@ -318,21 +318,15 @@ public partial class Inventory : Node3D
         };
         AddChild(meshInst);
     }
-    private MeshInstance3D CreateItemMeshInstance(Vector2I gridPos, float rotationZ)
+    private MeshInstance3D CreateItemMeshInstance(Mesh mesh, Material mat, float rotationZ)
     {
         MeshInstance3D meshInst = new()
         {
-            Mesh = new BoxMesh()
-            {
-                Material = new OrmMaterial3D()
-                {
-                    AlbedoColor = Colors.Purple,
-                    NoDepthTest = true,
-                    RenderPriority = 1
-                },
-                Size = new(0.05f, 0.25f, 0.05f)
-            },
+            Mesh = (Mesh)mesh.Duplicate(),
+            MaterialOverride = (Material)mat.Duplicate(),
+            Rotation = Vector3.Back * rotationZ
         };
+        ((OrmMaterial3D)meshInst.MaterialOverride).NoDepthTest = true;
         AddChild(meshInst);
 
         return meshInst;

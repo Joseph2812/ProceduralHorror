@@ -9,7 +9,9 @@ public partial class Phone : Item
     private static readonly StringName _fullIdleName = "Idle_Phone";
 
     public override bool TwoHanded => false;
+
     protected override StringName FullEquipName => _fullEquipName;
     protected override StringName FullUnequipName => _fullUnequipName;
     protected override StringName FullIdleName => _fullIdleName;
+    protected override string MeshInstPath => "Phone_Obj";
 }
