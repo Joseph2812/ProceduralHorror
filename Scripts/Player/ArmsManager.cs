@@ -45,7 +45,16 @@ public partial class ArmsManager : Node3D
             UnequipLeftOnly();
             return;
         }
-        if (_itemR == item) { UnequipRightOnly(); }
+        if (_itemR == item)
+        {
+            UnequipRightOnly();
+            if (_itemL != null)
+            {
+                Item itemL = _itemL;
+                UnequipLeftOnly();
+                EquipRight(itemL);
+            }
+        }
         if (_itemL != null) { Unequip(_itemL); }
 
         _itemL = item;
@@ -62,7 +71,16 @@ public partial class ArmsManager : Node3D
             UnequipRightOnly();
             return;
         }
-        if (_itemL == item) { UnequipLeftOnly(); }
+        if (_itemL == item)
+        {
+            UnequipLeftOnly();
+            if (_itemR != null)
+            {
+                Item itemR = _itemR;
+                UnequipRightOnly();
+                EquipLeft(itemR);
+            }
+        }
         if (_itemR != null) { Unequip(_itemR); }
 
         _itemR = item;

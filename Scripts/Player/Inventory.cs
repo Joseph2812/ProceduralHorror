@@ -201,10 +201,10 @@ public partial class Inventory : Node3D
         else if (@event.IsActionPressed(_hotkey2Name, exactMatch: true)) { UseHotkey(1); }
         else if (@event.IsActionPressed(_hotkey3Name, exactMatch: true)) { UseHotkey(2); }
         else if (@event.IsActionPressed(_hotkey4Name, exactMatch: true)) { UseHotkey(3); }
-        else if (@event.IsActionPressed(_hotkeyAlt1Name) && !Visible) { EquipAlt(_assignedGridData[0].Item); }
-        else if (@event.IsActionPressed(_hotkeyAlt2Name) && !Visible) { EquipAlt(_assignedGridData[1].Item); }
-        else if (@event.IsActionPressed(_hotkeyAlt3Name) && !Visible) { EquipAlt(_assignedGridData[2].Item); }
-        else if (@event.IsActionPressed(_hotkeyAlt4Name) && !Visible) { EquipAlt(_assignedGridData[3].Item); }
+        else if (@event.IsActionPressed(_hotkeyAlt1Name) && !Visible && _assignedGridData[0] != null) { EquipAlt(_assignedGridData[0].Item); }
+        else if (@event.IsActionPressed(_hotkeyAlt2Name) && !Visible && _assignedGridData[1] != null) { EquipAlt(_assignedGridData[1].Item); }
+        else if (@event.IsActionPressed(_hotkeyAlt3Name) && !Visible && _assignedGridData[2] != null) { EquipAlt(_assignedGridData[2].Item); }
+        else if (@event.IsActionPressed(_hotkeyAlt4Name) && !Visible && _assignedGridData[3] != null) { EquipAlt(_assignedGridData[3].Item); }
 
         if (!Visible) { return; }
 
@@ -390,13 +390,24 @@ public partial class Inventory : Node3D
 
     private void UseHotkey(int idx)
     {
-        if (Visible) { Assign(idx); }
-        else         { Equip(_assignedGridData[idx].Item); }
+        if (Visible)                             { Assign(idx); }
+        else if (_assignedGridData[idx] != null) { Equip(_assignedGridData[idx].Item); }
     }
 
     private void Assign(int idx)
     {
         if (!_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
+
+        // Remove Old Assignment For GridData If It Exists //
+        for (int i = 0; i < _assignedGridData.Length; i++)
+        {
+            if (_assignedGridData[i] == data)
+            {
+                _assignedGridData[i] = null;
+                break;
+            }
+        }
+        //
 
         GridData oldData = _assignedGridData[idx];
         if (oldData != null) { oldData.HotkeyLabel.Visible = false; }
@@ -422,15 +433,11 @@ public partial class Inventory : Node3D
 
     private void Equip(Item item)
     {
-        if (item == null) { return; }
-
         if (item.TwoHanded) { _armsManager.EquipBoth(item); }
         else                { _armsManager.EquipRight(item); }
     }
     private void EquipAlt(Item item)
     {
-        if (item == null) { return; }
-
         if (item.TwoHanded) { _armsManager.EquipBoth(item); }
         else                { _armsManager.EquipLeft(item); }
     }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dduxddcquhrp1"]
+[gd_scene load_steps=24 format=3 uid="uid://dduxddcquhrp1"]
 
 [ext_resource type="Script" path="res://Scripts/FreeCameraController.cs" id="2_dhtrs"]
 [ext_resource type="Theme" uid="uid://bmbx06aggy0cl" path="res://Theme.tres" id="3_a65xu"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://Scripts/Player/ArmsManager.cs" id="8_ku1aq"]
 [ext_resource type="PackedScene" uid="uid://ctq0i2e5wrdpn" path="res://Models/Arm.glb" id="10_bkjxv"]
 [ext_resource type="PackedScene" uid="uid://cv26pyhdxy6wq" path="res://Scenes/Items/Phone.tscn" id="12_q4whi"]
+[ext_resource type="Texture2D" uid="uid://cjx4bewkntqub" path="res://Textures/Items/Phone/ORM.png" id="15_3omg8"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
 
@@ -40,6 +41,10 @@ height = 1.9
 [sub_resource type="SphereShape3D" id="SphereShape3D_cu83u"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_ey0t1"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_i4wdq"]
+albedo_color = Color(0.443137, 0.443137, 0.443137, 1)
+orm_texture = ExtResource("15_3omg8")
 
 [node name="Main" type="Node3D"]
 
@@ -178,3 +183,12 @@ mesh = SubResource("SphereMesh_ey0t1")
 [node name="Phone" parent="." instance=ExtResource("12_q4whi")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45381, 2.78498, -1.05887)
 continuous_cd = true
+
+[node name="Phone2" parent="." instance=ExtResource("12_q4whi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.599, 2.785, -1.059)
+continuous_cd = true
+
+[node name="Phone_Obj" parent="Phone2" index="0"]
+surface_material_override/0 = SubResource("ORMMaterial3D_i4wdq")
+
+[editable path="Phone2"]
