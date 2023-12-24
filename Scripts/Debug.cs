@@ -9,6 +9,18 @@ public static class Debug
 {
     private static readonly List<MeshInstance3D> _meshInstances = new();
 
+    public static void CreateBox(Node parent, Color colour, Vector3 centrePos, Vector3 size)
+    {
+        (MeshInstance3D meshInst, OrmMaterial3D material) = GetNewMeshInstAndMaterial(parent, colour, centrePos);
+
+        BoxMesh mesh = new()
+        {
+            Size = size,
+            Material = material
+        };
+        meshInst.Mesh = mesh;
+    }
+
     public static void CreateLine(Node parent, Color colour, Vector3 startPos, Vector3 endPos)
     {
         (MeshInstance3D meshInst, OrmMaterial3D material) = GetNewMeshInstAndMaterial(parent, colour, startPos);
@@ -26,12 +38,14 @@ public static class Debug
     {
         (MeshInstance3D meshInst, OrmMaterial3D material) = GetNewMeshInstAndMaterial(parent, colour, pos);
 
-        SphereMesh mesh = new();
+        const float Radius = 0.05f;
+        SphereMesh mesh = new()
+        {
+            Radius = Radius,
+            Height = Radius * 2f,
+            Material = material,
+        };
         meshInst.Mesh = mesh;
-
-        mesh.Radius = 0.05f;
-        mesh.Height = mesh.Radius * 2f;
-        mesh.Material = material;
     }
 
     /// <summary>

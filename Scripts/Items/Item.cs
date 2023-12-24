@@ -22,12 +22,19 @@ public abstract partial class Item : RigidBody3D
     /// </summary>
     public virtual Vector2I[] ClearancePositions => _defaultClearancePositions;
 
-    public Mesh InventoryMesh { get; private set; }
+    /// <summary>
+    /// Signals when idle animation has started, which should be a 1 frame pose (used to generate a new shape for <see cref="SpringArm3D"/>s).<para/>
+    /// NOTE: Cleared on Unequip.
+    /// </summary>
+    public event Action StartedIdle;
+
+    public Mesh InventoryMesh => _meshInst.Mesh;
     public Material InventoryMaterial { get; private set; }
     public CollisionShape3D CollisionShape { get; private set; }
 
     protected bool Equipped { get; private set; }
 
+    private MeshInstance3D _meshInst;
     private AnimationPlayer _itemAnim;
     private AnimationPlayer[] _otherAnims;
 
@@ -38,12 +45,13 @@ public abstract partial class Item : RigidBody3D
 
         Visible = true;
         //PlayAnimation(_equipName, FullEquipName);
-        PlayAnimation(_idleName, FullIdleName);
 
+        PlayAnimation(_idleName, FullIdleName);
     }
     public virtual void Unequip()
     {
         Equipped = false;
+        StartedIdle = null;
 
         // Would need to wait for this to finish, so a different equip animation could play right after when pressing hotkey
         //PlayAnimation(_unequipName, FullUnequipName);
@@ -55,17 +63,25 @@ public abstract partial class Item : RigidBody3D
     {
         base._Ready();
 
-        MeshInstance3D meshInst = GetNode<MeshInstance3D>(MeshInstPath);
-        InventoryMesh = meshInst.Mesh;
-        InventoryMaterial = meshInst.GetActiveMaterial(0);
+        _meshInst = GetNode<MeshInstance3D>(MeshInstPath);
+        InventoryMaterial = _meshInst.GetActiveMaterial(0);
 
         CollisionShape = GetNode<CollisionShape3D>("CollisionShape3D");
         _itemAnim = GetNode<AnimationPlayer>("AnimationPlayer");
+
+        _itemAnim.CurrentAnimationChanged += OnItemAnim_CurrentAnimationChanged;
     }
+
+    public Aabb GetAabb() => _meshInst.GetAabb();
 
     protected void PlayAnimation(StringName name, StringName fullName)
     {
         _itemAnim.Play(name);
         foreach (AnimationPlayer anim in _otherAnims) { anim.Play(fullName); }
+    }
+
+    private void OnItemAnim_CurrentAnimationChanged(string name)
+    {
+        if (name == "Idle") { StartedIdle?.Invoke(); }
     }
 }

@@ -15,15 +15,16 @@ public partial class InteractionController : Node
     private static readonly StringName _interactName = "interact", _grabName = "grab";
     private static readonly StringName _extendName = "extend", _retractName = "retract";
     private static readonly StringName _colliderName = "collider";
-    private static readonly PhysicsRayQueryParameters3D _rayParams = new();
 
-    // Events run only for interactables that require exit
+    // Events only for interactables that require exit
     public event Action EnteredInteractable;
     public event Action ExitedInteractable;
 
     private readonly PidController _pidX = new(pGain: PGain, dGain: DGain, maxResult: MaxGrabForce);
     private readonly PidController _pidY = new(pGain: PGain, dGain: DGain, maxResult: MaxGrabForce);
     private readonly PidController _pidZ = new(pGain: PGain * 3f, dGain: DGain * 1.5f, maxResult: MaxGrabForce * 3f);
+
+    private readonly PhysicsRayQueryParameters3D _rayParams = new();
 
     private Inventory _inventory;
     private PhysicsDirectSpaceState3D _space;
@@ -39,9 +40,7 @@ public partial class InteractionController : Node
         base._Ready();
 
         _inventory = CameraController.Inst.GetNode<Inventory>("Inventory");
-        _space = CameraController.Inst.GetWorld3D().DirectSpaceState;
-
-        _rayParams.Exclude = new() { Player.Inst.Rid };
+        _space = CameraController.Inst.GetWorld3D().DirectSpaceState;       
 
         Console.Inst.Opened += OnConsole_Opened;
         Console.Inst.Closed += OnConsole_Closed;
@@ -115,6 +114,8 @@ public partial class InteractionController : Node
             if (_targetReach < ReachMinimum) { _targetReach = ReachMinimum; }
         }
     }
+
+    public void AddRayExclusion(Rid rid) { _rayParams.Exclude.Add(rid); }
 
     private Godot.Collections.Dictionary RaycastFromCamera()
     {
