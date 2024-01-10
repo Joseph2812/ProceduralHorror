@@ -31,7 +31,7 @@ sdfgi_read_sky_light = false
 glow_enabled = true
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k83d5"]
-radius = 0.2
+radius = 0.25
 height = 1.9
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_kpy6l"]

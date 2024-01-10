@@ -318,7 +318,11 @@ public partial class Inventory : Node3D
         };
         AddChild(meshInst);
     }
-    private MeshInstance3D CreateItemMeshInstance(Mesh mesh, Material mat, float rotationZ)
+    /// <summary>
+    /// Creates new MeshInstance to use for displaying an item in the grid.<para/>
+    /// NOTE: Both <paramref name="mesh"/> and <paramref name="mat"/> are duplicated for unique modification.
+    /// </summary>
+    private MeshInstance3D CreateItemMeshInstance(Mesh mesh, BaseMaterial3D mat, float rotationZ)
     {
         MeshInstance3D meshInst = new()
         {
@@ -326,7 +330,10 @@ public partial class Inventory : Node3D
             MaterialOverride = (Material)mat.Duplicate(),
             Rotation = Vector3.Back * rotationZ
         };
-        ((OrmMaterial3D)meshInst.MaterialOverride).NoDepthTest = true;
+
+        BaseMaterial3D dupMat = (BaseMaterial3D)meshInst.MaterialOverride;
+        dupMat.NoDepthTest = true;
+        dupMat.RenderPriority = 1;
         AddChild(meshInst);
 
         return meshInst;
@@ -528,7 +535,7 @@ public partial class Inventory : Node3D
         TryMoveBackIntoGrid(_selectedGridData.GetOccupiedPositions());
     }
 
-    /// <returns>Successfully in a valid position.</returns>
+    /// <returns>Success if in a valid position.</returns>
     private bool TryMoveBackIntoGrid(HashSet<Vector2I> occupiedPosS)
     {
         int lowestX = int.MaxValue, highestX = int.MinValue;

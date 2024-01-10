@@ -26,10 +26,10 @@ public abstract partial class Item : RigidBody3D
     /// Signals when idle animation has started, which should be a 1 frame pose (used to generate a new shape for <see cref="SpringArm3D"/>s).<para/>
     /// NOTE: Cleared on Unequip.
     /// </summary>
-    public event Action StartedIdle;
+    public event Action IdleStarted;
 
     public Mesh InventoryMesh => _meshInst.Mesh;
-    public Material InventoryMaterial { get; private set; }
+    public BaseMaterial3D InventoryMaterial { get; private set; }
     public CollisionShape3D CollisionShape { get; private set; }
 
     protected bool Equipped { get; private set; }
@@ -51,7 +51,7 @@ public abstract partial class Item : RigidBody3D
     public virtual void Unequip()
     {
         Equipped = false;
-        StartedIdle = null;
+        IdleStarted = null;
 
         // Would need to wait for this to finish, so a different equip animation could play right after when pressing hotkey
         //PlayAnimation(_unequipName, FullUnequipName);
@@ -64,12 +64,12 @@ public abstract partial class Item : RigidBody3D
         base._Ready();
 
         _meshInst = GetNode<MeshInstance3D>(MeshInstPath);
-        InventoryMaterial = _meshInst.GetActiveMaterial(0);
+        InventoryMaterial = (BaseMaterial3D)_meshInst.GetActiveMaterial(0);
 
         CollisionShape = GetNode<CollisionShape3D>("CollisionShape3D");
         _itemAnim = GetNode<AnimationPlayer>("AnimationPlayer");
 
-        _itemAnim.CurrentAnimationChanged += OnItemAnim_CurrentAnimationChanged;
+        _itemAnim.AnimationStarted += OnItemAnim_AnimationStarted;
     }
 
     public Aabb GetAabb() => _meshInst.GetAabb();
@@ -80,8 +80,8 @@ public abstract partial class Item : RigidBody3D
         foreach (AnimationPlayer anim in _otherAnims) { anim.Play(fullName); }
     }
 
-    private void OnItemAnim_CurrentAnimationChanged(string name)
+    private void OnItemAnim_AnimationStarted(StringName name)
     {
-        if (name == "Idle") { StartedIdle?.Invoke(); }
+        if (name == _idleName) { IdleStarted?.Invoke(); }
     }
 }

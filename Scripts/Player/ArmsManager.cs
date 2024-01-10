@@ -79,7 +79,7 @@ public partial class ArmsManager : Node3D
         if (_itemL != null) { Unequip(_itemL); }
 
         _itemL = item;
-        item.StartedIdle += AssignNewBoxShapeDeferredLeft;
+        item.IdleStarted += AssignNewBoxShapeDeferredLeft;
 
         _armL.Visible = true;
         _armL.Reparent(_targetL);
@@ -108,7 +108,7 @@ public partial class ArmsManager : Node3D
         if (_itemR != null) { Unequip(_itemR); }
 
         _itemR = item;
-        item.StartedIdle += AssignNewBoxShapeDeferredRight;
+        item.IdleStarted += AssignNewBoxShapeDeferredRight;
 
         _armR.Visible = true;
         _armR.Reparent(_targetR);
@@ -129,7 +129,7 @@ public partial class ArmsManager : Node3D
 
         _itemL = item;
         _itemR = item;
-        item.StartedIdle += AssignNewBoxShapeDeferredLeft;
+        item.IdleStarted += AssignNewBoxShapeDeferredLeft;
 
         _armL.Visible = true;
         _armR.Visible = true;
