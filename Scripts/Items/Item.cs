@@ -18,6 +18,16 @@ public abstract partial class Item : RigidBody3D
     protected abstract string MeshInstPath { get; }
 
     /// <summary>
+    /// Offset applied to the <see cref="MeshInstance3D"/> in <see cref="Player.Inventory"/> when placing it on the grid.
+    /// </summary>
+    public virtual Vector3 InventoryOffset => Vector3.Zero;
+
+    /// <summary>
+    /// Rotation applied to the <see cref="MeshInstance3D"/> in <see cref="Player.Inventory"/> when placing it on the grid.
+    /// </summary>
+    public virtual Vector3 InventoryRotation => Vector3.Zero;
+
+    /// <summary>
     /// Local grid coordinates used by <see cref="Player.Inventory"/> to indicate the positions it takes up.
     /// </summary>
     public virtual Vector2I[] ClearancePositions => _defaultClearancePositions;

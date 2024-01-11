@@ -11,7 +11,7 @@ public partial class Inventory : Node3D
     private partial class GridData : GodotObject
     {
         public readonly Item Item;
-        public readonly MeshInstance3D MeshInstance;
+        public readonly Node3D Pivot;
         public readonly ArrayMesh SelectionMesh;
         public readonly Label3D EquippedLabel;
         public readonly Label3D HotkeyLabel;
@@ -28,10 +28,10 @@ public partial class Inventory : Node3D
             return positions;
         }
 
-        public GridData(Item item, MeshInstance3D meshInstance, ArrayMesh selectionMesh, Label3D equippedLabel, Label3D hotkeyLabel)
+        public GridData(Item item, Node3D pivot, ArrayMesh selectionMesh, Label3D equippedLabel, Label3D hotkeyLabel)
         {
             Item = item;
-            MeshInstance = meshInstance;
+            Pivot = pivot;
             SelectionMesh = selectionMesh;
             EquippedLabel = equippedLabel;
             HotkeyLabel = hotkeyLabel;
@@ -41,13 +41,13 @@ public partial class Inventory : Node3D
         {
             base.Dispose(disposing);
 
-            MeshInstance.QueueFree();
+            Pivot.QueueFree();
             EquippedLabel.QueueFree();
             HotkeyLabel.QueueFree();
         }
 
-        public HashSet<Vector2I> GetOccupiedPositions() => GetOccupiedPositions(Item.ClearancePositions, GridPosition, MeshInstance.Rotation.Z);
-        public HashSet<Vector2I> GetOccupiedPositions(Vector2I testGridPos) => GetOccupiedPositions(Item.ClearancePositions, testGridPos, MeshInstance.Rotation.Z);
+        public HashSet<Vector2I> GetOccupiedPositions() => GetOccupiedPositions(Item.ClearancePositions, GridPosition, Pivot.Rotation.Z);
+        public HashSet<Vector2I> GetOccupiedPositions(Vector2I testGridPos) => GetOccupiedPositions(Item.ClearancePositions, testGridPos, Pivot.Rotation.Z);
         public HashSet<Vector2I> GetOccupiedPositions(float testRotZ) => GetOccupiedPositions(Item.ClearancePositions, GridPosition, testRotZ);
 
         public void SetGridPosition(Vector2I gridPos)
@@ -55,7 +55,7 @@ public partial class Inventory : Node3D
             Vector3 pos = GetCentrePosFromGridPos(gridPos);
 
             GridPosition = gridPos;
-            MeshInstance.Position = pos;
+            Pivot.Position = pos;
 
             UpdateLabelPosition(pos);
         }
@@ -249,7 +249,7 @@ public partial class Inventory : Node3D
         GridData data = new
         (
             item,
-            CreateItemMeshInstance(item.InventoryMesh, item.InventoryMaterial, rotZ), 
+            CreateItemMeshInstanceOnPivot(item, rotZ), 
             CreateSelectorMesh(item.ClearancePositions), 
             CreateLabel(),
             CreateLabel()
@@ -319,24 +319,32 @@ public partial class Inventory : Node3D
         AddChild(meshInst);
     }
     /// <summary>
-    /// Creates new MeshInstance to use for displaying an item in the grid.<para/>
-    /// NOTE: Both <paramref name="mesh"/> and <paramref name="mat"/> are duplicated for unique modification.
+    /// Creates new <see cref="Node3D"/> with <see cref="MeshInstance3D"/> as a child (preserves offset), to use for moving and displaying an item in the grid.<para/>
+    /// NOTE: Both mesh and material are duplicated for unique modification.
     /// </summary>
-    private MeshInstance3D CreateItemMeshInstance(Mesh mesh, BaseMaterial3D mat, float rotationZ)
+    /// <returns><see cref="Node3D"/> with a <see cref="MeshInstance3D"/> child, where the parent node will act as a pivot.</returns>
+    private Node3D CreateItemMeshInstanceOnPivot(Item item, float rotationZ)
     {
         MeshInstance3D meshInst = new()
         {
-            Mesh = (Mesh)mesh.Duplicate(),
-            MaterialOverride = (Material)mat.Duplicate(),
-            Rotation = Vector3.Back * rotationZ
+            Mesh = (Mesh)item.InventoryMesh.Duplicate(),
+            MaterialOverride = (Material)item.InventoryMaterial.Duplicate(),
+            Position = item.InventoryOffset,
+            Rotation = item.InventoryRotation
         };
 
-        BaseMaterial3D dupMat = (BaseMaterial3D)meshInst.MaterialOverride;
-        dupMat.NoDepthTest = true;
-        dupMat.RenderPriority = 1;
-        AddChild(meshInst);
+        BaseMaterial3D mat = (BaseMaterial3D)meshInst.MaterialOverride;
+        mat.NoDepthTest = true;
+        mat.RenderPriority = 1;
 
-        return meshInst;
+        // Parenting //
+        Node3D pivot = new() { Rotation = Vector3.Back * rotationZ };
+        AddChild(pivot);
+
+        pivot.AddChild(meshInst);
+        //
+
+        return pivot;
     }
     private ArrayMesh CreateSelectorMesh(Vector2I[] clearancePosS)
     {
@@ -477,12 +485,12 @@ public partial class Inventory : Node3D
             DeregisterGridDataSpace(occupiedPositions);
 
             SetSelectorGridPosition(data.GridPosition);
-            _selectorMeshInst.Rotation = data.MeshInstance.Rotation;
+            _selectorMeshInst.Rotation = data.Pivot.Rotation;
             _selectorMeshInst.Mesh = data.SelectionMesh;
             _selectorMaterial.AlbedoColor = Colors.White;
 
             _oldGridPos = data.GridPosition;
-            _oldRotation = data.MeshInstance.Rotation;
+            _oldRotation = data.Pivot.Rotation;
         }
         else
         {
@@ -499,7 +507,7 @@ public partial class Inventory : Node3D
     private void RevertMove()
     {
         _selectedGridData.SetGridPosition(_oldGridPos);
-        _selectedGridData.MeshInstance.Rotation = _oldRotation;
+        _selectedGridData.Pivot.Rotation = _oldRotation;
 
         SetSelectorGridPosition(_oldGridPos);
         _selectorMeshInst.Rotation = _oldRotation;
@@ -517,20 +525,20 @@ public partial class Inventory : Node3D
         if (_selectedGridData == null) { return; }
 
         // 90 Degrees //
-        Vector3 rotation = Vector3.Back * (_selectedGridData.MeshInstance.Rotation.Z - (Mathf.Pi * 0.5f));
+        Vector3 rotation = Vector3.Back * (_selectedGridData.Pivot.Rotation.Z - (Mathf.Pi * 0.5f));
         if (TryMoveBackIntoGrid(_selectedGridData.GetOccupiedPositions(rotation.Z)))
         {
             _selectorMeshInst.Rotation = rotation;
-            _selectedGridData.MeshInstance.Rotation = rotation;
+            _selectedGridData.Pivot.Rotation = rotation;
 
             return;
         }
 
         // 180 Degrees (should always work, given it takes up the same space along each axis when not rotated) //
-        rotation = Vector3.Back * (_selectedGridData.MeshInstance.Rotation.Z - Mathf.Pi);
+        rotation = Vector3.Back * (_selectedGridData.Pivot.Rotation.Z - Mathf.Pi);
 
         _selectorMeshInst.Rotation = rotation;
-        _selectedGridData.MeshInstance.Rotation = rotation;
+        _selectedGridData.Pivot.Rotation = rotation;
 
         TryMoveBackIntoGrid(_selectedGridData.GetOccupiedPositions());
     }
