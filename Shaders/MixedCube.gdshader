@@ -16,7 +16,7 @@ const float ONE_THIRD = 1.0 / 3.0;
 const vec2 UV_SCALE = vec2(3.0, 2.0);
 
 // Only allow textures at their specified UV areas (for Godot's BoxMesh)
-bool is_side2(vec2 uv){
+bool is_side2(vec2 uv) {
 	return
 	(
 		(uv.x > 0.5 * ONE_THIRD && uv.x < 2.5 * ONE_THIRD && uv.y < 0.5) ||
@@ -33,14 +33,14 @@ bool is_side2(vec2 uv){
 void fragment() {
 	vec2 scaled_uv = UV * UV_SCALE;
 	
-	if (is_side2(UV)){
+	if (is_side2(UV)) {
 		ALBEDO     = texture(albedo_map_2   , scaled_uv).rgb;
 		ROUGHNESS  = texture(roughness_map_2, scaled_uv).r;
 		METALLIC   = texture(metallic_map_2 , scaled_uv).r;
 		NORMAL_MAP = texture(normal_map_2   , scaled_uv).rgb;
 		AO         = texture(ao_map_2       , scaled_uv).r;
 	}
-	else{
+	else {
 		ALBEDO     = texture(albedo_map_1   , scaled_uv).rgb;
 		ROUGHNESS  = texture(roughness_map_1, scaled_uv).r;
 		METALLIC   = texture(metallic_map_1 , scaled_uv).r;

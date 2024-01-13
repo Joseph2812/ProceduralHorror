@@ -1,11 +1,19 @@
-[gd_scene load_steps=7 format=3 uid="uid://cv26pyhdxy6wq"]
+[gd_scene load_steps=9 format=3 uid="uid://cv26pyhdxy6wq"]
 
 [ext_resource type="PackedScene" uid="uid://cx0p183airnv1" path="res://Models/Items/Phone.glb" id="1_g5t4l"]
 [ext_resource type="Script" path="res://Scripts/Items/Phone.cs" id="2_p0ks1"]
 [ext_resource type="Texture2D" uid="uid://b4a6xcfcf7n8m" path="res://Textures/Items/Phone/Albedo.png" id="2_q1d43"]
 [ext_resource type="Texture2D" uid="uid://cjx4bewkntqub" path="res://Textures/Items/Phone/ORM.png" id="3_rtloi"]
+[ext_resource type="Shader" path="res://Shaders/Outline.gdshader" id="4_a4h8h"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5ghf0"]
+render_priority = 0
+shader = ExtResource("4_a4h8h")
+shader_parameter/outline_width = 0.0
+shader_parameter/outline_colour = Color(1, 1, 1, 1)
 
 [sub_resource type="ORMMaterial3D" id="ORMMaterial3D_o1goy"]
+next_pass = SubResource("ShaderMaterial_5ghf0")
 albedo_texture = ExtResource("2_q1d43")
 orm_texture = ExtResource("3_rtloi")
 

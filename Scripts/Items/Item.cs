@@ -18,12 +18,12 @@ public abstract partial class Item : RigidBody3D
     protected abstract string MeshInstPath { get; }
 
     /// <summary>
-    /// Offset applied to the <see cref="MeshInstance3D"/> in <see cref="Player.Inventory"/> when placing it on the grid.
+    /// Visual offset applied to the <see cref="MeshInstance3D"/> in <see cref="Player.Inventory"/> when placing it on the grid.
     /// </summary>
     public virtual Vector3 InventoryOffset => Vector3.Zero;
 
     /// <summary>
-    /// Rotation applied to the <see cref="MeshInstance3D"/> in <see cref="Player.Inventory"/> when placing it on the grid.
+    /// Visual rotation applied to the <see cref="MeshInstance3D"/> in <see cref="Player.Inventory"/> when placing it on the grid.
     /// </summary>
     public virtual Vector3 InventoryRotation => Vector3.Zero;
 

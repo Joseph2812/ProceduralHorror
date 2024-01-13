@@ -334,6 +334,7 @@ public partial class Inventory : Node3D
         };
 
         BaseMaterial3D mat = (BaseMaterial3D)meshInst.MaterialOverride;
+        mat.NextPass = null;
         mat.NoDepthTest = true;
         mat.RenderPriority = 1;
 

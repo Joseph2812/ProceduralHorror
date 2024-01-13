@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using Scripts.Items;
 
 namespace Scripts.Player;
 
@@ -12,9 +13,12 @@ public partial class InteractionController : Node
     private const float PGain = 150f, DGain = 25f, MaxGrabForce = 250f;
     private const float GrabDropSqrThresholdZ = (ReachMaximum + 0.5f) * (ReachMaximum + 0.5f);
 
+    private const float OutlineWidth = 2f;
+
     private static readonly StringName _interactName = "interact", _grabName = "grab";
     private static readonly StringName _extendName = "extend", _retractName = "retract";
     private static readonly StringName _colliderName = "collider";
+    private static readonly StringName _outlineWidthName = "outline_width";
 
     // Events only for interactables that require exit
     public event Action EnteredInteractable;
@@ -32,6 +36,7 @@ public partial class InteractionController : Node
     private RigidBody3D _activeRigidbody;
     private float _targetReach;
 
+    private ShaderMaterial _lastOutlinedMat;
     private bool _interactQueued;
     private bool _grabQueued;
 
@@ -56,7 +61,26 @@ public partial class InteractionController : Node
         // Check For Raycast Collision //
         Godot.Collections.Dictionary rayResult = RaycastFromCamera();
         GodotObject colliderObj = null;
-        if (rayResult.Count > 0) { colliderObj = rayResult[_colliderName].AsGodotObject(); }
+
+        if (rayResult.Count > 0)
+        {
+            colliderObj = rayResult[_colliderName].AsGodotObject();
+            if (colliderObj is Item item)
+            {
+                if (_lastOutlinedMat != item.InventoryMaterial.NextPass)
+                {
+                    _lastOutlinedMat?.SetShaderParameter(_outlineWidthName, 0f);
+
+                    _lastOutlinedMat = (ShaderMaterial)item.InventoryMaterial.NextPass;
+                    _lastOutlinedMat.SetShaderParameter(_outlineWidthName, OutlineWidth);
+                }     
+            }
+            else if (_lastOutlinedMat != null)
+            {
+                _lastOutlinedMat.SetShaderParameter(_outlineWidthName, 0f);
+                _lastOutlinedMat = null;
+            }
+        }
 
         // Try Grabbing/Interacting //
         if (_activeRigidbody != null || (_grabQueued && TryGrab(colliderObj)))
