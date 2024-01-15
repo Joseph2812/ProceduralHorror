@@ -6,12 +6,13 @@ namespace Scripts.Player;
 
 public partial class InteractionController : Node
 {
-    private const float ReachMinimum = 1f;
-    private const float ReachMaximum = 2f;
-    private const float ReachSensitivity = 0.1f;
+    private const float ReachMinimum = 0.7f;
+    private const float ReachMaximum = 1.2f;
+    private const float ReachStep = 0.1f;
 
     private const float PGain = 150f, DGain = 25f, MaxGrabForce = 250f;
-    private const float GrabDropSqrThresholdZ = (ReachMaximum + 0.5f) * (ReachMaximum + 0.5f);
+    private const float GrabDropMargin = 0.5f;
+    private const float GrabDropSqrThresholdZ = (ReachMaximum + GrabDropMargin) * (ReachMaximum + GrabDropMargin);
 
     private const float OutlineWidth = 2f;
 
@@ -21,8 +22,8 @@ public partial class InteractionController : Node
     private static readonly StringName _outlineWidthName = "outline_width";
 
     // Events only for interactables that require exit
-    public event Action EnteredInteractable;
-    public event Action ExitedInteractable;
+    public event Action InteractableEntered;
+    public event Action InteractableExited;
 
     private readonly PidController _pidX = new(pGain: PGain, dGain: DGain, maxResult: MaxGrabForce);
     private readonly PidController _pidY = new(pGain: PGain, dGain: DGain, maxResult: MaxGrabForce);
@@ -81,6 +82,11 @@ public partial class InteractionController : Node
                 _lastOutlinedMat = null;
             }
         }
+        else if (_lastOutlinedMat != null)
+        {
+            _lastOutlinedMat.SetShaderParameter(_outlineWidthName, 0f);
+            _lastOutlinedMat = null;
+        }
 
         // Try Grabbing/Interacting //
         if (_activeRigidbody != null || (_grabQueued && TryGrab(colliderObj)))
@@ -107,7 +113,7 @@ public partial class InteractionController : Node
             _activeInteractable.Exit();
             _activeInteractable = null;
 
-            ExitedInteractable?.Invoke();
+            InteractableExited?.Invoke();
         }
 
         _interactQueued = false;
@@ -129,12 +135,12 @@ public partial class InteractionController : Node
         }
         else if (@event.IsActionPressed(_extendName))
         {
-            _targetReach += ReachSensitivity;
+            _targetReach += ReachStep;
             if (_targetReach > ReachMaximum) { _targetReach = ReachMaximum; }
         }
         else if (@event.IsActionPressed(_retractName))
         {
-            _targetReach -= ReachSensitivity;
+            _targetReach -= ReachStep;
             if (_targetReach < ReachMinimum) { _targetReach = ReachMinimum; }
         }
     }
@@ -182,7 +188,7 @@ public partial class InteractionController : Node
                 interactable.Interact();
                 _activeInteractable = interactable;
 
-                EnteredInteractable?.Invoke();
+                InteractableEntered?.Invoke();
             }
             else { interactable.Interact(); }
 
@@ -213,7 +219,6 @@ public partial class InteractionController : Node
 
         _interactQueued = false;
         _grabQueued = false;
-        if (_activeRigidbody != null) { ReleaseGrab(); }
     }
 
     private void SetProcesses(bool state)
@@ -225,6 +230,10 @@ public partial class InteractionController : Node
     private void OnConsole_Opened() { Disable(); }
     private void OnConsole_Closed() { SetProcesses(CameraController.Inst.Current); }
 
-    private void OnInventory_Opened() { Disable(); }
+    private void OnInventory_Opened()
+    {
+        Disable();
+        if (_activeRigidbody != null) { ReleaseGrab(); }
+    }
     private void OnInventory_Closed() { SetProcesses(CameraController.Inst.Current); }
 }

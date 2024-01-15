@@ -73,8 +73,8 @@ public partial class MovementController : Node
         Console.Inst.Closed += OnConsole_Closed;
 
         InteractionController interactionController = CameraController.Inst.GetNode<InteractionController>("InteractionController");
-        interactionController.EnteredInteractable += OnInteractionController_EnteredInteractable;
-        interactionController.ExitedInteractable += OnInteractionController_ExitedInteractable;
+        interactionController.InteractableEntered += OnInteractionController_InteractableEntered;
+        interactionController.InteractableExited += OnInteractionController_InteractableExited;
     }
 
     public override void _Process(double delta)
@@ -272,6 +272,6 @@ public partial class MovementController : Node
     }
     private void OnConsole_Closed() { SetProcesses(CameraController.Inst.Current); }
 
-    private void OnInteractionController_EnteredInteractable() { _interacting = true; }
-    private void OnInteractionController_ExitedInteractable() { _interacting = false; }
+    private void OnInteractionController_InteractableEntered() { _interacting = true; }
+    private void OnInteractionController_InteractableExited() { _interacting = false; }
 }

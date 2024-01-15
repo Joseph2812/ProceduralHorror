@@ -40,8 +40,11 @@ radius = 0.4
 height = 1.9
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_cu83u"]
+radius = 0.25
 
 [sub_resource type="SphereMesh" id="SphereMesh_ey0t1"]
+radius = 0.25
+height = 0.5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_08yfj"]
 render_priority = 0
@@ -193,14 +196,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
 visible = false
 script = ExtResource("7_pvyt2")
 
-[node name="StaticBody3D" type="RigidBody3D" parent="."]
+[node name="Sphere" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, -0.5)
 script = ExtResource("7_gpdo7")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sphere"]
 shape = SubResource("SphereShape3D_cu83u")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Sphere"]
 mesh = SubResource("SphereMesh_ey0t1")
 
 [node name="Phone" parent="." instance=ExtResource("12_q4whi")]
