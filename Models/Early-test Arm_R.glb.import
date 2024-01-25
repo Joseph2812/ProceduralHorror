@@ -3,18 +3,18 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://ctq0i2e5wrdpn"
-path="res://.godot/imported/Arm.glb-4e9c3d319b4bea3393c96c50bcb30307.scn"
+uid="uid://wgjogkw12vbc"
+path="res://.godot/imported/Early-test Arm_R.glb-c9dd640b91af75402894f09f25875d41.scn"
 
 [deps]
 
-source_file="res://Models/Arm.glb"
-dest_files=["res://.godot/imported/Arm.glb-4e9c3d319b4bea3393c96c50bcb30307.scn"]
+source_file="res://Models/Early-test Arm_R.glb"
+dest_files=["res://.godot/imported/Early-test Arm_R.glb-c9dd640b91af75402894f09f25875d41.scn"]
 
 [params]
 
-nodes/root_type="Node3D"
-nodes/root_name="Scene Root"
+nodes/root_type=""
+nodes/root_name=""
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
 meshes/ensure_tangents=true
@@ -31,7 +31,7 @@ animation/remove_immutable_tracks=true
 import_script/path=""
 _subresources={
 "animations": {
-"Idle_Phone": {
+"Idle_Phone_R": {
 "save_to_file/enabled": false,
 "save_to_file/keep_custom_tracks": "",
 "save_to_file/path": "",
@@ -1828,14 +1828,9 @@ _subresources={
 "slice_99/save_to_file/keep_custom_tracks": false,
 "slice_99/save_to_file/path": "",
 "slice_99/start_frame": 0,
-"slices/amount": null
-}
-},
-"materials": {
-"@MATERIAL:0": {
-"use_external/path": "res://Materials/Placeholders/BrownFallPolishedMarble.tres"
+"slices/amount": 0
 }
 }
 }
-gltf/naming_version=0
+gltf/naming_version=1
 gltf/embedded_image_handling=1

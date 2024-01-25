@@ -14,12 +14,17 @@ public partial class ArmsManager : Node3D
         Both
     }
 
+    /// <summary>
+    /// <see cref="AnimationPlayer"/> for each arm.
+    /// </summary>
+    public static AnimationPlayer AnimPlayerL, AnimPlayerR;
+    
     public event Action<Item, Arm> EquippedStateChanged;
 
     private Node3D _armL, _armR;
     private MeshInstance3D _armMeshInstL, _armMeshInstR;
-    private AnimationPlayer[] _animL, _animR, _animBoth;
     private Item _itemL, _itemR;
+    private Item _lastItemL, _lastItemR; // Cached for AnimationFinished
 
     private SpringArm3D _springL, _springR;
     private Node _targetL, _targetR;
@@ -31,15 +36,11 @@ public partial class ArmsManager : Node3D
         _armL = GetNode<Node3D>("Arm_L");
         _armR = GetNode<Node3D>("Arm_R");
 
-        _armMeshInstL = _armL.GetNode<MeshInstance3D>("Arm_Obj");
-        _armMeshInstR = _armR.GetNode<MeshInstance3D>("Arm_Obj");
+        AnimPlayerL = _armL.GetNode<AnimationPlayer>("AnimationPlayer");
+        AnimPlayerR = _armR.GetNode<AnimationPlayer>("AnimationPlayer");
 
-        AnimationPlayer animL = _armL.GetNode<AnimationPlayer>("AnimationPlayer");
-        AnimationPlayer animR = _armR.GetNode<AnimationPlayer>("AnimationPlayer");
-
-        _animL = new AnimationPlayer[] { animL };
-        _animR = new AnimationPlayer[] { animR };
-        _animBoth = new AnimationPlayer[] { animL, animR };
+        _armMeshInstL = _armL.GetNode<MeshInstance3D>("Armature_L/Skeleton3D/Arm_Obj_L");
+        _armMeshInstR = _armR.GetNode<MeshInstance3D>("Armature_R/Skeleton3D/Arm_Obj_R");
 
         _springL = GetNode<SpringArm3D>("SpringArm3D_L");
         _springR = GetNode<SpringArm3D>("SpringArm3D_R");
@@ -47,6 +48,8 @@ public partial class ArmsManager : Node3D
         _targetR = _springR.GetNode("Target");
 
         GetParent().GetNode<Inventory>("Inventory").ItemRemoved += (item) => Unequip(item);
+        AnimPlayerL.AnimationFinished += OnAnimPlayerL_AnimationFinished;
+        AnimPlayerR.AnimationFinished += OnAnimPlayerR_AnimationFinished;
     }
 
     /// <summary>
@@ -79,12 +82,13 @@ public partial class ArmsManager : Node3D
         if (_itemL != null) { Unequip(_itemL); }
 
         _itemL = item;
+        _lastItemL = item;
         item.IdleStarted += AssignNewBoxShapeDeferredLeft;
 
         _armL.Visible = true;
         _armL.Reparent(_targetL);
         item.Reparent(_targetL);
-        item.Equip(_animL);        
+        item.Equip(Arm.Left);        
 
         EquippedStateChanged?.Invoke(item, Arm.Left);
     }
@@ -108,12 +112,13 @@ public partial class ArmsManager : Node3D
         if (_itemR != null) { Unequip(_itemR); }
 
         _itemR = item;
+        _lastItemR = item;
         item.IdleStarted += AssignNewBoxShapeDeferredRight;
 
         _armR.Visible = true;
         _armR.Reparent(_targetR);
         item.Reparent(_targetR);
-        item.Equip(_animR);    
+        item.Equip(Arm.Right);    
 
         EquippedStateChanged?.Invoke(item, Arm.Right);       
     }
@@ -129,6 +134,9 @@ public partial class ArmsManager : Node3D
 
         _itemL = item;
         _itemR = item;
+        _lastItemL = item;
+        _lastItemR = item;
+
         item.IdleStarted += AssignNewBoxShapeDeferredLeft;
 
         _armL.Visible = true;
@@ -137,7 +145,7 @@ public partial class ArmsManager : Node3D
         _armR.Reparent(_targetL);
 
         item.Reparent(_targetL);
-        item.Equip(_animBoth);
+        item.Equip(Arm.Both);
 
         EquippedStateChanged?.Invoke(item, Arm.Both);  
     }
@@ -152,15 +160,11 @@ public partial class ArmsManager : Node3D
         if (_itemL == item)
         {
             _itemL = null;
-            _armL.Visible = false;
-
             unequipped = true;
         }
         if (_itemR == item)
         {
             _itemR = null;
-            _armR.Visible = false;
-
             unequipped = true;
         }
 
@@ -177,7 +181,6 @@ public partial class ArmsManager : Node3D
         _itemL.Unequip();
         EquippedStateChanged?.Invoke(_itemL, Arm.None);
 
-        _armL.Visible = false;
         _itemL = null;       
     }
     private void UnequipRightOnly()
@@ -185,7 +188,6 @@ public partial class ArmsManager : Node3D
         _itemR.Unequip();
         EquippedStateChanged?.Invoke(_itemR, Arm.None);
 
-        _armR.Visible = false;
         _itemR = null;
     }
     private void UnequipBothOnly()
@@ -193,8 +195,6 @@ public partial class ArmsManager : Node3D
         _itemL.Unequip();
         EquippedStateChanged?.Invoke(_itemL, Arm.None);
 
-        _armL.Visible = false;
-        _armR.Visible = false;
         _itemL = null;
         _itemR = null;
     }
@@ -208,7 +208,7 @@ public partial class ArmsManager : Node3D
         BoxShape3D box = GenerateBoxShape(aabbs);
         
         spring.Shape = box;
-        arm.Position = new(arm.Position.X, arm.Position.Y, -box.Size.Z * 0.5f);
+        //arm.Position = new(arm.Position.X, arm.Position.Y, -box.Size.Z * 0.5f);
     }
 
     private BoxShape3D GenerateBoxShape(Godot.Collections.Array<Aabb> aabbs)
@@ -219,5 +219,14 @@ public partial class ArmsManager : Node3D
             mergedAabb = mergedAabb.Merge(aabbs[i]);
         }
         return new BoxShape3D() { Size = mergedAabb.Size };
+    }
+
+    private void OnAnimPlayerL_AnimationFinished(StringName animName)
+    {
+        if (animName == _lastItemL.UnequipNameL) { _armL.Visible = false; }
+    }
+    private void OnAnimPlayerR_AnimationFinished(StringName animName)
+    {
+        if (animName == _lastItemR.UnequipNameR) { _armR.Visible = false; }
     }
 }

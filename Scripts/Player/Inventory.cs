@@ -85,7 +85,7 @@ public partial class Inventory : Node3D
         }
     }
 
-    private const float GridSpace = 0.175f;
+    private const float GridSpace = 0.15f;
     private const float GridThickness = 0.01f;
     private const int HotkeyCount = 4; // Numbered Hotkeys
 
@@ -260,6 +260,8 @@ public partial class Inventory : Node3D
 
         item.GetParent()?.RemoveChild(item);
         _armsManager.AddChild(item);
+        item.Position = Vector3.Zero;
+        item.Rotation = Vector3.Zero;
 
         RegisterGridDataSpace(data, occupiedPosS);
 
