@@ -12,7 +12,7 @@ public partial class CameraController : Camera3D
 
     public static CameraController Inst { get; private set; }
 
-    private static readonly StringName _lookUpName = "look_up", _lookDownName = "look_down";
+    private static readonly StringName s_lookUpName = "look_up", s_lookDownName = "look_down";
 
     public CameraController() { Inst = this; }
 
@@ -30,7 +30,7 @@ public partial class CameraController : Camera3D
     {
         base._Process(delta);
 
-        Rotation = GetCameraRotation(Input.GetAxis(_lookUpName, _lookDownName) * JoystickSensitivity * (float)delta);
+        Rotation = GetCameraRotation(Input.GetAxis(s_lookUpName, s_lookDownName) * JoystickSensitivity * (float)delta);
     }
 
     public override void _UnhandledInput(InputEvent @event)

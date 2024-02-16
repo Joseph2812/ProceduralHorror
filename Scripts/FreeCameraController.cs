@@ -7,12 +7,12 @@ public partial class FreeCameraController : Camera3D
 {
     private const float Speed = 10f;
 
-    private static readonly StringName _moveLeftName = "move_left", _moveRightName = "move_right";
-    private static readonly StringName _moveUpName = "move_up", _moveDownName = "move_down";
-    private static readonly StringName _moveForwardName = "move_forward", _moveBackName = "move_back";
+    private static readonly StringName s_moveLeftName = "move_left", s_moveRightName = "move_right";
+    private static readonly StringName s_moveUpName = "move_up", s_moveDownName = "move_down";
+    private static readonly StringName s_moveForwardName = "move_forward", s_moveBackName = "move_back";
 
-    private static readonly StringName _lookUpName = "look_up", _lookDownName = "look_down";
-    private static readonly StringName _lookLeftName = "look_left", _lookRightName = "look_right";
+    private static readonly StringName s_lookUpName = "look_up", s_lookDownName = "look_down";
+    private static readonly StringName s_lookLeftName = "look_left", s_lookRightName = "look_right";
 
     public static FreeCameraController Inst { get; private set; }
 
@@ -36,14 +36,14 @@ public partial class FreeCameraController : Camera3D
 
         Vector3 input = new Vector3
         (
-            Input.GetAxis(_moveLeftName, _moveRightName),
-            Input.GetAxis(_moveDownName, _moveUpName),
-            Input.GetAxis(_moveForwardName, _moveBackName)
+            Input.GetAxis(s_moveLeftName, s_moveRightName),
+            Input.GetAxis(s_moveDownName, s_moveUpName),
+            Input.GetAxis(s_moveForwardName, s_moveBackName)
         ).LimitLength();
 
         TranslateObjectLocal(input * Speed * (float)delta);
-        RotateObjectLocal(Vector3.Right, Input.GetAxis(_lookDownName, _lookUpName) * Player.CameraController.JoystickSensitivity * (float)delta);
-        RotateY(Input.GetAxis(_lookRightName, _lookLeftName) * Player.CameraController.JoystickSensitivity * (float)delta);
+        RotateObjectLocal(Vector3.Right, Input.GetAxis(s_lookDownName, s_lookUpName) * Player.CameraController.JoystickSensitivity * (float)delta);
+        RotateY(Input.GetAxis(s_lookRightName, s_lookLeftName) * Player.CameraController.JoystickSensitivity * (float)delta);
     }
 
     public override void _UnhandledInput(InputEvent @event)

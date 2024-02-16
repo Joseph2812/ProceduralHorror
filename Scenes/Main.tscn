@@ -141,6 +141,9 @@ axis_lock_angular_x = true
 axis_lock_angular_z = true
 script = ExtResource("5_ql3me")
 
+[node name="MovementController" type="Node" parent="Player"]
+script = ExtResource("6_0v3cs")
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 shape = SubResource("CapsuleShape3D_k83d5")
@@ -149,9 +152,6 @@ shape = SubResource("CapsuleShape3D_k83d5")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 visible = false
 mesh = SubResource("CapsuleMesh_kpy6l")
-
-[node name="MovementController" type="Node" parent="Player"]
-script = ExtResource("6_0v3cs")
 
 [node name="Camera3D" type="Camera3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
@@ -179,14 +179,14 @@ visible = false
 visible = false
 
 [node name="SpringArm3D_L" type="SpringArm3D" parent="Player/Camera3D/ArmsManager"]
-transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, -0.237, 0, 0.266)
-spring_length = 0.345
+transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0)
+spring_length = 0.45
 
 [node name="Target" type="Node3D" parent="Player/Camera3D/ArmsManager/SpringArm3D_L"]
 
 [node name="SpringArm3D_R" type="SpringArm3D" parent="Player/Camera3D/ArmsManager"]
-transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0.237, 0, 0.266)
-spring_length = 0.345
+transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0)
+spring_length = 0.45
 
 [node name="Target" type="Node3D" parent="Player/Camera3D/ArmsManager/SpringArm3D_R"]
 

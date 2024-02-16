@@ -112,7 +112,7 @@ public partial class InteriorObject : Resource
         (
             new Godot.Collections.Dictionary[]
             {
-                CommonMethods.GetCategory(nameof(InteriorObject)),
+                CommonMethod.GetCategory(nameof(InteriorObject)),
                 new Godot.Collections.Dictionary
                 {
                     { "name"       , nameof(Scene) },
@@ -121,7 +121,7 @@ public partial class InteriorObject : Resource
                     { "hint_string", $"{(int)Variant.Type.Object}/{(int)PropertyHint.ResourceType}:{nameof(PackedScene)}" }
                 },
 
-                CommonMethods.GetGroup("Probability"),
+                CommonMethod.GetGroup("Probability"),
                 new Godot.Collections.Dictionary
                 {
                     { "name"       , nameof(WeightToMiddle) },
@@ -135,7 +135,7 @@ public partial class InteriorObject : Resource
                     { "type", (int)Variant.Type.Bool }
                 },
 
-                CommonMethods.GetGroup("Constraints"),
+                CommonMethod.GetGroup("Constraints"),
                 new Godot.Collections.Dictionary
                 {
                     { "name"       , nameof(MinimumHeight) },
@@ -182,7 +182,7 @@ public partial class InteriorObject : Resource
                     { "type", (int)Variant.Type.PackedVector3Array }
                 },
 
-                CommonMethods.GetGroup("Rotation"),
+                CommonMethod.GetGroup("Rotation"),
                 new Godot.Collections.Dictionary
                 {
                     { "name"       , nameof(MinimumRotationalYOffset) },

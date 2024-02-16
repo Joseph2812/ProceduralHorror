@@ -6,7 +6,7 @@ namespace Scripts.Items;
 
 public abstract partial class Item : RigidBody3D
 {
-    private static readonly Vector2I[] _defaultClearancePositions = new Vector2I[] { Vector2I.Zero };
+    private static readonly Vector2I[] s_defaultClearancePositions = new Vector2I[] { Vector2I.Zero };
 
     public abstract bool TwoHanded { get; }
 
@@ -32,7 +32,7 @@ public abstract partial class Item : RigidBody3D
     /// <summary>
     /// Local grid coordinates used by <see cref="Inventory"/> to indicate the positions it takes up.
     /// </summary>
-    public virtual Vector2I[] ClearancePositions => _defaultClearancePositions;
+    public virtual Vector2I[] ClearancePositions => s_defaultClearancePositions;
 
     /// <summary>
     /// Signals when idle animation has started (used to generate a new shape for <see cref="SpringArm3D"/>s).<para/>
@@ -40,13 +40,12 @@ public abstract partial class Item : RigidBody3D
     /// </summary>
     public event Action IdleStarted;
 
-    public Mesh InventoryMesh => _meshInst.Mesh;
-    public BaseMaterial3D InventoryMaterial { get; private set; }
+    public MeshInstance3D MeshInstance;
+    public BaseMaterial3D Material { get; private set; }
     public CollisionShape3D CollisionShape { get; private set; }
 
     protected bool Equipped { get; private set; }
 
-    private MeshInstance3D _meshInst;
     private AnimationPlayer _itemAnim;
     private ArmsManager.Arm _currentArm;
 
@@ -72,9 +71,8 @@ public abstract partial class Item : RigidBody3D
     {
         base._Ready();
 
-        _meshInst = GetNode<MeshInstance3D>(MeshInstPath);
-
-        InventoryMaterial = (BaseMaterial3D)_meshInst.GetActiveMaterial(0);
+        MeshInstance = GetNode<MeshInstance3D>(MeshInstPath);
+        Material = (BaseMaterial3D)MeshInstance.GetActiveMaterial(0);
         CollisionShape = GetNode<CollisionShape3D>("CollisionShape3D");
 
         _itemAnim = GetNode<AnimationPlayer>("AnimationPlayer");
@@ -82,8 +80,6 @@ public abstract partial class Item : RigidBody3D
         _itemAnim.AnimationStarted += OnItemAnim_AnimationStarted;
         _itemAnim.AnimationFinished += OnItemAnim_AnimationFinished;
     }
-
-    public Aabb GetAabb() => _meshInst.GetAabb();
 
     protected void PlayAnimation(StringName nameL, StringName nameR)
     {

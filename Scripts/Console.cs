@@ -29,9 +29,9 @@ public partial class Console : Panel
 
     public static Console Inst { get; private set; }
 
-    private static readonly StringName _toggleConsoleName = "toggle_console", _prevCommandName = "prev_command", _nextCommandName = "next_command";
-    private static readonly StringName _grabFocusName = "grab_focus";
-    private static readonly NodePath _positionYPath = "position:y";
+    private static readonly StringName s_toggleConsoleName = "toggle_console", s_prevCommandName = "prev_command", s_nextCommandName = "next_command";
+    private static readonly StringName s_grabFocusName = "grab_focus";
+    private static readonly NodePath s_positionYPath = "position:y";
 
     public event Action Opened;
     public event Action Closed;
@@ -94,7 +94,7 @@ public partial class Console : Panel
     {
         base._Input(@event);
 
-        if (@event.IsActionPressed(_toggleConsoleName))
+        if (@event.IsActionPressed(s_toggleConsoleName))
         {
             _isActive = !_isActive;
 
@@ -103,10 +103,10 @@ public partial class Console : Panel
 
             if (_isActive)
             {
-                _openTween.TweenProperty(this, _positionYPath, 0f, TweenDuration);
+                _openTween.TweenProperty(this, s_positionYPath, 0f, TweenDuration);
                 Visible = true;
 
-                _input.CallDeferred(_grabFocusName); // Focus after (so nothing is typed)
+                _input.CallDeferred(s_grabFocusName); // Focus after (so nothing is typed)
                 Input.MouseMode = Input.MouseModeEnum.Visible;
 
                 IsOpen = true;
@@ -114,7 +114,7 @@ public partial class Console : Panel
             }
             else
             {
-                _openTween.TweenProperty(this, _positionYPath, -Size.Y, TweenDuration);
+                _openTween.TweenProperty(this, s_positionYPath, -Size.Y, TweenDuration);
                 _openTween.TweenCallback(_setVisibleFalse);
 
                 _input.ReleaseFocus();
@@ -127,14 +127,14 @@ public partial class Console : Panel
 
         if (!_isActive) { return; }
 
-        if (@event.IsActionPressed(_prevCommandName))
+        if (@event.IsActionPressed(s_prevCommandName))
         { 
             if (_historyIdx < HistoryLineCountMinusOne && _historyLines[_historyIdx + 1] != null)
             {
                 _input.Text = _historyLines[++_historyIdx];
             }          
         }
-        else if (@event.IsActionPressed(_nextCommandName))
+        else if (@event.IsActionPressed(s_nextCommandName))
         {
             if (_historyIdx > 0)
             {

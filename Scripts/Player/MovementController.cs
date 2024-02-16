@@ -26,11 +26,11 @@ public partial class MovementController : Node
     private const float StaminaGradient = (MaxSprintSpeed - WalkSpeed) / StaminaTireThreshold;
     private const float StaminaRefillRate = 0.5f;
 
-    private static readonly StringName _moveLeftName = "move_left", _moveRightName = "move_right", _moveForwardName = "move_forward", _moveBackName = "move_back";
-    private static readonly StringName _lookLeftName = "look_left", _lookRightName = "look_right";
-    private static readonly StringName _sprintName = "sprint";
-    private static readonly StringName _crouchName = "crouch";
-    private static readonly NodePath _positionYPath = "position:y", _rotationZPath = "rotation:z";
+    private static readonly StringName s_moveLeftName = "move_left", s_moveRightName = "move_right", s_moveForwardName = "move_forward", s_moveBackName = "move_back";
+    private static readonly StringName s_lookLeftName = "look_left", s_lookRightName = "look_right";
+    private static readonly StringName s_sprintName = "sprint";
+    private static readonly StringName s_crouchName = "crouch";
+    private static readonly NodePath s_positionYPath = "position:y", s_rotationZPath = "rotation:z";
 
     private float _staminaTimeLeft = StaminaMaxTime;
     private bool _sprintHeld;
@@ -81,7 +81,7 @@ public partial class MovementController : Node
     {
         base._Process(delta);
 
-        Player.Inst.RotateY(Input.GetAxis(_lookRightName, _lookLeftName) * CameraController.JoystickSensitivity * (float)delta);
+        Player.Inst.RotateY(Input.GetAxis(s_lookRightName, s_lookLeftName) * CameraController.JoystickSensitivity * (float)delta);
 
         _distanceTravelled += Player.Inst.Velocity.Length() * (float)delta;
         if (_crouching)                        { Sway(); }
@@ -132,17 +132,17 @@ public partial class MovementController : Node
         {
             Player.Inst.RotateY(-mouseMotion.Relative.X * CameraController.MouseSensitivity);
         }
-        else if (@event.IsActionPressed(_sprintName)) { _sprintHeld = true; }
-        else if (@event.IsActionReleased(_sprintName)) { _sprintHeld = false; }
-        else if (@event.IsActionPressed(_crouchName)) { ToggleCrouch(); }
+        else if (@event.IsActionPressed(s_sprintName)) { _sprintHeld = true; }
+        else if (@event.IsActionReleased(s_sprintName)) { _sprintHeld = false; }
+        else if (@event.IsActionPressed(s_crouchName)) { ToggleCrouch(); }
     }
 
     private Vector3 GetGlobalMoveInput()
     {
         return
         (
-            (Input.GetAxis(_moveLeftName, _moveRightName) * Player.Inst.Transform.Basis.X) +
-            (Input.GetAxis(_moveForwardName, _moveBackName) * Player.Inst.Transform.Basis.Z)
+            (Input.GetAxis(s_moveLeftName, s_moveRightName) * Player.Inst.Transform.Basis.X) +
+            (Input.GetAxis(s_moveForwardName, s_moveBackName) * Player.Inst.Transform.Basis.Z)
         ).LimitLength();
     }
 
@@ -198,7 +198,7 @@ public partial class MovementController : Node
             {
                 _bobToRestTween.Kill();
                 _bobToRestTween = CreateTween();
-                _bobToRestTween.TweenProperty(CameraController.Inst, _positionYPath, CameraStandY, 0.5f);
+                _bobToRestTween.TweenProperty(CameraController.Inst, s_positionYPath, CameraStandY, 0.5f);
 
                 _distanceTravelled = 0f;
             }
@@ -218,7 +218,7 @@ public partial class MovementController : Node
     {
         _swayToRestTween.Kill();
         _swayToRestTween = CreateTween();
-        _swayToRestTween.TweenProperty(CameraController.Inst, _rotationZPath, 0f, 0.5f);
+        _swayToRestTween.TweenProperty(CameraController.Inst, s_rotationZPath, 0f, 0.5f);
     }
 
     private void ToggleCrouch()
@@ -261,7 +261,7 @@ public partial class MovementController : Node
         _crouchColTween.SetProcessMode(Tween.TweenProcessMode.Physics);
 
         float time = GetCrouchTime(CameraController.Inst.Position.Y, camTargetY);
-        _crouchCamTween.TweenProperty(CameraController.Inst, _positionYPath, camTargetY, time);
+        _crouchCamTween.TweenProperty(CameraController.Inst, s_positionYPath, camTargetY, time);
         _crouchColTween.TweenMethod(_setCollisionShapeYCall, _colShape.Position.Y, colTargetY, time);
     }
 

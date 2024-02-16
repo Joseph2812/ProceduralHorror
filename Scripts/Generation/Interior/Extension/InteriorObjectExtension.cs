@@ -23,7 +23,7 @@ public partial class InteriorObjectExtension : Resource
 
     public void LoadDependencies()
     {
-        InteriorObjectWithWeightS = CommonMethods.LoadSubDirectoryNextToPath<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
+        InteriorObjectWithWeightS = CommonMethod.LoadSubDirectoryNextToPath<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
         foreach (InteriorObjectWithWeight iObjWithWt in InteriorObjectWithWeightS) { iObjWithWt.LoadDependencies(); }
     }
 }

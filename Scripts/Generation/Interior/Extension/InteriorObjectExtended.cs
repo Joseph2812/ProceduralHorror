@@ -15,7 +15,7 @@ public partial class InteriorObjectExtended : InteriorObject
     {
         base.LoadDependencies();
 
-        string extensionsDir = CommonMethods.GetPathWithoutEndDirectory(ResourcePath) + "Extensions/";
+        string extensionsDir = CommonMethod.GetPathWithoutEndDirectory(ResourcePath) + "Extensions/";
         string[] subDirs = DirAccess.GetDirectoriesAt(extensionsDir);
 
         _extensions = new InteriorObjectExtension[subDirs.Length];

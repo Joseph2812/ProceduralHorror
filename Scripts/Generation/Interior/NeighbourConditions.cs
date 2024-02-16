@@ -16,14 +16,14 @@ namespace Scripts.Generation.Interior;
 /// </summary>
 public class NeighbourConditions
 {
-    private static readonly ValueNode[] _valueNodes = new ValueNode[Enum.GetValues<All3x3x3Dir>().Length];
-    private static readonly ValueNode _alwaysTrueNode = new ValueNode(true);
+    private static readonly ValueNode[] s_valueNodes = new ValueNode[Enum.GetValues<All3x3x3Dir>().Length];
+    private static readonly ValueNode s_alwaysTrueNode = new ValueNode(true);
 
     private TreeNode _root;
 
     static NeighbourConditions()
     {
-        for (int i = 0; i < _valueNodes.Length; i++) { _valueNodes[i] = new(); }
+        for (int i = 0; i < s_valueNodes.Length; i++) { s_valueNodes[i] = new(); }
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class NeighbourConditions
 #endif
         if (conditionsToParse == string.Empty)
         {
-            _root = _alwaysTrueNode;
+            _root = s_alwaysTrueNode;
             return;
         }
 
@@ -147,7 +147,7 @@ public class NeighbourConditions
         if
         (
             (topNode is not BinaryNode) ||
-            (topNode is BinaryNode bl && bl.Complete)
+            (topNode is BinaryNode node && node.Complete)
         )
         {
             while (stack.Count > 1)
@@ -163,11 +163,11 @@ public class NeighbourConditions
         }
     }
 
-    private void UpdateValueNodes(NeighbourInfo[] all3x3x3Neighbours) // TODO: Maybe this gets rotated to be relative to object's rotation
+    private void UpdateValueNodes(NeighbourInfo[] all3x3x3Neighbours)
     {
-        for (int i = 0; i < _valueNodes.Length; i++)
+        for (int i = 0; i < s_valueNodes.Length; i++)
         {
-            _valueNodes[i].Value = !all3x3x3Neighbours[i].Empty;
+            s_valueNodes[i].Value = !all3x3x3Neighbours[i].Empty;
         }
     }
 
@@ -175,32 +175,32 @@ public class NeighbourConditions
     {
         switch (directionName)
         {
-            case "left0"   : return _valueNodes[(int)All3x3x3Dir.Left0];
-            case "forward0": return _valueNodes[(int)All3x3x3Dir.Forward0];
-            case "right0"  : return _valueNodes[(int)All3x3x3Dir.Right0];
-            case "back0"   : return _valueNodes[(int)All3x3x3Dir.Back0];
-            case "fl0"     : return _valueNodes[(int)All3x3x3Dir.FL0];
-            case "fr0"     : return _valueNodes[(int)All3x3x3Dir.FR0];
-            case "br0"     : return _valueNodes[(int)All3x3x3Dir.BR0];
-            case "bl0"     : return _valueNodes[(int)All3x3x3Dir.BL0];
+            case "left0"   : return s_valueNodes[(int)All3x3x3Dir.Left0];
+            case "forward0": return s_valueNodes[(int)All3x3x3Dir.Forward0];
+            case "right0"  : return s_valueNodes[(int)All3x3x3Dir.Right0];
+            case "back0"   : return s_valueNodes[(int)All3x3x3Dir.Back0];
+            case "fl0"     : return s_valueNodes[(int)All3x3x3Dir.FL0];
+            case "fr0"     : return s_valueNodes[(int)All3x3x3Dir.FR0];
+            case "br0"     : return s_valueNodes[(int)All3x3x3Dir.BR0];
+            case "bl0"     : return s_valueNodes[(int)All3x3x3Dir.BL0];
 
-            case "left1"   : return _valueNodes[(int)All3x3x3Dir.Left1];
-            case "forward1": return _valueNodes[(int)All3x3x3Dir.Forward1];
-            case "right1"  : return _valueNodes[(int)All3x3x3Dir.Right1];
-            case "back1"   : return _valueNodes[(int)All3x3x3Dir.Back1];
-            case "fl1"     : return _valueNodes[(int)All3x3x3Dir.FL1];
-            case "fr1"     : return _valueNodes[(int)All3x3x3Dir.FR1];
-            case "br1"     : return _valueNodes[(int)All3x3x3Dir.BR1];
-            case "bl1"     : return _valueNodes[(int)All3x3x3Dir.BL1];
+            case "left1"   : return s_valueNodes[(int)All3x3x3Dir.Left1];
+            case "forward1": return s_valueNodes[(int)All3x3x3Dir.Forward1];
+            case "right1"  : return s_valueNodes[(int)All3x3x3Dir.Right1];
+            case "back1"   : return s_valueNodes[(int)All3x3x3Dir.Back1];
+            case "fl1"     : return s_valueNodes[(int)All3x3x3Dir.FL1];
+            case "fr1"     : return s_valueNodes[(int)All3x3x3Dir.FR1];
+            case "br1"     : return s_valueNodes[(int)All3x3x3Dir.BR1];
+            case "bl1"     : return s_valueNodes[(int)All3x3x3Dir.BL1];
 
-            case "left2"   : return _valueNodes[(int)All3x3x3Dir.Left2];
-            case "forward2": return _valueNodes[(int)All3x3x3Dir.Forward2];
-            case "right2"  : return _valueNodes[(int)All3x3x3Dir.Right2];
-            case "back2"   : return _valueNodes[(int)All3x3x3Dir.Back2];
-            case "fl2"     : return _valueNodes[(int)All3x3x3Dir.FL2];
-            case "fr2"     : return _valueNodes[(int)All3x3x3Dir.FR2];
-            case "br2"     : return _valueNodes[(int)All3x3x3Dir.BR2];
-            case "bl2"     : return _valueNodes[(int)All3x3x3Dir.BL2];
+            case "left2"   : return s_valueNodes[(int)All3x3x3Dir.Left2];
+            case "forward2": return s_valueNodes[(int)All3x3x3Dir.Forward2];
+            case "right2"  : return s_valueNodes[(int)All3x3x3Dir.Right2];
+            case "back2"   : return s_valueNodes[(int)All3x3x3Dir.Back2];
+            case "fl2"     : return s_valueNodes[(int)All3x3x3Dir.FL2];
+            case "fr2"     : return s_valueNodes[(int)All3x3x3Dir.FR2];
+            case "br2"     : return s_valueNodes[(int)All3x3x3Dir.BR2];
+            case "bl2"     : return s_valueNodes[(int)All3x3x3Dir.BL2];
 
             default: throw new NotImplementedException($"\"{directionName}\" is not a valid direction.");
         }

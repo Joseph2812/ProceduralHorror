@@ -3,7 +3,7 @@ using System;
 
 namespace Scripts;
 
-public static class CommonMethods
+public static class CommonMethod
 {
     public static Godot.Collections.Dictionary GetCategory(string name)
     {

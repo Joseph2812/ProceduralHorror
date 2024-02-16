@@ -3,7 +3,7 @@ using System;
 
 namespace Scripts;
 
-public static class PlanarMaths
+public static class PlanarMath
 {
     public static Vector3 GetPointOfIntersectionPlane(Vector3 origin, Vector3 direction, Vector3 pointOnPlane, Vector3 normal)
     {

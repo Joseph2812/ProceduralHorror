@@ -16,10 +16,10 @@ public partial class InteractionController : Node
 
     private const float OutlineWidth = 2f;
 
-    private static readonly StringName _interactName = "interact", _grabName = "grab";
-    private static readonly StringName _extendName = "extend", _retractName = "retract";
-    private static readonly StringName _colliderName = "collider";
-    private static readonly StringName _outlineWidthName = "outline_width";
+    private static readonly StringName s_interactName = "interact", s_grabName = "grab";
+    private static readonly StringName s_extendName = "extend", s_retractName = "retract";
+    private static readonly StringName s_colliderName = "collider";
+    private static readonly StringName s_outlineWidthName = "outline_width";
 
     // Events only for interactables that require exit
     public event Action InteractableEntered;
@@ -65,26 +65,26 @@ public partial class InteractionController : Node
 
         if (rayResult.Count > 0)
         {
-            colliderObj = rayResult[_colliderName].AsGodotObject();
+            colliderObj = rayResult[s_colliderName].AsGodotObject();
             if (colliderObj is Item item)
             {
-                if (_lastOutlinedMat != item.InventoryMaterial.NextPass)
+                if (_lastOutlinedMat != item.Material.NextPass)
                 {
-                    _lastOutlinedMat?.SetShaderParameter(_outlineWidthName, 0f);
+                    _lastOutlinedMat?.SetShaderParameter(s_outlineWidthName, 0f);
 
-                    _lastOutlinedMat = (ShaderMaterial)item.InventoryMaterial.NextPass;
-                    _lastOutlinedMat.SetShaderParameter(_outlineWidthName, OutlineWidth);
+                    _lastOutlinedMat = (ShaderMaterial)item.Material.NextPass;
+                    _lastOutlinedMat.SetShaderParameter(s_outlineWidthName, OutlineWidth);
                 }     
             }
             else if (_lastOutlinedMat != null)
             {
-                _lastOutlinedMat.SetShaderParameter(_outlineWidthName, 0f);
+                _lastOutlinedMat.SetShaderParameter(s_outlineWidthName, 0f);
                 _lastOutlinedMat = null;
             }
         }
         else if (_lastOutlinedMat != null)
         {
-            _lastOutlinedMat.SetShaderParameter(_outlineWidthName, 0f);
+            _lastOutlinedMat.SetShaderParameter(s_outlineWidthName, 0f);
             _lastOutlinedMat = null;
         }
 
@@ -124,21 +124,21 @@ public partial class InteractionController : Node
     {
         base._UnhandledInput(@event);
         
-        if (@event.IsActionPressed(_interactName) && _activeRigidbody == null)
+        if (@event.IsActionPressed(s_interactName) && _activeRigidbody == null)
         { 
             _interactQueued = true;
         }
-        else if (@event.IsActionPressed(_grabName))
+        else if (@event.IsActionPressed(s_grabName))
         {
             if (_activeRigidbody == null) { _grabQueued = true; }
             else                          { ReleaseGrab(); }
         }
-        else if (@event.IsActionPressed(_extendName))
+        else if (@event.IsActionPressed(s_extendName))
         {
             _targetReach += ReachStep;
             if (_targetReach > ReachMaximum) { _targetReach = ReachMaximum; }
         }
-        else if (@event.IsActionPressed(_retractName))
+        else if (@event.IsActionPressed(s_retractName))
         {
             _targetReach -= ReachStep;
             if (_targetReach < ReachMinimum) { _targetReach = ReachMinimum; }

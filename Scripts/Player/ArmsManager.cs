@@ -19,15 +19,17 @@ public partial class ArmsManager : Node3D
     /// </summary>
     public static AnimationPlayer AnimPlayerL, AnimPlayerR;
     
-    public event Action<Item, Arm> EquippedStateChanged;
+    public event Action<Item, Arm> EquippedStateChanged; 
 
     private Node3D _armL, _armR;
+    private Skeleton3D _armSkeletonL, _armSkeletonR;
     private MeshInstance3D _armMeshInstL, _armMeshInstR;
     private Item _itemL, _itemR;
     private Item _lastItemL, _lastItemR; // Cached for AnimationFinished
 
     private SpringArm3D _springL, _springR;
     private Node _targetL, _targetR;
+    private Vector3 _springOffset;
 
     public override void _Ready()
     {
@@ -39,13 +41,17 @@ public partial class ArmsManager : Node3D
         AnimPlayerL = _armL.GetNode<AnimationPlayer>("AnimationPlayer");
         AnimPlayerR = _armR.GetNode<AnimationPlayer>("AnimationPlayer");
 
-        _armMeshInstL = _armL.GetNode<MeshInstance3D>("Armature_L/Skeleton3D/Arm_Obj_L");
-        _armMeshInstR = _armR.GetNode<MeshInstance3D>("Armature_R/Skeleton3D/Arm_Obj_R");
+        _armSkeletonL = _armL.GetNode<Skeleton3D>("Armature_L/Skeleton3D");
+        _armSkeletonR = _armR.GetNode<Skeleton3D>("Armature_R/Skeleton3D");
+
+        _armMeshInstL = _armSkeletonL.GetNode<MeshInstance3D>("Arm_Obj_L");
+        _armMeshInstR = _armSkeletonR.GetNode<MeshInstance3D>("Arm_Obj_R");
 
         _springL = GetNode<SpringArm3D>("SpringArm3D_L");
         _springR = GetNode<SpringArm3D>("SpringArm3D_R");
         _targetL = _springL.GetNode("Target");
         _targetR = _springR.GetNode("Target");
+        _springOffset = _springL.SpringLength * Vector3.Back;
 
         GetParent().GetNode<Inventory>("Inventory").ItemRemoved += (item) => Unequip(item);
         AnimPlayerL.AnimationFinished += OnAnimPlayerL_AnimationFinished;
@@ -83,13 +89,24 @@ public partial class ArmsManager : Node3D
 
         _itemL = item;
         _lastItemL = item;
-        item.IdleStarted += AssignNewBoxShapeDeferredLeft;
+        item.IdleStarted += () => AssignNewBoxShape(_springL, _armL, _armSkeletonL, _itemL);
 
         _armL.Visible = true;
-        _armL.Reparent(_targetL);
-        item.Reparent(_targetL);
-        item.Equip(Arm.Left);        
 
+        _armL.Reparent(_targetL, false);
+        item.Reparent(_targetL, false);
+
+        // Reset Position & Rotations //
+        _armL.Position = Vector3.Zero;
+        _armL.Rotation = -_springL.Rotation;
+
+        item.Position = Vector3.Zero;
+        item.Rotation = -_springL.Rotation;
+
+        _springL.Position = _springOffset;
+        //
+
+        item.Equip(Arm.Left);
         EquippedStateChanged?.Invoke(item, Arm.Left);
     }
     public void EquipRight(Item item)
@@ -113,14 +130,25 @@ public partial class ArmsManager : Node3D
 
         _itemR = item;
         _lastItemR = item;
-        item.IdleStarted += AssignNewBoxShapeDeferredRight;
+        item.IdleStarted += () => AssignNewBoxShape(_springR, _armR, _armSkeletonR, _itemR);
 
         _armR.Visible = true;
-        _armR.Reparent(_targetR);
-        item.Reparent(_targetR);
-        item.Equip(Arm.Right);    
 
-        EquippedStateChanged?.Invoke(item, Arm.Right);       
+        _armR.Reparent(_targetR, false);
+        item.Reparent(_targetR, false);
+
+        // Reset Position & Rotations //
+        _armR.Position = Vector3.Zero;
+        _armR.Rotation = -_springR.Rotation;
+
+        item.Position = Vector3.Zero;
+        item.Rotation = -_springR.Rotation;
+
+        _springR.Position = _springOffset;
+        //
+
+        item.Equip(Arm.Right);
+        EquippedStateChanged?.Invoke(item, Arm.Right);
     }
     public void EquipBoth(Item item)
     {
@@ -137,16 +165,28 @@ public partial class ArmsManager : Node3D
         _lastItemL = item;
         _lastItemR = item;
 
-        item.IdleStarted += AssignNewBoxShapeDeferredLeft;
+        item.IdleStarted += () => AssignNewBoxShape(_springL, _armL, _armSkeletonL, _itemL);
 
         _armL.Visible = true;
         _armR.Visible = true;
-        _armL.Reparent(_targetL);
-        _armR.Reparent(_targetL);
 
-        item.Reparent(_targetL);
+        _armL.Reparent(_targetL, false);
+        _armR.Reparent(_targetL, false);
+        item.Reparent(_targetL, false);
+
+        // Reset Position & Rotations //
+        _armL.Position = Vector3.Zero;
+        _armL.Rotation = -_springL.Rotation;
+        _armR.Position = Vector3.Zero;
+        _armR.Rotation = -_springL.Rotation;
+
+        item.Position = Vector3.Zero;
+        item.Rotation = -_springL.Rotation;
+
+        _springL.Position = _springOffset;
+        //
+
         item.Equip(Arm.Both);
-
         EquippedStateChanged?.Invoke(item, Arm.Both);  
     }
 
@@ -199,26 +239,30 @@ public partial class ArmsManager : Node3D
         _itemR = null;
     }
 
-    private void AssignNewBoxShapeDeferredLeft() { CallDeferred(MethodName.AssignNewBoxShape, _springL, _armL, new Godot.Collections.Array<Aabb> { _armMeshInstL.GetAabb(), _itemL.GetAabb() }); }
-    private void AssignNewBoxShapeDeferredRight() { CallDeferred(MethodName.AssignNewBoxShape, _springR, _armR, new Godot.Collections.Array<Aabb> { _armMeshInstR.GetAabb(), _itemR.GetAabb() }); }
-
-    // Call deferred to allow AABB update
-    private void AssignNewBoxShape(SpringArm3D spring, Node3D arm, Godot.Collections.Array<Aabb> aabbs)
+    private void AssignNewBoxShape(SpringArm3D spring, Node3D arm, Skeleton3D skeleton, Item item)
     {
-        BoxShape3D box = GenerateBoxShape(aabbs);
-        
+        (BoxShape3D box, Vector3 offset) = ConvexHull.GenerateBox(GetBoneGlobalPositions(skeleton), item.MeshInstance.Transform * item.MeshInstance.Mesh.GetFaces());
+        offset = new(offset.X, -offset.Y, offset.Z);
+
         spring.Shape = box;
-        //arm.Position = new(arm.Position.X, arm.Position.Y, -box.Size.Z * 0.5f);
+        spring.Position = _springOffset - offset.Rotated(Vector3.Up, -spring.Rotation.Y);
+        arm.Position = offset;
+        item.Position = offset;
+
+        //Debug.Clear();
+        //Debug.CreateBox(spring, Colors.Green, Vector3.Zero, box.Size);
     }
 
-    private BoxShape3D GenerateBoxShape(Godot.Collections.Array<Aabb> aabbs)
+    private Vector3[] GetBoneGlobalPositions(Skeleton3D skeleton)
     {
-        Aabb mergedAabb = aabbs[0];
-        for (int i = 1; i < aabbs.Count; i++)
+        int count = skeleton.GetBoneCount();
+        Vector3[] positions = new Vector3[count];
+
+        for (int i = 0; i < count; i++)
         {
-            mergedAabb = mergedAabb.Merge(aabbs[i]);
+            positions[i] = (skeleton.GetParent<Node3D>().Transform * skeleton.GetBoneGlobalPose(i)).Origin; // TODO: Remove skeleton.GetParent().Transform once I make the arm uniform scale
         }
-        return new BoxShape3D() { Size = mergedAabb.Size };
+        return positions;
     }
 
     private void OnAnimPlayerL_AnimationFinished(StringName animName)

@@ -89,26 +89,26 @@ public partial class Inventory : Node3D
     private const float GridThickness = 0.01f;
     private const int HotkeyCount = 4; // Numbered Hotkeys
 
-    private static readonly StringName _toggleName = "inventory_toggle";
-    private static readonly StringName _leftName = "inventory_left", _rightName = "inventory_right", _upName = "inventory_up", _downName = "inventory_down";
-    private static readonly StringName _useName = "inventory_use", _useAltName = "inventory_use_alt", _dropName = "inventory_drop", _moveName = "inventory_move", _rotateName = "inventory_rotate";
-    private static readonly StringName _hotkey1Name = "hotkey_1", _hotkey2Name = "hotkey_2", _hotkey3Name = "hotkey_3", _hotkey4Name = "hotkey_4";
-    private static readonly StringName _hotkeyAlt1Name = "hotkey_alt_1", _hotkeyAlt2Name = "hotkey_alt_2", _hotkeyAlt3Name = "hotkey_alt_3", _hotkeyAlt4Name = "hotkey_alt_4";
-    private static readonly StringName _updateLabelPositionName = nameof(GridData.UpdateLabelPosition);
+    private static readonly StringName s_toggleName = "inventory_toggle";
+    private static readonly StringName s_leftName = "inventory_left", s_rightName = "inventory_right", s_upName = "inventory_up", s_downName = "inventory_down";
+    private static readonly StringName s_useName = "inventory_use", s_useAltName = "inventory_use_alt", s_dropName = "inventory_drop", s_moveName = "inventory_move", s_rotateName = "inventory_rotate";
+    private static readonly StringName s_hotkey1Name = "hotkey_1", s_hotkey2Name = "hotkey_2", s_hotkey3Name = "hotkey_3", s_hotkey4Name = "hotkey_4";
+    private static readonly StringName s_hotkeyAlt1Name = "hotkey_alt_1", s_hotkeyAlt2Name = "hotkey_alt_2", s_hotkeyAlt3Name = "hotkey_alt_3", s_hotkeyAlt4Name = "hotkey_alt_4";
+    private static readonly StringName s_updateLabelPositionName = nameof(GridData.UpdateLabelPosition);
 
-    private static readonly Vector2I _gridSize = new(6, 4);
+    private static readonly Vector2I s_gridSize = new(6, 4);
 
     /// <summary>
     /// Applied to the grid MeshInstance to centre it on the screen.
     /// </summary>
-    private static readonly Vector3 _offset = new
+    private static readonly Vector3 s_offset = new
     (
-        _gridSize.X * (GridSpace + GridThickness) * -0.5f,
-        _gridSize.Y * (GridSpace + GridThickness) * -0.5f,
+        s_gridSize.X * (GridSpace + GridThickness) * -0.5f,
+        s_gridSize.Y * (GridSpace + GridThickness) * -0.5f,
         0f
     );
-    private static readonly QuadMesh _selectorMesh = new() { Size = Vector2.One * GridSpace };
-    private static Node _sceneRoot;
+    private static readonly QuadMesh s_selectorMesh = new() { Size = Vector2.One * GridSpace };
+    private static Node s_sceneRoot;
 
     public event Action Opened, Closed;
     public event Action<Item> ItemRemoved;
@@ -136,17 +136,17 @@ public partial class Inventory : Node3D
     {
         return new
         (
-            _offset.X + (GridThickness * 0.5f) + ((gridPos.X + 0.5f) * (GridSpace + GridThickness)),
-            _offset.Y + (GridThickness * 0.5f) + ((gridPos.Y + 0.5f) * (GridSpace + GridThickness)),
+            s_offset.X + (GridThickness * 0.5f) + ((gridPos.X + 0.5f) * (GridSpace + GridThickness)),
+            s_offset.Y + (GridThickness * 0.5f) + ((gridPos.Y + 0.5f) * (GridSpace + GridThickness)),
             0f
         );
     }
 
     public Inventory() 
     {
-        for (int y = 0; y < _gridSize.Y; y++)
+        for (int y = 0; y < s_gridSize.Y; y++)
         {
-            for (int x = 0; x < _gridSize.X; x++)
+            for (int x = 0; x < s_gridSize.X; x++)
             {
                 _emptyPosS.Add(new(x, y));
             }
@@ -157,7 +157,7 @@ public partial class Inventory : Node3D
     {
         base._Ready();
 
-        _sceneRoot = GetTree().Root.GetNode("Main");
+        s_sceneRoot = GetTree().Root.GetNode("Main");
         _armsManager = GetParent().GetNode<ArmsManager>("ArmsManager");
 
         _selectorMaterial = new OrmMaterial3D()
@@ -172,7 +172,7 @@ public partial class Inventory : Node3D
             Name             = "Selector",
             Position         = GetCentrePosFromGridPos(Vector2I.Zero),
             MaterialOverride = _selectorMaterial,
-            Mesh             = _selectorMesh,
+            Mesh             = s_selectorMesh,
             CastShadow       = GeometryInstance3D.ShadowCastingSetting.Off
         };
         AddChild(_selectorMeshInst);
@@ -188,7 +188,7 @@ public partial class Inventory : Node3D
 
         if (Console.Inst.IsOpen || FreeCameraController.Inst.Current) { return; }
 
-        if (@event.IsActionPressed(_toggleName))
+        if (@event.IsActionPressed(s_toggleName))
         {
             Visible = !Visible;
             CancelMove();
@@ -197,39 +197,39 @@ public partial class Inventory : Node3D
             if (Visible) { Opened?.Invoke(); }
             else         { Closed?.Invoke(); }
         }
-        else if (@event.IsActionPressed(_hotkey1Name, exactMatch: true)) { UseHotkey(0); }
-        else if (@event.IsActionPressed(_hotkey2Name, exactMatch: true)) { UseHotkey(1); }
-        else if (@event.IsActionPressed(_hotkey3Name, exactMatch: true)) { UseHotkey(2); }
-        else if (@event.IsActionPressed(_hotkey4Name, exactMatch: true)) { UseHotkey(3); }
-        else if (@event.IsActionPressed(_hotkeyAlt1Name) && !Visible && _assignedGridData[0] != null) { EquipAlt(_assignedGridData[0].Item); }
-        else if (@event.IsActionPressed(_hotkeyAlt2Name) && !Visible && _assignedGridData[1] != null) { EquipAlt(_assignedGridData[1].Item); }
-        else if (@event.IsActionPressed(_hotkeyAlt3Name) && !Visible && _assignedGridData[2] != null) { EquipAlt(_assignedGridData[2].Item); }
-        else if (@event.IsActionPressed(_hotkeyAlt4Name) && !Visible && _assignedGridData[3] != null) { EquipAlt(_assignedGridData[3].Item); }
+        else if (@event.IsActionPressed(s_hotkey1Name, exactMatch: true)) { UseHotkey(0); }
+        else if (@event.IsActionPressed(s_hotkey2Name, exactMatch: true)) { UseHotkey(1); }
+        else if (@event.IsActionPressed(s_hotkey3Name, exactMatch: true)) { UseHotkey(2); }
+        else if (@event.IsActionPressed(s_hotkey4Name, exactMatch: true)) { UseHotkey(3); }
+        else if (@event.IsActionPressed(s_hotkeyAlt1Name) && !Visible && _assignedGridData[0] != null) { EquipAlt(_assignedGridData[0].Item); }
+        else if (@event.IsActionPressed(s_hotkeyAlt2Name) && !Visible && _assignedGridData[1] != null) { EquipAlt(_assignedGridData[1].Item); }
+        else if (@event.IsActionPressed(s_hotkeyAlt3Name) && !Visible && _assignedGridData[2] != null) { EquipAlt(_assignedGridData[2].Item); }
+        else if (@event.IsActionPressed(s_hotkeyAlt4Name) && !Visible && _assignedGridData[3] != null) { EquipAlt(_assignedGridData[3].Item); }
 
         if (!Visible) { return; }
 
         // Inventory Only Controls //
-        if      (@event.IsActionPressed(_leftName))  { MoveSelection(Vector2I.Left); }
-        else if (@event.IsActionPressed(_rightName)) { MoveSelection(Vector2I.Right); }
-        else if (@event.IsActionPressed(_upName))    { MoveSelection(Vector2I.Down); }
-        else if (@event.IsActionPressed(_downName))  { MoveSelection(Vector2I.Up); }
-        else if (@event.IsActionPressed(_useName, exactMatch: true))
+        if      (@event.IsActionPressed(s_leftName))  { MoveSelection(Vector2I.Left); }
+        else if (@event.IsActionPressed(s_rightName)) { MoveSelection(Vector2I.Right); }
+        else if (@event.IsActionPressed(s_upName))    { MoveSelection(Vector2I.Down); }
+        else if (@event.IsActionPressed(s_downName))  { MoveSelection(Vector2I.Up); }
+        else if (@event.IsActionPressed(s_useName, exactMatch: true))
         {
             if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
             Equip(data.Item);
         }
-        else if (@event.IsActionPressed(_useAltName))
+        else if (@event.IsActionPressed(s_useAltName))
         {
             if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
             EquipAlt(data.Item);
         }
-        else if (@event.IsActionPressed(_dropName))
+        else if (@event.IsActionPressed(s_dropName))
         {
             if (_selectedGridData == null) { RemoveItem(_gridPosToGridData[_selectorGridPos]); }
             else                           { CancelMove(); }       
         }
-        else if (@event.IsActionPressed(_moveName))   { ToggleMove(); }
-        else if (@event.IsActionPressed(_rotateName)) { Rotate(); }
+        else if (@event.IsActionPressed(s_moveName))   { ToggleMove(); }
+        else if (@event.IsActionPressed(s_rotateName)) { Rotate(); }
     }
 
     protected override void Dispose(bool disposing)
@@ -260,8 +260,6 @@ public partial class Inventory : Node3D
 
         item.GetParent()?.RemoveChild(item);
         _armsManager.AddChild(item);
-        item.Position = Vector3.Zero;
-        item.Rotation = Vector3.Zero;
 
         RegisterGridDataSpace(data, occupiedPosS);
 
@@ -273,7 +271,7 @@ public partial class Inventory : Node3D
         _itemToGridData.Remove(gridData.Item);
 
         _armsManager.RemoveChild(gridData.Item);
-        _sceneRoot.AddChild(gridData.Item);
+        s_sceneRoot.AddChild(gridData.Item);
 
         DeregisterGridDataSpace(gridData.GetOccupiedPositions());
 
@@ -305,8 +303,8 @@ public partial class Inventory : Node3D
         MeshInstance3D meshInst = new()
         {
             Name = "Grid",
-            Position = _offset,
-            Mesh = new GridMesh(_gridSize, GridSpace, GridThickness)
+            Position = s_offset,
+            Mesh = new GridMesh(s_gridSize, GridSpace, GridThickness)
             {
                 Material = new OrmMaterial3D()
                 {
@@ -329,8 +327,8 @@ public partial class Inventory : Node3D
     {
         MeshInstance3D meshInst = new()
         {
-            Mesh = (Mesh)item.InventoryMesh.Duplicate(),
-            MaterialOverride = (Material)item.InventoryMaterial.Duplicate(),
+            Mesh = (Mesh)item.MeshInstance.Mesh.Duplicate(),
+            MaterialOverride = (Material)item.Material.Duplicate(),
             Position = item.InventoryOffset,
             Rotation = item.InventoryRotation
         };
@@ -428,7 +426,7 @@ public partial class Inventory : Node3D
         data.HotkeyLabel.Visible = true;
         data.HotkeyLabel.Text = GetHotkeyString(idx);
 
-        data.CallDeferred(_updateLabelPositionName);
+        data.CallDeferred(s_updateLabelPositionName);
     }
     private string GetHotkeyString(int idx)
     {
@@ -440,7 +438,7 @@ public partial class Inventory : Node3D
             case 3: return "4";
             default:
                 throw new ArgumentException($"Index: {idx}, is not a hotkey.");
-        }      
+        }
     }
 
     private void Equip(Item item)
@@ -503,7 +501,7 @@ public partial class Inventory : Node3D
             RegisterGridDataSpace(_selectedGridData, occupiedPositions);
             _selectedGridData = null;
 
-            _selectorMeshInst.Mesh = _selectorMesh;
+            _selectorMeshInst.Mesh = s_selectorMesh;
             _selectorMaterial.AlbedoColor = Colors.Yellow;
         }
     }
@@ -562,23 +560,23 @@ public partial class Inventory : Node3D
         }
 
         // Where It Exceeds The Grid //
-        bool lowerX = lowestX < 0, upperX = highestX >= _gridSize.X;
-        bool lowerY = lowestY < 0, upperY = highestY >= _gridSize.Y;
+        bool lowerX = lowestX < 0, upperX = highestX >= s_gridSize.X;
+        bool lowerY = lowestY < 0, upperY = highestY >= s_gridSize.Y;
         //
 
         // Doesn't exceed any of the grid's bounds
         if (!(lowerX || upperX || lowerY || upperY)) { return true; }
 
         // Too large to fit grid
-        if (highestX - lowestX >= _gridSize.X || highestY - lowestY >= _gridSize.Y) { return false; }
+        if (highestX - lowestX >= s_gridSize.X || highestY - lowestY >= s_gridSize.Y) { return false; }
 
         Vector2I newPos = _selectedGridData.GridPosition;
 
         if (lowerX)      { newPos += Vector2I.Left * lowestX; }
-        else if (upperX) { newPos += Vector2I.Left * (highestX - (_gridSize.X - 1)); }
+        else if (upperX) { newPos += Vector2I.Left * (highestX - (s_gridSize.X - 1)); }
 
         if (lowerY)      { newPos += Vector2I.Up * lowestY; }
-        else if (upperY) { newPos += Vector2I.Up * (highestY - (_gridSize.Y - 1)); }
+        else if (upperY) { newPos += Vector2I.Up * (highestY - (s_gridSize.Y - 1)); }
 
         SetSelectorGridPosition(newPos);
         _selectedGridData.SetGridPosition(newPos);
@@ -586,14 +584,14 @@ public partial class Inventory : Node3D
         return true;
     }
 
-    private bool WithinBounds(Vector2I gridPos) => (gridPos.X >= 0 && gridPos.X < _gridSize.X) && (gridPos.Y >= 0 && gridPos.Y < _gridSize.Y);
+    private bool WithinBounds(Vector2I gridPos) => (gridPos.X >= 0 && gridPos.X < s_gridSize.X) && (gridPos.Y >= 0 && gridPos.Y < s_gridSize.Y);
 
     /// <returns>(GridPosition, RotationZ, OccupiedPositions)</returns>
     private (Vector2I, float, HashSet<Vector2I>)? FindValidPositioning(Vector2I[] clearancePosS)
     {
-        for (int y = 0; y < _gridSize.Y; y++)
+        for (int y = 0; y < s_gridSize.Y; y++)
         {
-            for (int x = 0; x < _gridSize.X; x++)
+            for (int x = 0; x < s_gridSize.X; x++)
             {
                 Vector2I gridPos = new(x, y);
                 HashSet<Vector2I> occupiedPositions;
@@ -628,19 +626,19 @@ public partial class Inventory : Node3D
             case ArmsManager.Arm.Left:
                 data.EquippedLabel.Visible = true;
                 data.EquippedLabel.Text = "L";
-                data.CallDeferred(_updateLabelPositionName);
+                data.CallDeferred(s_updateLabelPositionName);
                 break;
 
             case ArmsManager.Arm.Right:
                 data.EquippedLabel.Visible = true;
                 data.EquippedLabel.Text = "R";
-                data.CallDeferred(_updateLabelPositionName);
+                data.CallDeferred(s_updateLabelPositionName);
                 break;
 
             case ArmsManager.Arm.Both:
                 data.EquippedLabel.Visible = true;
                 data.EquippedLabel.Text = "B";
-                data.CallDeferred(_updateLabelPositionName);
+                data.CallDeferred(s_updateLabelPositionName);
                 break;
 
             default:

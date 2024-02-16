@@ -7,7 +7,7 @@ namespace Scripts;
 
 public static class Debug
 {
-    private static readonly List<MeshInstance3D> _meshInstances = new();
+    private static readonly List<MeshInstance3D> s_meshInstances = new();
 
     public static void CreateBox(Node parent, Color colour, Vector3 centrePos, Vector3 size)
     {
@@ -34,15 +34,14 @@ public static class Debug
         mesh.SurfaceEnd();
     }
 
-    public static void CreatePoint(Node parent, Color colour, Vector3 pos)
+    public static void CreatePoint(Node parent, Color colour, Vector3 pos, float radius = 0.01f)
     {
         (MeshInstance3D meshInst, OrmMaterial3D material) = GetNewMeshInstAndMaterial(parent, colour, pos);
 
-        const float Radius = 0.05f;
         SphereMesh mesh = new()
         {
-            Radius = Radius,
-            Height = Radius * 2f,
+            Radius = radius,
+            Height = radius * 2f,
             Material = material,
         };
         meshInst.Mesh = mesh;
@@ -53,8 +52,8 @@ public static class Debug
     /// </summary>
     public static void Clear()
     {
-        foreach (MeshInstance3D inst in _meshInstances) { inst.QueueFree(); }
-        _meshInstances.Clear();
+        foreach (MeshInstance3D inst in s_meshInstances) { inst.QueueFree(); }
+        s_meshInstances.Clear();
     }
 
     private static (MeshInstance3D, OrmMaterial3D) GetNewMeshInstAndMaterial(Node parent, Color colour, Vector3 pos)
@@ -65,7 +64,7 @@ public static class Debug
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off
         };
         parent.AddChild(meshInst);
-        _meshInstances.Add(meshInst);
+        s_meshInstances.Add(meshInst);
 
         OrmMaterial3D material = new()
         {
