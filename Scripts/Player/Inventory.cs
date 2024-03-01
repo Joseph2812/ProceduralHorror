@@ -330,7 +330,8 @@ public partial class Inventory : Node3D
             Mesh = (Mesh)item.MeshInstance.Mesh.Duplicate(),
             MaterialOverride = (Material)item.Material.Duplicate(),
             Position = item.InventoryOffset,
-            Rotation = item.InventoryRotation
+            Rotation = item.InventoryRotation,
+            Scale = Vector3.One * 0.8f
         };
 
         BaseMaterial3D mat = (BaseMaterial3D)meshInst.MaterialOverride;

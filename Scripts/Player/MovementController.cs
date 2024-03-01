@@ -30,7 +30,7 @@ public partial class MovementController : Node
     private static readonly StringName s_lookLeftName = "look_left", s_lookRightName = "look_right";
     private static readonly StringName s_sprintName = "sprint";
     private static readonly StringName s_crouchName = "crouch";
-    private static readonly NodePath s_positionYPath = "position:y", s_rotationZPath = "rotation:z";
+    private static readonly NodePath s_positionXPath = "position:x", s_positionYPath = "position:y", s_rotationZPath = "rotation:z";
 
     private float _staminaTimeLeft = StaminaMaxTime;
     private bool _sprintHeld;
@@ -116,7 +116,10 @@ public partial class MovementController : Node
             _staminaTimeLeft += (float)delta * StaminaRefillRate;
             if (_staminaTimeLeft > StaminaMaxTime) { _staminaTimeLeft = StaminaMaxTime; }
 
-            if (CanMove()) { Player.Inst.Velocity += input * (_crouching ? WalkSpeed * CrouchSpeedMultiplier : WalkSpeed); }
+            if (CanMove())
+            {
+                Player.Inst.Velocity += input * (_crouching ? WalkSpeed * CrouchSpeedMultiplier : WalkSpeed);
+            }
         }
         Player.Inst.MoveAndSlide();
 
@@ -132,9 +135,9 @@ public partial class MovementController : Node
         {
             Player.Inst.RotateY(-mouseMotion.Relative.X * CameraController.MouseSensitivity);
         }
-        else if (@event.IsActionPressed(s_sprintName)) { _sprintHeld = true; }
+        else if (@event.IsActionPressed(s_sprintName))  { _sprintHeld = true; }
         else if (@event.IsActionReleased(s_sprintName)) { _sprintHeld = false; }
-        else if (@event.IsActionPressed(s_crouchName)) { ToggleCrouch(); }
+        else if (@event.IsActionPressed(s_crouchName))  { ToggleCrouch(); }
     }
 
     private Vector3 GetGlobalMoveInput()
@@ -152,9 +155,17 @@ public partial class MovementController : Node
 
     private float GetCrouchTime(float current, float target) => Mathf.Abs(target - current) * (1f / ToggleCrouchSpeed);
 
+    // GetDistance_() is used to resume from where a Tween has stopped
     private float GetCameraSwayZ() => Mathf.Sin(_distanceTravelled * SwaySpeed) * SwayIntensity;
     private float GetDistanceFromCameraRotZ() => Mathf.Asin(CameraController.Inst.Rotation.Z * (1f / SwayIntensity)) * (1f / SwaySpeed);
 
+    private float GetCameraBobX()
+    {
+        float x = _distanceTravelled * BobSpeed;
+        float y = x % (Mathf.Tau * 2f) > Mathf.Tau ? -Mathf.Sin(x) : Mathf.Sin(x);
+        return x % Mathf.Tau > Mathf.Pi ? 0f : y * BobIntensity * 0.4f;
+    }
+        
     private float GetCameraBobY() => CameraStandY + (Mathf.Sin(_distanceTravelled * BobSpeed) * BobIntensity);
     private float GetDistanceFromCameraY() => Mathf.Asin((CameraController.Inst.Position.Y - CameraStandY) * (1f / BobIntensity)) * (1f / BobSpeed);
 
@@ -198,6 +209,8 @@ public partial class MovementController : Node
             {
                 _bobToRestTween.Kill();
                 _bobToRestTween = CreateTween();
+                _bobToRestTween.SetParallel(true);
+                _bobToRestTween.TweenProperty(CameraController.Inst, s_positionXPath, 0f, 0.5f);
                 _bobToRestTween.TweenProperty(CameraController.Inst, s_positionYPath, CameraStandY, 0.5f);
 
                 _distanceTravelled = 0f;
@@ -210,7 +223,7 @@ public partial class MovementController : Node
                 _bobToRestTween.Kill();
                 _distanceTravelled = GetDistanceFromCameraY();
             }
-            CameraController.Inst.Position = new(CameraController.Inst.Position.X, GetCameraBobY(), CameraController.Inst.Position.Z);
+            CameraController.Inst.Position = new(GetCameraBobX(), GetCameraBobY(), CameraController.Inst.Position.Z);
         }
     }
 
