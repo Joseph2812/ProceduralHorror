@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://dduxddcquhrp1"]
+[gd_scene load_steps=28 format=3 uid="uid://dduxddcquhrp1"]
 
 [ext_resource type="Script" path="res://Scripts/FreeCameraController.cs" id="2_dhtrs"]
 [ext_resource type="Theme" uid="uid://bmbx06aggy0cl" path="res://Theme.tres" id="3_a65xu"]
@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://cv26pyhdxy6wq" path="res://Scenes/Items/Phone.tscn" id="12_q4whi"]
 [ext_resource type="Texture2D" uid="uid://cjx4bewkntqub" path="res://Textures/Items/Phone/ORM.png" id="15_3omg8"]
 [ext_resource type="Shader" path="res://Shaders/Outline.gdshader" id="15_ofddk"]
+[ext_resource type="Script" path="res://Scripts/Items/TwoHandedTestItem.cs" id="16_gs8rj"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
 
@@ -213,7 +214,13 @@ continuous_cd = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.52059, 2.785, -1.059)
 continuous_cd = true
 
-[node name="Phone_Obj" parent="Phone2" index="0"]
+[node name="Phone3_TwoHanded" parent="." instance=ExtResource("12_q4whi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.62059, 2.785, -1.059)
+continuous_cd = true
+script = ExtResource("16_gs8rj")
+
+[node name="Phone_Obj" parent="Phone3_TwoHanded" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 surface_material_override/0 = SubResource("ORMMaterial3D_i4wdq")
 
-[editable path="Phone2"]
+[editable path="Phone3_TwoHanded"]

@@ -8,14 +8,14 @@ public abstract partial class Item : RigidBody3D
 {
     private static readonly Vector2I[] s_defaultClearancePositions = new Vector2I[] { Vector2I.Zero };
 
-    public abstract bool TwoHanded { get; }
-
     public abstract StringName EquipNameL { get; }
     public abstract StringName EquipNameR { get; }
     public abstract StringName IdleNameL { get; }
     public abstract StringName IdleNameR { get; }
     public abstract StringName UnequipNameL { get; }
     public abstract StringName UnequipNameR { get; }
+
+    public abstract bool TwoHanded { get; }
 
     protected abstract string MeshInstPath { get; }
 
@@ -87,18 +87,25 @@ public abstract partial class Item : RigidBody3D
         {
             case ArmsManager.Arm.Left:
                 _itemAnim.Play(nameL);
-                ArmsManager.AnimPlayerL.Play(nameL);
+                ArmsManager.ArmAnimL.Play(nameL);
+
+                ArmsManager.ArmAnimL.Advance(0d); // Advance(0): To make sure AnimationFinished events always fire, otherwise misses at the end of a new animation, when a new animation is played right after the previous is finished
                 break;
 
             case ArmsManager.Arm.Right:
                 _itemAnim.Play(nameR);
-                ArmsManager.AnimPlayerR.Play(nameR);
+                ArmsManager.ArmAnimR.Play(nameR);
+
+                ArmsManager.ArmAnimR.Advance(0d);
                 break;
 
             case ArmsManager.Arm.Both:
                 _itemAnim.Play(nameL);
-                ArmsManager.AnimPlayerL.Play(nameL);
-                ArmsManager.AnimPlayerR.Play(nameR);
+                ArmsManager.ArmAnimL.Play(nameL);
+                ArmsManager.ArmAnimR.Play(nameR);
+
+                ArmsManager.ArmAnimL.Advance(0d);
+                ArmsManager.ArmAnimR.Advance(0d);
                 break;
 
             default: 

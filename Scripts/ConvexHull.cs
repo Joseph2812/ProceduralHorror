@@ -5,12 +5,7 @@ using System.Drawing;
 namespace Scripts;
 
 public static class ConvexHull
-{
-    public static ConvexPolygonShape3D GeneratePolygon(Vector3[] points)
-    {
-        throw new NotImplementedException();
-    }
-    
+{    
     /// <returns>(Box, Offset)</returns>
     public static (BoxShape3D, Vector3) GenerateBox(params Vector3[][] pointGroups)
     {
@@ -55,6 +50,7 @@ public static class ConvexHull
                 else if (p.Z > highestZ) { highestZ = p.Z; }
             }
         }
+
         Vector3 size = new
         (
             highestX - lowestX,
@@ -65,7 +61,12 @@ public static class ConvexHull
         return new
         (
             size,
-            (size * 0.5f) + new Vector3(lowestX, lowestY, lowestZ)
+            new
+            (
+                (size.X * 0.5f) + lowestX,
+                -((size.Y * 0.5f) + lowestY), // Not sure why offset Y has to be inverted, but it works when testing in current project
+                (size.Z * 0.5f) + lowestZ
+            )
         );
     }
 }

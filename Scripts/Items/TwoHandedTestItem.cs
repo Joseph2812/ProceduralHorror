@@ -3,7 +3,7 @@ using System;
 
 namespace Scripts.Items;
 
-public partial class Phone : Item
+public partial class TwoHandedTestItem : Item
 {
     private static readonly StringName s_equipNameL = "Equip_Phone_L", s_equipNameR = "Equip_Phone_R";
     private static readonly StringName s_idleNameL = "Idle_Phone_L", s_idleNameR = "Idle_Phone_R";
@@ -16,7 +16,7 @@ public partial class Phone : Item
     public override StringName UnequipNameL => s_unequipNameL;
     public override StringName UnequipNameR => s_unequipNameR;
 
-    public override bool TwoHanded => false;
+    public override bool TwoHanded => true;
 
     protected override string MeshInstPath => "Phone_Obj";
 }

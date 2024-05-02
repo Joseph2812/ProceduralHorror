@@ -94,7 +94,6 @@ public partial class Inventory : Node3D
     private static readonly StringName s_useName = "inventory_use", s_useAltName = "inventory_use_alt", s_dropName = "inventory_drop", s_moveName = "inventory_move", s_rotateName = "inventory_rotate";
     private static readonly StringName s_hotkey1Name = "hotkey_1", s_hotkey2Name = "hotkey_2", s_hotkey3Name = "hotkey_3", s_hotkey4Name = "hotkey_4";
     private static readonly StringName s_hotkeyAlt1Name = "hotkey_alt_1", s_hotkeyAlt2Name = "hotkey_alt_2", s_hotkeyAlt3Name = "hotkey_alt_3", s_hotkeyAlt4Name = "hotkey_alt_4";
-    private static readonly StringName s_updateLabelPositionName = nameof(GridData.UpdateLabelPosition);
 
     private static readonly Vector2I s_gridSize = new(6, 4);
 
@@ -427,7 +426,7 @@ public partial class Inventory : Node3D
         data.HotkeyLabel.Visible = true;
         data.HotkeyLabel.Text = GetHotkeyString(idx);
 
-        data.CallDeferred(s_updateLabelPositionName);
+        data.CallDeferred(GridData.MethodName.UpdateLabelPosition);
     }
     private string GetHotkeyString(int idx)
     {
@@ -627,19 +626,19 @@ public partial class Inventory : Node3D
             case ArmsManager.Arm.Left:
                 data.EquippedLabel.Visible = true;
                 data.EquippedLabel.Text = "L";
-                data.CallDeferred(s_updateLabelPositionName);
+                data.CallDeferred(GridData.MethodName.UpdateLabelPosition);
                 break;
 
             case ArmsManager.Arm.Right:
                 data.EquippedLabel.Visible = true;
                 data.EquippedLabel.Text = "R";
-                data.CallDeferred(s_updateLabelPositionName);
+                data.CallDeferred(GridData.MethodName.UpdateLabelPosition);
                 break;
 
             case ArmsManager.Arm.Both:
                 data.EquippedLabel.Visible = true;
                 data.EquippedLabel.Text = "B";
-                data.CallDeferred(s_updateLabelPositionName);
+                data.CallDeferred(GridData.MethodName.UpdateLabelPosition);
                 break;
 
             default:
