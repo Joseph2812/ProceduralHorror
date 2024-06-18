@@ -40,11 +40,12 @@ public abstract partial class Item : RigidBody3D
     /// </summary>
     public event Action IdleStarted;
 
-    public MeshInstance3D MeshInstance;
+    public MeshInstance3D MeshInstance { get; set; }
     public BaseMaterial3D Material { get; private set; }
     public CollisionShape3D CollisionShape { get; private set; }
 
     protected bool Equipped { get; private set; }
+    protected AnimationPlayer OtherAnim { get; set; }
 
     private AnimationPlayer _itemAnim;
     private ArmsManager.Arm _currentArm;
@@ -63,7 +64,6 @@ public abstract partial class Item : RigidBody3D
         Equipped = false;
         IdleStarted = null;
 
-        // Would need to wait for this to finish, so a different equip animation could play right after when pressing hotkey
         PlayAnimation(UnequipNameL, UnequipNameR);
     }
 
@@ -81,19 +81,24 @@ public abstract partial class Item : RigidBody3D
         _itemAnim.AnimationFinished += OnItemAnim_AnimationFinished;
     }
 
+    /// <summary>
+    /// To play animations at the same time (syncs: item, arm, and other)
+    /// </summary>
     protected void PlayAnimation(StringName nameL, StringName nameR)
     {
         switch (_currentArm)
         {
             case ArmsManager.Arm.Left:
                 _itemAnim.Play(nameL);
-                ArmsManager.ArmAnimL.Play(nameL);
+                OtherAnim?.Play(nameL);
+                ArmsManager.ArmAnimL.Play(nameL);          
 
                 ArmsManager.ArmAnimL.Advance(0d); // Advance(0): To make sure AnimationFinished events always fire, otherwise misses at the end of a new animation, when a new animation is played right after the previous is finished
                 break;
 
             case ArmsManager.Arm.Right:
                 _itemAnim.Play(nameR);
+                OtherAnim?.Play(nameR);
                 ArmsManager.ArmAnimR.Play(nameR);
 
                 ArmsManager.ArmAnimR.Advance(0d);
@@ -101,6 +106,7 @@ public abstract partial class Item : RigidBody3D
 
             case ArmsManager.Arm.Both:
                 _itemAnim.Play(nameL);
+                OtherAnim?.Play(nameL);
                 ArmsManager.ArmAnimL.Play(nameL);
                 ArmsManager.ArmAnimR.Play(nameR);
 

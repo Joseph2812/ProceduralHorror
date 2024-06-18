@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dstxqlo131f5y"
-path.s3tc="res://.godot/imported/Fabric_Subsurface.jpg-0ea5a5154e5641db8d38288aba8d5028.s3tc.ctex"
+uid="uid://b0x2bg4en3bsu"
+path.s3tc="res://.godot/imported/Albedo.png-24974b2d0c706955e4d113a46b779130.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/Fabric/Fabric_Subsurface.jpg"
-dest_files=["res://.godot/imported/Fabric_Subsurface.jpg-0ea5a5154e5641db8d38288aba8d5028.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/TV/Albedo.png"
+dest_files=["res://.godot/imported/Albedo.png-24974b2d0c706955e4d113a46b779130.s3tc.ctex"]
 
 [params]
 

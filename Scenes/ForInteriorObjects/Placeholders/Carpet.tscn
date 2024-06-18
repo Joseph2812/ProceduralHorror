@@ -1,11 +1,11 @@
 [gd_scene load_steps=9 format=3 uid="uid://04384ocs25wn"]
 
-[ext_resource type="Texture2D" uid="uid://cdbag5gyxxhtx" path="res://Textures/Fabric/Fabric_Colour.jpg" id="1_h5gto"]
-[ext_resource type="Texture2D" uid="uid://dvt0lhy0gdgmy" path="res://Textures/Fabric/Fabric_AO.jpg" id="2_tc72b"]
-[ext_resource type="Texture2D" uid="uid://dqipo22num77h" path="res://Textures/Fabric/Fabric_Height.png" id="3_6glry"]
-[ext_resource type="Texture2D" uid="uid://w1fulq60nx8s" path="res://Textures/Fabric/Fabric_Normal.png" id="4_20e70"]
-[ext_resource type="Texture2D" uid="uid://pdaa2mi6eakr" path="res://Textures/Fabric/Fabric_Roughness.jpg" id="5_6fdt3"]
-[ext_resource type="Texture2D" uid="uid://dstxqlo131f5y" path="res://Textures/Fabric/Fabric_Subsurface.jpg" id="6_kr77e"]
+[ext_resource type="Texture2D" uid="uid://cdbag5gyxxhtx" path="res://Textures/InteriorObjects/Fabric/Fabric_Colour.jpg" id="1_h5gto"]
+[ext_resource type="Texture2D" uid="uid://dvt0lhy0gdgmy" path="res://Textures/InteriorObjects/Fabric/Fabric_AO.jpg" id="2_tc72b"]
+[ext_resource type="Texture2D" uid="uid://dqipo22num77h" path="res://Textures/InteriorObjects/Fabric/Fabric_Height.png" id="3_6glry"]
+[ext_resource type="Texture2D" uid="uid://w1fulq60nx8s" path="res://Textures/InteriorObjects/Fabric/Fabric_Normal.png" id="4_20e70"]
+[ext_resource type="Texture2D" uid="uid://pdaa2mi6eakr" path="res://Textures/InteriorObjects/Fabric/Fabric_Roughness.jpg" id="5_6fdt3"]
+[ext_resource type="Texture2D" uid="uid://dstxqlo131f5y" path="res://Textures/InteriorObjects/Fabric/Fabric_Subsurface.jpg" id="6_kr77e"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wklar"]
 albedo_texture = ExtResource("1_h5gto")

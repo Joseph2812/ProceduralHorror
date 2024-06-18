@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://rbiexjknragr"
-path.s3tc="res://.godot/imported/Albedo.png-4dd31fe5c6266b841da08d75afb781c6.s3tc.ctex"
+uid="uid://cbp6lrsww5r1o"
+path.s3tc="res://.godot/imported/ORM.png-9fcebb7e6ad2be33b5c86f59cfc8c909.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/Desk/Albedo.png"
-dest_files=["res://.godot/imported/Albedo.png-4dd31fe5c6266b841da08d75afb781c6.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/TV/ORM.png"
+dest_files=["res://.godot/imported/ORM.png-9fcebb7e6ad2be33b5c86f59cfc8c909.s3tc.ctex"]
 
 [params]
 

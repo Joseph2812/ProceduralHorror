@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b0x2bg4en3bsu"
-path.s3tc="res://.godot/imported/Albedo.png-bb26571de74f249b10a20c9450a00c04.s3tc.ctex"
+uid="uid://rbiexjknragr"
+path.s3tc="res://.godot/imported/Albedo.png-053cbbd662a9e9b59bc9bd9eff9bfa8d.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/TV/Albedo.png"
-dest_files=["res://.godot/imported/Albedo.png-bb26571de74f249b10a20c9450a00c04.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/Desk/Albedo.png"
+dest_files=["res://.godot/imported/Albedo.png-053cbbd662a9e9b59bc9bd9eff9bfa8d.s3tc.ctex"]
 
 [params]
 

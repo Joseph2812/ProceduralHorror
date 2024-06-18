@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c0yjx1eskaq8x"
-path.s3tc="res://.godot/imported/BrownFallPolishedMarble_Specular.png-250aeb73680dfa09063c7adf5de75aa2.s3tc.ctex"
+uid="uid://cmpf4vqx0tgg5"
+path.s3tc="res://.godot/imported/Albedo.png-8730a0b238cae9a2a17abcd487d1094f.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/BrownFallPolishedMarble/BrownFallPolishedMarble_Specular.png"
-dest_files=["res://.godot/imported/BrownFallPolishedMarble_Specular.png-250aeb73680dfa09063c7adf5de75aa2.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/Sofa/Albedo.png"
+dest_files=["res://.godot/imported/Albedo.png-8730a0b238cae9a2a17abcd487d1094f.s3tc.ctex"]
 
 [params]
 

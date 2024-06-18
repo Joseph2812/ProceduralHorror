@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bee4jr2ox2esv"
-path.s3tc="res://.godot/imported/ORM.png-d054df625c91c0820d89a1af033cd55a.s3tc.ctex"
+uid="uid://dvt0lhy0gdgmy"
+path.s3tc="res://.godot/imported/Fabric_AO.jpg-6361c9d6dfe9c2d6f470296595c1b4d5.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/Sofa/ORM.png"
-dest_files=["res://.godot/imported/ORM.png-d054df625c91c0820d89a1af033cd55a.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/Fabric/Fabric_AO.jpg"
+dest_files=["res://.godot/imported/Fabric_AO.jpg-6361c9d6dfe9c2d6f470296595c1b4d5.s3tc.ctex"]
 
 [params]
 

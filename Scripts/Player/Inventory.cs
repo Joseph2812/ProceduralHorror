@@ -178,7 +178,7 @@ public partial class Inventory : Node3D
 
         CreateGrid();
 
-        _armsManager.EquippedStateChanged += OnArmsManager_EquippedStateChanged;
+        _armsManager.ItemArmChanged += OnArmsManager_EquippedStateChanged;
     }
 
     public override void _UnhandledInput(InputEvent @event)

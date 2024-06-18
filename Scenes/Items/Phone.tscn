@@ -1,10 +1,13 @@
-[gd_scene load_steps=9 format=3 uid="uid://cv26pyhdxy6wq"]
+[gd_scene load_steps=17 format=3 uid="uid://cv26pyhdxy6wq"]
 
 [ext_resource type="PackedScene" uid="uid://cx0p183airnv1" path="res://Models/Items/Phone.glb" id="1_g5t4l"]
 [ext_resource type="Script" path="res://Scripts/Items/Phone.cs" id="2_p0ks1"]
 [ext_resource type="Texture2D" uid="uid://b4a6xcfcf7n8m" path="res://Textures/Items/Phone/Albedo.png" id="2_q1d43"]
 [ext_resource type="Texture2D" uid="uid://cjx4bewkntqub" path="res://Textures/Items/Phone/ORM.png" id="3_rtloi"]
 [ext_resource type="Shader" path="res://Shaders/Outline.gdshader" id="4_a4h8h"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mg5uv"]
+size = Vector3(0.0777896, 0.164119, 0.0120389)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5ghf0"]
 render_priority = 0
@@ -17,17 +20,130 @@ next_pass = SubResource("ShaderMaterial_5ghf0")
 albedo_texture = ExtResource("2_q1d43")
 orm_texture = ExtResource("3_rtloi")
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_mg5uv"]
-size = Vector3(0.0777896, 0.164119, 0.0120389)
+[sub_resource type="Animation" id="Animation_ng0rf"]
+resource_name = "RESET"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SpotLight3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.0242933, 0.03113, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SpotLight3D:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_q1d3e"]
+resource_name = "Equip_Phone_L"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SpotLight3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-0.446169, -0.117252, -0.537232), Vector3(-0.176875, 0.209301, -0.520825)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SpotLight3D:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(1.31296, -0.0245453, -2.13681), Vector3(-0.109771, 0.650869, -0.262012)]
+}
+
+[sub_resource type="Animation" id="Animation_qd7sp"]
+resource_name = "Equip_Phone_R"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SpotLight3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.446, -0.117, -0.537), Vector3(0.213516, 0.218239, -0.492399)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("SpotLight3D:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(1.31249, -1.59523, -2.13628), Vector3(-0.109771, -0.650869, 0.262012)]
+}
+
+[sub_resource type="Animation" id="Animation_r1tac"]
+resource_name = "Idle_Phone_L"
+
+[sub_resource type="Animation" id="Animation_snhoy"]
+resource_name = "Idle_Phone_R"
+
+[sub_resource type="Animation" id="Animation_de00u"]
+resource_name = "Unequip_Phone_L"
+
+[sub_resource type="Animation" id="Animation_i2crs"]
+resource_name = "Unequip_Phone_R"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_rei7s"]
+_data = {
+"Equip_Phone_L": SubResource("Animation_q1d3e"),
+"Equip_Phone_R": SubResource("Animation_qd7sp"),
+"Idle_Phone_L": SubResource("Animation_r1tac"),
+"Idle_Phone_R": SubResource("Animation_snhoy"),
+"RESET": SubResource("Animation_ng0rf"),
+"Unequip_Phone_L": SubResource("Animation_de00u"),
+"Unequip_Phone_R": SubResource("Animation_i2crs")
+}
 
 [node name="Phone" instance=ExtResource("1_g5t4l")]
 script = ExtResource("2_p0ks1")
 
-[node name="Phone_Obj" parent="." index="0"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="0"]
+shape = SubResource("BoxShape3D_mg5uv")
+
+[node name="Phone_Obj" parent="." index="1"]
+transform = Transform3D(0.796886, -0.154597, -0.584014, 0.255986, 0.962038, 0.094627, 0.547215, -0.224906, 0.806209, 0.198055, 0.184981, -0.495595)
 surface_material_override/0 = SubResource("ORMMaterial3D_o1goy")
 
-[node name="AnimationPlayer" parent="." index="1"]
+[node name="AnimationPlayer" parent="." index="2"]
 autoplay = "Default"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="2"]
-shape = SubResource("BoxShape3D_mg5uv")
+[node name="SpotlightAnimation" type="AnimationPlayer" parent="." index="3"]
+libraries = {
+"": SubResource("AnimationLibrary_rei7s")
+}
+
+[node name="SpotLight3D" type="SpotLight3D" parent="." index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0242933, 0.03113, 0)
+spot_range = 10.0

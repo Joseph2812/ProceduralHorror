@@ -163,13 +163,13 @@ public partial class InteractionController : Node
 
     private bool TryPickupItem(GodotObject colliderObj)
     {
-        if (colliderObj is Items.Item item)
+        if (colliderObj is Item item)
         {
             if (_inventory.TryAddItem(item))
             {
                 item.Visible = false;
                 item.Freeze = true;
-                item.CollisionShape.SetDeferred("disabled", true);
+                item.CollisionShape.SetDeferred(CollisionShape3D.PropertyName.Disabled, true);
 
                 return true;
             }

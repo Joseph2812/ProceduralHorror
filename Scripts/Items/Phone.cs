@@ -19,4 +19,11 @@ public partial class Phone : Item
     public override bool TwoHanded => false;
 
     protected override string MeshInstPath => "Phone_Obj";
+
+    public override void _Ready()
+    {
+        base._Ready();
+
+        OtherAnim = GetNode<AnimationPlayer>("SpotlightAnimation");
+    }
 }

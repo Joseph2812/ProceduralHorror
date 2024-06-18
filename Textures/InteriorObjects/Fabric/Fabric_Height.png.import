@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bjds4kg1k1ejv"
-path.s3tc="res://.godot/imported/ORM.png-94d94ab866c0b20a823e7f87a19b729b.s3tc.ctex"
+uid="uid://dqipo22num77h"
+path.s3tc="res://.godot/imported/Fabric_Height.png-6eb88eb77f0861ac97c1f3fe6495961d.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/Desk/ORM.png"
-dest_files=["res://.godot/imported/ORM.png-94d94ab866c0b20a823e7f87a19b729b.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/Fabric/Fabric_Height.png"
+dest_files=["res://.godot/imported/Fabric_Height.png-6eb88eb77f0861ac97c1f3fe6495961d.s3tc.ctex"]
 
 [params]
 

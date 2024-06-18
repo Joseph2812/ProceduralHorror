@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cbp6lrsww5r1o"
-path.s3tc="res://.godot/imported/ORM.png-fe8dde89dfc418faa357fe42073e5396.s3tc.ctex"
+uid="uid://dstxqlo131f5y"
+path.s3tc="res://.godot/imported/Fabric_Subsurface.jpg-5d84adcf8554f186b2cc0c92e1d34926.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/TV/ORM.png"
-dest_files=["res://.godot/imported/ORM.png-fe8dde89dfc418faa357fe42073e5396.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/Fabric/Fabric_Subsurface.jpg"
+dest_files=["res://.godot/imported/Fabric_Subsurface.jpg-5d84adcf8554f186b2cc0c92e1d34926.s3tc.ctex"]
 
 [params]
 

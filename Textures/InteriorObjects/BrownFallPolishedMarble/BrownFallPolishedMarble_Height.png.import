@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqipo22num77h"
-path.s3tc="res://.godot/imported/Fabric_Height.png-e155bfdf5f2fb994f487e3260bfede63.s3tc.ctex"
+uid="uid://cr3kccivgb0ff"
+path.s3tc="res://.godot/imported/BrownFallPolishedMarble_Height.png-886283c702f72c77225e95a000b387ab.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/Fabric/Fabric_Height.png"
-dest_files=["res://.godot/imported/Fabric_Height.png-e155bfdf5f2fb994f487e3260bfede63.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/BrownFallPolishedMarble/BrownFallPolishedMarble_Height.png"
+dest_files=["res://.godot/imported/BrownFallPolishedMarble_Height.png-886283c702f72c77225e95a000b387ab.s3tc.ctex"]
 
 [params]
 

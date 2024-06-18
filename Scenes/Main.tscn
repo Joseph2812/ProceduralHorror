@@ -67,7 +67,6 @@ environment = SubResource("Environment_4irpt")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
 shadow_enabled = true
-editor_only = true
 
 [node name="GridMap" type="GridMap" parent="."]
 cell_size = Vector3(1, 1, 1)
@@ -164,6 +163,7 @@ script = ExtResource("6_0qrqr")
 script = ExtResource("6_oq56r")
 
 [node name="SpotLight3D" type="SpotLight3D" parent="Player/Camera3D"]
+visible = false
 spot_range = 20.0
 
 [node name="ArmsManager" type="Node3D" parent="Player/Camera3D"]
@@ -219,8 +219,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.62059, 2.785, -1.059)
 continuous_cd = true
 script = ExtResource("16_gs8rj")
 
-[node name="Phone_Obj" parent="Phone3_TwoHanded" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+[node name="Phone_Obj" parent="Phone3_TwoHanded" index="1"]
 surface_material_override/0 = SubResource("ORMMaterial3D_i4wdq")
 
 [editable path="Phone3_TwoHanded"]

@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://csu0w7mfscrvq"]
 
 [ext_resource type="PackedScene" uid="uid://bsbjt52ouv17b" path="res://Models/Desk.glb" id="1_te8xq"]
-[ext_resource type="Texture2D" uid="uid://rbiexjknragr" path="res://Textures/Desk/Albedo.png" id="2_fnfj0"]
-[ext_resource type="Texture2D" uid="uid://bjds4kg1k1ejv" path="res://Textures/Desk/ORM.png" id="3_ij4r8"]
+[ext_resource type="Texture2D" uid="uid://rbiexjknragr" path="res://Textures/InteriorObjects/Desk/Albedo.png" id="2_fnfj0"]
+[ext_resource type="Texture2D" uid="uid://bjds4kg1k1ejv" path="res://Textures/InteriorObjects/Desk/ORM.png" id="3_ij4r8"]
 
 [sub_resource type="ORMMaterial3D" id="ORMMaterial3D_32rfe"]
 albedo_texture = ExtResource("2_fnfj0")

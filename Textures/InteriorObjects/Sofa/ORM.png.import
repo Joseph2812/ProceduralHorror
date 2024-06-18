@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://w1fulq60nx8s"
-path.s3tc="res://.godot/imported/Fabric_Normal.png-fa9eeca37730c6bdb03b5f0d4d5fba4a.s3tc.ctex"
+uid="uid://bee4jr2ox2esv"
+path.s3tc="res://.godot/imported/ORM.png-a832f38c5b28b71175adb4e8ee288b27.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/Fabric/Fabric_Normal.png"
-dest_files=["res://.godot/imported/Fabric_Normal.png-fa9eeca37730c6bdb03b5f0d4d5fba4a.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/Sofa/ORM.png"
+dest_files=["res://.godot/imported/ORM.png-a832f38c5b28b71175adb4e8ee288b27.s3tc.ctex"]
 
 [params]
 
@@ -20,12 +20,12 @@ compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1
-compress/normal_map=1
+compress/normal_map=0
 compress/channel_pack=0
 mipmaps/generate=false
 mipmaps/limit=-1
-roughness/mode=1
-roughness/src_normal="res://Textures/Carpet/fabric_0026_normal_opengl_1k.png"
+roughness/mode=0
+roughness/src_normal=""
 process/fix_alpha_border=true
 process/premult_alpha=false
 process/normal_map_invert_y=false

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6jvgr562704x"
-path.s3tc="res://.godot/imported/BrownFallPolishedMarble_AO.png-fb551db68c525c15e618e39fab586646.s3tc.ctex"
+uid="uid://cdbag5gyxxhtx"
+path.s3tc="res://.godot/imported/Fabric_Colour.jpg-aa9835dfe00d462dfe0a2086a5e2807b.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Textures/BrownFallPolishedMarble/BrownFallPolishedMarble_AO.png"
-dest_files=["res://.godot/imported/BrownFallPolishedMarble_AO.png-fb551db68c525c15e618e39fab586646.s3tc.ctex"]
+source_file="res://Textures/InteriorObjects/Fabric/Fabric_Colour.jpg"
+dest_files=["res://.godot/imported/Fabric_Colour.jpg-aa9835dfe00d462dfe0a2086a5e2807b.s3tc.ctex"]
 
 [params]
 

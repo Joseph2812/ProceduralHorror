@@ -21,7 +21,7 @@ public class ArmState
     public readonly SpringArm3D Spring;
     public readonly Node SpringTarget;
 
-    public Item LastItem; // Cached for AnimationFinished
+    public Item LastItem;
     public Item Item;   
     public Item NextItem;
 
