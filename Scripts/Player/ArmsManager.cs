@@ -33,34 +33,12 @@ public partial class ArmsManager : Node3D
         base._Ready();
 
         Node3D arm = GetNode<Node3D>("Arm_L");
-        Node3D armSkeletonParent = arm.GetNode<Node3D>("Armature_L");
-        Skeleton3D armSkeleton = armSkeletonParent.GetNode<Skeleton3D>("Skeleton3D");
-        SpringArm3D spring = GetNode<SpringArm3D>("SpringArm3D_L");
-        _stateL = new
-        (
-            arm              : arm,
-            armSkeletonParent: armSkeletonParent,
-            armSkeleton      : armSkeleton,
-            armMeshInst      : armSkeleton.GetNode<MeshInstance3D>("Arm_Obj_L"),
-            spring           : spring,
-            springTarget     : spring.GetNode("Target")
-        );
         ArmAnimL = arm.GetNode<AnimationPlayer>("AnimationPlayer");
-
+        _stateL = new(arm, GetNode<SpringArm3D>("SpringArm3D_L"), "Armature_L", "Arm_Obj_L");
+        
         arm = GetNode<Node3D>("Arm_R");
-        armSkeletonParent = arm.GetNode<Node3D>("Armature_R");
-        armSkeleton = armSkeletonParent.GetNode<Skeleton3D>("Skeleton3D");
-        spring = GetNode<SpringArm3D>("SpringArm3D_R");
-        _stateR = new
-        (
-            arm              : arm,
-            armSkeletonParent: armSkeletonParent,
-            armSkeleton      : armSkeleton,
-            armMeshInst      : armSkeleton.GetNode<MeshInstance3D>("Arm_Obj_R"),
-            spring           : spring,
-            springTarget     : spring.GetNode("Target")
-        );
         ArmAnimR = arm.GetNode<AnimationPlayer>("AnimationPlayer");
+        _stateR = new(arm, GetNode<SpringArm3D>("SpringArm3D_R"), "Armature_R", "Arm_Obj_R");
 
         _springOffset = _stateL.Spring.SpringLength * Vector3.Back;
 
@@ -92,7 +70,7 @@ public partial class ArmsManager : Node3D
         if (_stateL.Item != null)
         {
             Unequip(_stateL.Item);
-            if (_stateL.LastItem != item) { QueueItem(item, _stateL, _stateR); }
+            if (_stateL.Item != item) { QueueItem(item, _stateL, _stateR); }
             return;
         }
 
@@ -115,7 +93,7 @@ public partial class ArmsManager : Node3D
         if (_stateR.Item != null)
         {
             Unequip(_stateR.Item);
-            if (_stateR.LastItem != item) { QueueItem(item, _stateR, _stateL); }
+            if (_stateR.Item != item) { QueueItem(item, _stateR, _stateL); }
             return;
         }
 
@@ -158,7 +136,6 @@ public partial class ArmsManager : Node3D
         item.Reparent(_stateL.SpringTarget, false);
         item.Position = Vector3.Zero;
         item.Rotation = -_stateL.Spring.Rotation;
-        item.IdleStarted += () => AssignNewBoxShapeTwoHanded(item);
 
         _stateL.Spring.Position = _springOffset;
 
@@ -167,23 +144,25 @@ public partial class ArmsManager : Node3D
     }
 
     /// <summary>
-    /// Ensures an item is fully unequipped from <see cref="ArmsManager"/>, and <see cref="Item.Unequip"/> is only called once.
+    /// Ensures an item is changed into the <see cref="ArmState.EquipState.Unequipping"/>, or queued to, if matching.
+    /// Makes sure <see cref="Item.Unequip"/> is only called once on an <see cref="Item"/>.
     /// </summary>
-    /// <param name="item"></param>
     public void Unequip(Item item)
     {
         bool SetStateOrQueue(ArmState state1, ArmState state2)
         {
-            if (state1.EqpState == ArmState.EquipState.Equipped)
+            switch (state1.EqpState)
             {
-                state1.Item = null;
-                state1.EqpState = ArmState.EquipState.Unequipping;
-                return true;
-            }
-            else
-            {
-                QueueItem(item, state1, state2);
-                return false;
+                case ArmState.EquipState.Equipped:
+                    state1.EqpState = ArmState.EquipState.Unequipping;
+                    return true;
+
+                case ArmState.EquipState.Equipping:
+                    QueueItem(item, state1, state2);
+                    return false;
+
+                default:
+                    return false;
             }
         }
 
@@ -197,18 +176,6 @@ public partial class ArmsManager : Node3D
             ItemArmChanged?.Invoke(item, Arm.None);
         }
     }
-
-    private void PrepareArm(Item item, ArmState state, Node parent, Node3D spring)
-    {
-        state.Arm.Visible = true;
-        state.LastItem = item;
-        state.Item = item;
-        state.EqpState = ArmState.EquipState.Equipping;
-
-        state.Arm.Reparent(parent, false);
-        state.Arm.Position = Vector3.Zero;
-        state.Arm.Rotation = -spring.Rotation;
-    }
     
     // Not used with EquipBoth()
     private void EquipGeneral(Item item, ArmState state)
@@ -218,19 +185,29 @@ public partial class ArmsManager : Node3D
         item.Reparent(state.SpringTarget, false);
         item.Position = Vector3.Zero;
         item.Rotation = -state.Spring.Rotation;
-        item.IdleStarted += () => AssignNewBoxShape(item, state);
 
         state.Spring.Position = _springOffset;
+    }
+
+    private void PrepareArm(Item item, ArmState state, Node parent, Node3D spring)
+    {
+        state.Item = item;
+        state.EqpState = ArmState.EquipState.Equipping;
+
+        state.Arm.Reparent(parent, false);
+        state.Arm.Position = Vector3.Zero;
+        state.Arm.Rotation = -spring.Rotation;
+        state.Arm.Visible = true;
     }
 
     private void SwapItemsInHands(ArmState state1, ArmState state2)
     {
         Unequip(state2.Item);
-        QueueItem(state2.LastItem, state1, state2);
+        QueueItem(state2.Item, state1, state2);
         if (state1.Item != null)
         {
             Unequip(state1.Item);
-            QueueItem(state1.LastItem, state2, state1);
+            QueueItem(state1.Item, state2, state1);
         }
     }
 
@@ -248,7 +225,7 @@ public partial class ArmsManager : Node3D
                 return true;
 
             default:
-                if (state2.EqpState == ArmState.EquipState.Unequipping && state2.LastItem == item)
+                if (state2.EqpState == ArmState.EquipState.Unequipping && state2.Item == item)
                 {
                     QueueItem(item, state1, state2);
                     return true;
@@ -267,40 +244,40 @@ public partial class ArmsManager : Node3D
         state1.NextItem = item;
     }
 
-    private void AssignNewBoxShape(Item item, ArmState state)
+    private void AssignNewBoxShape(ArmState state)
     {
         (BoxShape3D box, Vector3 offset) = ConvexHull.GenerateBox
         (
             GetBoneGlobalPositions(state.ArmSkeletonParent, state.ArmSkeleton),
-            item.MeshInstance.Transform * item.MeshInstance.Mesh.GetFaces()
+            state.Item.MeshInstance.Transform * state.Item.MeshInstance.Mesh.GetFaces()
         );
-
-        state.Spring.Shape = box;
-        state.Spring.Position = _springOffset - new Vector3(-offset.X, offset.Y, -offset.Z); // Rotating offset 180 degrees (to match SpringArm3D)
-        state.Arm.Position = offset;
-        item.Position = offset;
+        
+        ApplyBoxShape(state, box, offset);
 
         //Debug.Clear();
         //Debug.CreateBox(state.Spring, Colors.Green, Vector3.Zero, box.Size);
     }
-
-    private void AssignNewBoxShapeTwoHanded(Item item)
+    private void AssignNewBoxShapeTwoHanded()
     {
         (BoxShape3D box, Vector3 offset) = ConvexHull.GenerateBox
         (
             GetBoneGlobalPositions(_stateL.ArmSkeletonParent, _stateL.ArmSkeleton),
             GetBoneGlobalPositions(_stateR.ArmSkeletonParent, _stateR.ArmSkeleton),
-            item.MeshInstance.Transform * item.MeshInstance.Mesh.GetFaces()
+            _stateL.Item.MeshInstance.Transform * _stateL.Item.MeshInstance.Mesh.GetFaces()
         );
 
-        _stateL.Spring.Shape = box;
-        _stateL.Spring.Position = _springOffset - new Vector3(-offset.X, offset.Y, -offset.Z); // Rotating offset 180 degrees (to match SpringArm3D)
-        _stateL.Arm.Position = offset;
+        ApplyBoxShape(_stateL, box, offset);
         _stateR.Arm.Position = offset;
-        item.Position = offset;
 
         //Debug.Clear();
         //Debug.CreateBox(_stateL.Spring, Colors.Green, Vector3.Zero, box.Size);
+    }  
+    private void ApplyBoxShape(ArmState state, BoxShape3D box, Vector3 offset)
+    {
+        state.Spring.Shape = box;
+        state.Spring.Position = _springOffset - new Vector3(-offset.X, offset.Y, -offset.Z); // Rotating offset 180 degrees (to match SpringArm3D)
+        state.Arm.Position = offset;
+        state.Item.Position = offset;
     }
 
     /// <summary>
@@ -313,7 +290,7 @@ public partial class ArmsManager : Node3D
 
         for (int i = 0; i < count; i++)
         {
-            positions[i] = (skeletonParent.Transform * skeleton.GetBoneGlobalPose(i)).Origin; // TODO: Remove skeletonParent.Transform once I make the arm uniform scale
+            positions[i] = (skeletonParent.Transform * skeleton.GetBoneGlobalPose(i)).Origin; // TODO: Remove skeletonParent.Transform once I make the skeleton uniform scale
         }
         return positions;
     }
@@ -325,7 +302,7 @@ public partial class ArmsManager : Node3D
             switch (state1.EqpState)
             {
                 case ArmState.EquipState.Equipping:
-                    state1.EqpState = ArmState.EquipState.Equipped;
+                    state1.EqpState = ArmState.EquipState.Equipped;                   
 
                     if (state1.Item.TwoHanded)
                     {
@@ -350,6 +327,9 @@ public partial class ArmsManager : Node3D
                     break;
 
                 case ArmState.EquipState.Unequipping:
+                    state1.EqpState = ArmState.EquipState.None;
+                    state1.Item = null;                
+
                     EquipNextItem(state1, state2, equip);
                     break;
             }
@@ -359,16 +339,22 @@ public partial class ArmsManager : Node3D
             if (state1.EqpState == ArmState.EquipState.Unequipping)
             {
                 state1.EqpState = ArmState.EquipState.None;
+                state1.Item = null;     
+                
                 state1.Arm.Visible = false;
             }
-            else { state1.EqpState = ArmState.EquipState.Equipped; }
+            else
+            {
+                state1.EqpState = ArmState.EquipState.Equipped;
+
+                if (state1.Item.TwoHanded) { AssignNewBoxShapeTwoHanded(); }
+                else                       { AssignNewBoxShape(state1); }
+            }
         }
     }
 
     private void EquipNextItem(ArmState state1, ArmState state2, Action<Item> equip)
     {
-        state1.EqpState = ArmState.EquipState.None;
-
         if (state1.NextItem.TwoHanded)
         {
             if (state2.EqpState != ArmState.EquipState.None) { return; }

@@ -14,7 +14,7 @@ export_presets.cfg
 data_*/
 mono_crash.*.json
 
-# Visual Studio ignores
-.vs/
-*.csproj.user
-Properties/
+# Visual Studio Code ignores
+.vscode/
+
+*.csproj.old

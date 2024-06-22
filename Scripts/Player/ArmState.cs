@@ -21,19 +21,20 @@ public class ArmState
     public readonly SpringArm3D Spring;
     public readonly Node SpringTarget;
 
-    public Item LastItem;
-    public Item Item;   
+    public Item Item;
     public Item NextItem;
-
     public EquipState EqpState;
 
-    public ArmState(Node3D arm, Node3D armSkeletonParent, Skeleton3D armSkeleton, MeshInstance3D armMeshInst, SpringArm3D spring, Node springTarget)
+    public ArmState(Node3D arm, SpringArm3D spring, string armSkeletonParentName, string armMeshInstName)
     {
+        Node3D armSkeletonParent = arm.GetNode<Node3D>(armSkeletonParentName);
+        Skeleton3D armSkeleton = armSkeletonParent.GetNode<Skeleton3D>("Skeleton3D");
+
         Arm = arm;
         ArmSkeletonParent = armSkeletonParent;
         ArmSkeleton = armSkeleton;
-        ArmMeshInst = armMeshInst;
+        ArmMeshInst = armSkeleton.GetNode<MeshInstance3D>(armMeshInstName);
         Spring = spring;
-        SpringTarget = springTarget;
+        SpringTarget = spring.GetNode("Target");
     }
 }

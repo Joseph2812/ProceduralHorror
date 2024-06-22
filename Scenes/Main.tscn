@@ -207,15 +207,15 @@ shape = SubResource("SphereShape3D_cu83u")
 mesh = SubResource("SphereMesh_ey0t1")
 
 [node name="Phone" parent="." instance=ExtResource("12_q4whi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45381, 2.78498, -1.05887)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45381, 3.10299, -1.05887)
 continuous_cd = true
 
 [node name="Phone2" parent="." instance=ExtResource("12_q4whi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.52059, 2.785, -1.059)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.52059, 3.10301, -1.059)
 continuous_cd = true
 
 [node name="Phone3_TwoHanded" parent="." instance=ExtResource("12_q4whi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.62059, 2.785, -1.059)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.62059, 3.10301, -1.059)
 continuous_cd = true
 script = ExtResource("16_gs8rj")
 

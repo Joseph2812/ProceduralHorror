@@ -8,14 +8,14 @@ public abstract partial class Item : RigidBody3D
 {
     private static readonly Vector2I[] s_defaultClearancePositions = new Vector2I[] { Vector2I.Zero };
 
-    public abstract StringName EquipNameL { get; }
-    public abstract StringName EquipNameR { get; }
-    public abstract StringName IdleNameL { get; }
-    public abstract StringName IdleNameR { get; }
-    public abstract StringName UnequipNameL { get; }
-    public abstract StringName UnequipNameR { get; }
-
     public abstract bool TwoHanded { get; }
+
+    protected abstract StringName EquipNameL { get; }
+    protected abstract StringName EquipNameR { get; }
+    protected abstract StringName IdleNameL { get; }
+    protected abstract StringName IdleNameR { get; }
+    protected abstract StringName UnequipNameL { get; }
+    protected abstract StringName UnequipNameR { get; }
 
     protected abstract string MeshInstPath { get; }
 
@@ -33,12 +33,6 @@ public abstract partial class Item : RigidBody3D
     /// Local grid coordinates used by <see cref="Inventory"/> to indicate the positions it takes up.
     /// </summary>
     public virtual Vector2I[] ClearancePositions => s_defaultClearancePositions;
-
-    /// <summary>
-    /// Signals when idle animation has started (used to generate a new shape for <see cref="SpringArm3D"/>s).<para/>
-    /// NOTE: Cleared on Unequip.
-    /// </summary>
-    public event Action IdleStarted;
 
     public MeshInstance3D MeshInstance { get; set; }
     public BaseMaterial3D Material { get; private set; }
@@ -62,8 +56,6 @@ public abstract partial class Item : RigidBody3D
     public virtual void Unequip()
     {
         Equipped = false;
-        IdleStarted = null;
-
         PlayAnimation(UnequipNameL, UnequipNameR);
     }
 
@@ -77,7 +69,6 @@ public abstract partial class Item : RigidBody3D
 
         _itemAnim = GetNode<AnimationPlayer>("AnimationPlayer");
 
-        _itemAnim.AnimationStarted += OnItemAnim_AnimationStarted;
         _itemAnim.AnimationFinished += OnItemAnim_AnimationFinished;
     }
 
@@ -114,15 +105,11 @@ public abstract partial class Item : RigidBody3D
                 ArmsManager.ArmAnimR.Advance(0d);
                 break;
 
-            default: 
+            default:
                 throw new NotImplementedException("Invalid arm value.");
         }
     }
 
-    private void OnItemAnim_AnimationStarted(StringName animName)
-    {
-        if (animName == IdleNameL || animName == IdleNameR) { IdleStarted?.Invoke(); }
-    }
     private void OnItemAnim_AnimationFinished(StringName animName)
     {
         if      (animName == EquipNameL   || animName == EquipNameR)   { PlayAnimation(IdleNameL, IdleNameR); }
