@@ -104,7 +104,9 @@ public partial class MapGenerator : GridMap
 
         // Attempt To Place Interior Nodes //
         int maxHeightLvl = height - 1;
-        for (int i = 0; i < _potentialPos_floorIdx_heightLvl_S.Count * PlaceAttemptsMultiplier; i++) // Attempts Are Proportional To Count
+        int attempts = _potentialPos_floorIdx_heightLvl_S.Count * PlaceAttemptsMultiplier; // Attempts are proportional to count
+
+        for (int i = 0; i < attempts; i++)
         {
             if (_potentialPos_floorIdx_heightLvl_S.Count == 0) { break; }
 

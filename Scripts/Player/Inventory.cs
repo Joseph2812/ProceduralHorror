@@ -156,7 +156,7 @@ public partial class Inventory : Node3D
     {
         base._Ready();
 
-        s_sceneRoot = GetTree().Root.GetNode("Main");
+        s_sceneRoot = GetNode("/root/Main");
         _armsManager = GetParent().GetNode<ArmsManager>("ArmsManager");
 
         _selectorMaterial = new OrmMaterial3D()
