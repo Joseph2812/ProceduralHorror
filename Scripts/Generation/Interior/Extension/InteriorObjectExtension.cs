@@ -19,11 +19,11 @@ public partial class InteriorObjectExtension : Resource
     /// <summary>
     /// Other <see cref="InteriorObject"/>s that pair with the root <see cref="InteriorObject"/> (meant to generate together). 
     /// </summary>
-    public InteriorObjectWithWeight[] InteriorObjectWithWeightS { get; private set; }
+    public InteriorObjectWithWeight[] InteriorObjectWithWeight_S { get; private set; }
 
     public void LoadDependencies()
     {
-        InteriorObjectWithWeightS = CommonMethod.LoadSubDirectoryNextToPath<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/");
-        foreach (InteriorObjectWithWeight iObjWithWt in InteriorObjectWithWeightS) { iObjWithWt.LoadDependencies(); }
+        InteriorObjectWithWeight_S = CommonMethod.LoadSubDirectoryNextToPath<InteriorObjectWithWeight>(ResourcePath, "IObjWithWeightS/"); // TODO: Rename to IObjWithWeight_S
+        foreach (InteriorObjectWithWeight iObjWithWt in InteriorObjectWithWeight_S) { iObjWithWt.LoadDependencies(); }
     }
 }

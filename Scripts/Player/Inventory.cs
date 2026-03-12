@@ -37,10 +37,11 @@ public partial class Inventory : Node3D
             HotkeyLabel = hotkeyLabel;
         }
 
-        protected override void Dispose(bool disposing)
+        public override void _Notification(int what)
         {
-            base.Dispose(disposing);
-
+            base._Notification(what);
+            if (what != NotificationPredelete) { return; }
+            
             Pivot.QueueFree();
             EquippedLabel.QueueFree();
             HotkeyLabel.QueueFree();
@@ -231,9 +232,10 @@ public partial class Inventory : Node3D
         else if (@event.IsActionPressed(s_rotateName)) { Rotate(); }
     }
 
-    protected override void Dispose(bool disposing)
+    public override void _Notification(int what)
     {
-        base.Dispose(disposing);
+        base._Notification(what);
+        if (what != NotificationPredelete) { return; }
 
         foreach (GridData data in _itemToGridData.Values) { data.Free(); }
     }

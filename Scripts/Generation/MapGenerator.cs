@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Scripts.Extensions;
+using System.Threading;
 
 namespace Scripts.Generation;
 
@@ -85,6 +86,7 @@ public partial class MapGenerator : GridMap
     private const int MaximumExtrusionRetries = 50;
 
     private const string ConsoleSeedArgs = "\"gen\"|\"enemy\"|\"item\"";
+    private static ulong Seed = 16005123932967406760; // Holds seed for reload
 
     public static MapGenerator Inst { get; private set; }
 
@@ -112,6 +114,7 @@ public partial class MapGenerator : GridMap
     private ItemManager _itemManager = new();
     private RoomManager _roomManager = new();
     private HashSet<Vector3I> _floorPosS;
+    private CancellationTokenSource _cancelSrc = new(); // To stop tasks if scene changes during slowed down generation
 
     public MapGenerator() { Inst = this; }
 
@@ -133,6 +136,15 @@ public partial class MapGenerator : GridMap
                 $"[color=#aaa]<{ConsoleSeedArgs}>[/color]. Prints current seed."
             )
         );
+        Console.Inst.AddCommand
+        (
+            "reload",
+            new
+            (
+                new(OnConsoleCmd_Reload),
+                $"[color=#aaa]<seed?>[/color]. Reloads game with optional seed."
+            )
+        );
 
         // Setting Directions //
         int orthDiagLength = OrthogonalDirs.Length + DiagonalDirs.Length;
@@ -147,7 +159,7 @@ public partial class MapGenerator : GridMap
         for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i + (All3x3Dirs.Length * 2)] = All3x3Dirs[i] + Vector3I.Up; }
         //
 
-        Rng.Seed = 16005123932967406760;
+        Rng.Seed = Seed;
 
         bool success = false;
         while (!success) { success = await StartGeneration(); }
@@ -166,6 +178,14 @@ public partial class MapGenerator : GridMap
         _potentialPos_floorIdx_heightLvl_S = null;
 
         GC.Collect();
+    }
+
+    public override void _Notification(int what)
+    {
+        base._Notification(what);
+
+        if (what != NotificationPredelete) { return; }
+        _cancelSrc.Cancel();
     }
 
     /// <summary>
@@ -205,7 +225,8 @@ public partial class MapGenerator : GridMap
                 _roomManager.SelectRandomRoom();
 
                 _floorPosS = GenerateFloor(doorPos, out Vector3I startDir);
-                await Task.Delay(MillisecondsBtwSteps);
+                await Task.Delay(MillisecondsBtwSteps, _cancelSrc.Token);
+                if (_cancelSrc.IsCancellationRequested) { return true; }
 
                 if (_floorPosS == null) { continue; }
 
@@ -215,18 +236,24 @@ public partial class MapGenerator : GridMap
                 int height = Rng.RandiRange(_roomManager.SelectedRoom.MinimumHeight, _roomManager.SelectedRoom.MaximumHeight);
 
                 List<Vector3I> potentialDoorPosS = GenerateWallsAndCeiling(actualDoorPos, height);
-                await Task.Delay(MillisecondsBtwSteps);
+                await Task.Delay(MillisecondsBtwSteps, _cancelSrc.Token);
+                if (_cancelSrc.IsCancellationRequested) { return true; }
+
                 HashSet<Vector3I> connectionPosS = MixWallsAndFindConnections(aheadDoorPos, height);
-                await Task.Delay(MillisecondsBtwSteps);
+                await Task.Delay(MillisecondsBtwSteps, _cancelSrc.Token);
+                if (_cancelSrc.IsCancellationRequested) { return true; }
+
                 HashSet<Vector3I> newDoorPosS = GenerateDoors(potentialDoorPosS);
-                await Task.Delay(MillisecondsBtwSteps);
+                await Task.Delay(MillisecondsBtwSteps, _cancelSrc.Token);
+                if (_cancelSrc.IsCancellationRequested) { return true; }
 
                 allDoorPosS.UnionWith(newDoorPosS);
                 doorPosS.UnionWith(newDoorPosS);
 
                 newDoorPosS.UnionWith(connectionPosS); // Add doors from other rooms (Connections)
                 GenerateInterior(newDoorPosS, aheadDoorPos, height);
-                await Task.Delay(MillisecondsBtwSteps);
+                await Task.Delay(MillisecondsBtwSteps, _cancelSrc.Token);
+                if (_cancelSrc.IsCancellationRequested) { return true; }
 
                 roomCount++;
             }
@@ -602,5 +629,22 @@ public partial class MapGenerator : GridMap
                 Console.Inst.AppendLine($"Seed \"{arg}\" is not implemented.");
                 break;
         }
+    }
+
+    private void OnConsoleCmd_Reload(string[] commandSplit)
+    {
+        if (commandSplit.Length > 1)
+        {
+            if (ulong.TryParse(commandSplit[1], System.Globalization.NumberStyles.Any, null, out ulong result))
+            {
+                Seed = result;
+            }
+            else
+            {
+                Console.Inst.AppendLine($"Seed \"{commandSplit[1]}\" is not valid. Cancelling reload.");
+                return;
+            }
+        }
+        GetTree().ChangeSceneToFile("Scenes/Main.tscn");
     }
 }

@@ -232,7 +232,7 @@ public partial class Creator : VBoxContainer
             SaveResource(iObjExtension, $"{dir.GetCurrentDir()}/{extensionDir}/{ExtensionFileName}");
 
             // InteriorObjectWithWeight Directory Inside Extension //
-            if (!extensionRef.GetIObjWithWeightS(out InteriorObjectWithWeight[] iObjWithWeightS)) { PrintParseWarning(nameof(iObjExtension.InteriorObjectWithWeightS)); }
+            if (!extensionRef.GetIObjWithWeightS(out InteriorObjectWithWeight[] iObjWithWeightS)) { PrintParseWarning(nameof(iObjExtension.InteriorObjectWithWeight_S)); }
 
             foreach (InteriorObjectWithWeight iObjWithWt in iObjWithWeightS)
             {
