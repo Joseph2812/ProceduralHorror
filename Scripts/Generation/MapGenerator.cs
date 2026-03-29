@@ -269,7 +269,7 @@ public partial class MapGenerator : GridMap
             GD.Print($"Maximum room count wasn't reached. Current: {roomCount}. Retrying...");
 
             Clear();
-            _interiorNodeParent.Free();
+            _interiorNodeParent.QueueFree();
             _interiorNodeParent = new Node3D { Name = InteriorObjectParentName };
             AddChild(_interiorNodeParent);
 

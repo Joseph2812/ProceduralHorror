@@ -9,24 +9,21 @@ public partial class Plugin : EditorPlugin
 {
     private const string DockPath = "addons/InteriorObjectCreator/Dock/Dock.tscn";
 
-    public static event Action Disabled;
-
-    private Control _dock;
+    private EditorDock _dock;
 
 	public override void _EnterTree()
 	{
-        _dock = (Control)GD.Load<PackedScene>(DockPath).Instantiate();
-        AddControlToDock(DockSlot.LeftUr, _dock);
+        _dock = new() { DefaultSlot = EditorDock.DockSlot.LeftUr };
+        _dock.AddChild(GD.Load<PackedScene>(DockPath).Instantiate());
+        AddDock(_dock);
     }
 
 	public override void _ExitTree()
 	{
-        RemoveControlFromDocks(_dock);
+        RemoveDock(_dock);
 
-        Disabled?.Invoke();
-        Disabled = null;
-
-        _dock.Free();
+        _dock.QueueFree();
+        _dock = null;
     }
 }
 #endif
