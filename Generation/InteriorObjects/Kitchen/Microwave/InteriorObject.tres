@@ -1,7 +1,7 @@
-[gd_resource type="Resource" load_steps=3 format=3 uid="uid://wxpouvar8ut0"]
+[gd_resource type="Resource" format=3 uid="uid://wxpouvar8ut0"]
 
-[ext_resource type="PackedScene" uid="uid://d3f30v2j8v8b2" path="res://Scenes/ForInteriorObjects/Placeholders/Microwave.tscn" id="1_f8qv1"]
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_bbbfa"]
+[ext_resource type="PackedScene" uid="uid://d3f30v2j8v8b2" path="res://Scenes/InteriorObjects/Placeholders/Microwave.tscn" id="1_f8qv1"]
+[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_bbbfa"]
 
 [resource]
 script = ExtResource("2_bbbfa")

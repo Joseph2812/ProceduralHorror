@@ -36,10 +36,23 @@ project/assembly_name="ProceduralHorror"
 [editor]
 
 movie_writer/movie_file="C:/Users/Under/Desktop/GameClip.avi"
+export/convert_text_resources_to_binary=false
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/InteriorObjectCreator/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://Generation/": "red",
+"res://Materials/": "green",
+"res://Models/": "blue",
+"res://Scenes/": "purple",
+"res://Scripts/": "pink",
+"res://Shaders/": "orange",
+"res://Textures/": "green"
+}
 
 [filesystem]
 

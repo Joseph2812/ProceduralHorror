@@ -90,6 +90,8 @@ public partial class MapGenerator : GridMap
 
     public static MapGenerator Inst { get; private set; }
 
+    public event Action GenerationFinished;
+
     public RandomNumberGenerator Rng { get; private set; } = new();
 
     // Directions //
@@ -178,6 +180,8 @@ public partial class MapGenerator : GridMap
         _potentialPos_floorIdx_heightLvl_S = null;
 
         GC.Collect();
+
+        GenerationFinished?.Invoke();
     }
 
     public override void _Notification(int what)

@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dkyoet4k1n5ud"]
+
+[ext_resource type="Texture2D" uid="uid://o5qmxt665fwe" path="res://Models/InteriorObjects/Placeholders/WashingMachine/Mat.1_Base_Color.png" id="1_tmrhb"]
+[ext_resource type="Texture2D" uid="uid://cawuslrwsgar2" path="res://Models/InteriorObjects/Placeholders/WashingMachine/Mat.1_Metallic.png" id="2_mnso5"]
+[ext_resource type="Texture2D" uid="uid://b1vsmi6fhb2vh" path="res://Models/InteriorObjects/Placeholders/WashingMachine/Mat.1_Normal.png" id="3_67cw3"]
+[ext_resource type="Texture2D" uid="uid://hdelftj5qmq0" path="res://Models/InteriorObjects/Placeholders/WashingMachine/Mat.1_Roughness.png" id="4_b8qkj"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k7tdm"]
+albedo_texture = ExtResource("1_tmrhb")
+metallic = 1.0
+metallic_texture = ExtResource("2_mnso5")
+roughness_texture = ExtResource("4_b8qkj")
+normal_enabled = true
+normal_texture = ExtResource("3_67cw3")
+
+[node name="WashingMachine" unique_id=1869587210]
+
+[node name="Washing_Machine" parent="RootNode" index="0"]
+transform = Transform3D(-6.11959e-08, 0, -1.4, 0, 1.4, 0, 1.4, 0, -6.11959e-08, 0.522179, 0.629147, 0.251192)
+surface_material_override/0 = SubResource("StandardMaterial3D_k7tdm")

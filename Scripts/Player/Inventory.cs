@@ -8,13 +8,13 @@ namespace Scripts.Player;
 
 public partial class Inventory : Node3D
 {
-    private partial class GridData : GodotObject
+    private partial class GridData(Item item, Node3D pivot, ArrayMesh selectionMesh, Label3D equippedLabel, Label3D hotkeyLabel) : GodotObject
     {
-        public readonly Item Item;
-        public readonly Node3D Pivot;
-        public readonly ArrayMesh SelectionMesh;
-        public readonly Label3D EquippedLabel;
-        public readonly Label3D HotkeyLabel;
+        public readonly Item Item = item;
+        public readonly Node3D Pivot = pivot;
+        public readonly ArrayMesh SelectionMesh = selectionMesh;
+        public readonly Label3D EquippedLabel = equippedLabel;
+        public readonly Label3D HotkeyLabel = hotkeyLabel;
 
         public Vector2I GridPosition { get; private set; }
 
@@ -26,15 +26,6 @@ public partial class Inventory : Node3D
                 positions.Add(gridPos + pos.RotatedZ(rotationZ));
             }
             return positions;
-        }
-
-        public GridData(Item item, Node3D pivot, ArrayMesh selectionMesh, Label3D equippedLabel, Label3D hotkeyLabel)
-        {
-            Item = item;
-            Pivot = pivot;
-            SelectionMesh = selectionMesh;
-            EquippedLabel = equippedLabel;
-            HotkeyLabel = hotkeyLabel;
         }
 
         public override void _Notification(int what)

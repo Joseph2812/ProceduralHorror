@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://c44d7m8ku65a5"]
+[gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://c44d7m8ku65a5"]
 
-[ext_resource type="PackedScene" uid="uid://c15enste8xslg" path="res://Scenes/ForInteriorObjects/Sofa.tscn" id="1_fk628"]
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_3clqg"]
+[ext_resource type="PackedScene" uid="uid://c15enste8xslg" path="res://Scenes/InteriorObjects/Sofa.tscn" id="1_fk628"]
+[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_3clqg"]
 
 [resource]
 script = ExtResource("2_3clqg")

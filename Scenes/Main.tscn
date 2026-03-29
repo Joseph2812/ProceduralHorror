@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://dduxddcquhrp1"]
 
+[ext_resource type="Script" uid="uid://l445o4yv3aws" path="res://Scripts/LightBaker.cs" id="1_0sclb"]
 [ext_resource type="Script" uid="uid://ce15k2s3jtwyy" path="res://Scripts/FreeCameraController.cs" id="2_dhtrs"]
 [ext_resource type="Theme" uid="uid://bmbx06aggy0cl" path="res://Theme.tres" id="3_a65xu"]
 [ext_resource type="Script" uid="uid://r5gn6hne7vck" path="res://Scripts/Generation/MapGenerator.cs" id="3_xb8fi"]
@@ -12,8 +13,8 @@
 [ext_resource type="Script" uid="uid://cnuicqjcqk5xw" path="res://Scripts/Player/Inventory.cs" id="7_pvyt2"]
 [ext_resource type="Script" uid="uid://c7cmp2nu4oppx" path="res://Scripts/Player/ArmsController.cs" id="8_dphlw"]
 [ext_resource type="Script" uid="uid://bp8imaawrk08n" path="res://Scripts/Player/ArmsManager.cs" id="8_ku1aq"]
-[ext_resource type="PackedScene" uid="uid://b5dwhf7evtn3x" path="res://Models/Early-test Arm_L.glb" id="11_qw4ff"]
-[ext_resource type="PackedScene" uid="uid://wgjogkw12vbc" path="res://Models/Early-test Arm_R.glb" id="12_c454h"]
+[ext_resource type="PackedScene" uid="uid://b5dwhf7evtn3x" path="res://Models/InteriorObjects/Early-test Arm_L.glb" id="11_qw4ff"]
+[ext_resource type="PackedScene" uid="uid://wgjogkw12vbc" path="res://Models/InteriorObjects/Early-test Arm_R.glb" id="12_c454h"]
 [ext_resource type="PackedScene" uid="uid://cv26pyhdxy6wq" path="res://Scenes/Items/Phone.tscn" id="12_q4whi"]
 [ext_resource type="Texture2D" uid="uid://cjx4bewkntqub" path="res://Textures/Items/Phone/ORM.png" id="15_3omg8"]
 [ext_resource type="Shader" uid="uid://dvegjon4jd7pl" path="res://Shaders/Outline.gdshader" id="15_ofddk"]
@@ -28,17 +29,20 @@ sky_material = SubResource("ProceduralSkyMaterial_8ys5x")
 background_mode = 1
 background_color = Color(0.235294, 0.235294, 0.235294, 1)
 sky = SubResource("Sky_4uo1o")
+ambient_light_source = 1
+reflected_light_source = 1
 tonemap_mode = 3
-sdfgi_enabled = true
+sdfgi_use_occlusion = true
 sdfgi_read_sky_light = false
 glow_enabled = true
 
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_sxkr1"]
+
+[sub_resource type="VoxelGIData" id="VoxelGIData_346fj"]
+interior = true
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k83d5"]
 radius = 0.45
-height = 1.9
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_kpy6l"]
-radius = 0.4
 height = 1.9
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_cu83u"]
@@ -64,9 +68,11 @@ orm_texture = ExtResource("15_3omg8")
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2112499483]
 environment = SubResource("Environment_4irpt")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=791770816]
-transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
-shadow_enabled = true
+[node name="VoxelGI" type="VoxelGI" parent="." unique_id=523354880]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 0)
+camera_attributes = SubResource("CameraAttributesPractical_sxkr1")
+data = SubResource("VoxelGIData_346fj")
+script = ExtResource("1_0sclb")
 
 [node name="GridMap" type="GridMap" parent="." unique_id=2021676517]
 cell_size = Vector3(1, 1, 1)
@@ -149,11 +155,6 @@ script = ExtResource("6_0v3cs")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
 shape = SubResource("CapsuleShape3D_k83d5")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=256712450]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
-visible = false
-mesh = SubResource("CapsuleMesh_kpy6l")
-
 [node name="Camera3D" type="Camera3D" parent="Player" unique_id=741815326]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
 current = true
@@ -163,10 +164,6 @@ script = ExtResource("6_0qrqr")
 [node name="InteractionController" type="Node" parent="Player/Camera3D" unique_id=446690757]
 script = ExtResource("6_oq56r")
 
-[node name="SpotLight3D" type="SpotLight3D" parent="Player/Camera3D" unique_id=1454102457]
-visible = false
-spot_range = 20.0
-
 [node name="ArmsManager" type="Node3D" parent="Player/Camera3D" unique_id=831612267]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3, 0)
 script = ExtResource("8_ku1aq")
@@ -174,7 +171,7 @@ script = ExtResource("8_ku1aq")
 [node name="ArmsController" type="Node" parent="Player/Camera3D/ArmsManager" unique_id=757909531]
 script = ExtResource("8_dphlw")
 
-[node name="Arm_L" parent="Player/Camera3D/ArmsManager" unique_id=400064987 instance=ExtResource("11_qw4ff")]
+[node name="Arm_L" parent="Player/Camera3D/ArmsManager" unique_id=1171228774 instance=ExtResource("11_qw4ff")]
 visible = false
 
 [node name="Arm_R" parent="Player/Camera3D/ArmsManager" unique_id=238642346 instance=ExtResource("12_c454h")]

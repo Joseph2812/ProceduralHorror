@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="InteriorObjectWithWeight" load_steps=2 format=3 uid="uid://t6y55i5686q"]
+[gd_resource type="Resource" script_class="InteriorObjectWithWeight" format=3 uid="uid://t6y55i5686q"]
 
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_i0cll"]
+[ext_resource type="Script" uid="uid://cuvgghw1jqrhf" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_i0cll"]
 
 [resource]
 script = ExtResource("1_i0cll")
-InteriorObjectPath = "res://Generation/InteriorObjects/Kitchen/Fridge/InteriorObject.tres"
+InteriorObjectPath = "uid://ds422q07jhkfg"
 WeightOfPlacement = 5

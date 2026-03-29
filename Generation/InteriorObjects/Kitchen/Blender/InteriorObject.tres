@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://b8mf10083fbg8"]
+[gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://b8mf10083fbg8"]
 
-[ext_resource type="PackedScene" uid="uid://cjtidaij2r2p5" path="res://Scenes/ForInteriorObjects/Placeholders/Blender.tscn" id="1_8ngg4"]
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_ahjaf"]
+[ext_resource type="PackedScene" uid="uid://cjtidaij2r2p5" path="res://Scenes/InteriorObjects/Placeholders/Blender.tscn" id="1_8ngg4"]
+[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_ahjaf"]
 
 [resource]
 script = ExtResource("2_ahjaf")

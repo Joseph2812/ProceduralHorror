@@ -1,8 +1,7 @@
-[gd_resource type="Resource" script_class="InteriorObjectWithWeight" load_steps=2 format=3 uid="uid://t2hme57upglr"]
+[gd_resource type="Resource" script_class="InteriorObjectWithWeight" format=3 uid="uid://t2hme57upglr"]
 
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_jt76o"]
+[ext_resource type="Script" uid="uid://cuvgghw1jqrhf" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_jt76o"]
 
 [resource]
 script = ExtResource("1_jt76o")
-InteriorObjectPath = "res://Generation/InteriorObjects/Kitchen/Trashcan/InteriorObject.tres"
-WeightOfPlacement = 1
+InteriorObjectPath = "uid://ds422q07jhkfg"

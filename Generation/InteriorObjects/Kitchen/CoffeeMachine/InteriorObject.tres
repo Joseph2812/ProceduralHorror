@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="InteriorObject" load_steps=3 format=3 uid="uid://dqi0lsoxr7thh"]
+[gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://dqi0lsoxr7thh"]
 
-[ext_resource type="PackedScene" uid="uid://bfrt3sc3kskwp" path="res://Scenes/ForInteriorObjects/Placeholders/CoffeeMachine.tscn" id="1_8o7xf"]
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_fjhxn"]
+[ext_resource type="PackedScene" uid="uid://bfrt3sc3kskwp" path="res://Scenes/InteriorObjects/Placeholders/CoffeeMachine.tscn" id="1_8o7xf"]
+[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_fjhxn"]
 
 [resource]
 script = ExtResource("2_fjhxn")

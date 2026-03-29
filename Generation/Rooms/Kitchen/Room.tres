@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="Room" load_steps=2 format=3 uid="uid://cog8r41rnwpvd"]
+[gd_resource type="Resource" script_class="Room" format=3 uid="uid://cog8r41rnwpvd"]
 
-[ext_resource type="Script" path="res://Scripts/Generation/Room.cs" id="1_q8nsi"]
+[ext_resource type="Script" uid="uid://bhm15lhjl6wx4" path="res://Scripts/Generation/Room.cs" id="1_q8nsi"]
 
 [resource]
 script = ExtResource("1_q8nsi")
@@ -10,11 +10,8 @@ CeilingId = 7
 ChanceOfEmptyCell = 0.0
 MinimumOuterWidth = 2
 MaximumOuterWidth = 4
-MinimumLength = 3
 MaximumLength = 9
-MinimumExtrusionIterations = 1
 MaximumExtrusionIterations = 2
 MinimumHeight = 4
 MaximumHeight = 5
-MinimumDoorways = 1
 MaximumDoorways = 4

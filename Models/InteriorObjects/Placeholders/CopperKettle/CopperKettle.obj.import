@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bwmml3nvs27kc"
+path="res://.godot/imported/CopperKettle.obj-0d65748a8e93a3986bc9b7d7afe77020.mesh"
+
+[deps]
+
+files=["res://.godot/imported/CopperKettle.obj-0d65748a8e93a3986bc9b7d7afe77020.mesh"]
+
+source_file="res://Models/InteriorObjects/Placeholders/CopperKettle/CopperKettle.obj"
+dest_files=["res://.godot/imported/CopperKettle.obj-0d65748a8e93a3986bc9b7d7afe77020.mesh", "res://.godot/imported/CopperKettle.obj-0d65748a8e93a3986bc9b7d7afe77020.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false
