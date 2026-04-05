@@ -14,6 +14,8 @@ public partial class ArmsManager : Node3D
         Both
     }
 
+    private static readonly Vector3 s_maxShapeSize = new(0.1f, 0.6f, 0.9f); // Limit shape size for SpringArm3D
+
     /// <summary>
     /// <see cref="AnimationPlayer"/> for left arm.
     /// </summary>
@@ -244,20 +246,22 @@ public partial class ArmsManager : Node3D
         state1.NextItem = item;
     }
 
-    private void AssignNewBoxShape(ArmState state)
+    private void AssignNewShape(ArmState state)
     {
         (BoxShape3D box, Vector3 offset) = ConvexHull.GenerateBox
         (
             GetBoneGlobalPositions(state.ArmSkeletonParent, state.ArmSkeleton),
             state.Item.MeshInstance.Transform * state.Item.MeshInstance.Mesh.GetFaces()
         );
+        box.Size += Vector3.Back * 0.1f; // Forward padding
+        box.Size = box.Size.Clamp(Vector3.Zero, s_maxShapeSize);
         
-        ApplyBoxShape(state, box, offset);
+        ApplyShape(state, box, offset);
 
         //Debug.Clear();
         //Debug.CreateBox(state.Spring, Colors.Green, Vector3.Zero, box.Size);
     }
-    private void AssignNewBoxShapeTwoHanded()
+    private void AssignNewShapeTwoHanded()
     {
         (BoxShape3D box, Vector3 offset) = ConvexHull.GenerateBox
         (
@@ -266,15 +270,18 @@ public partial class ArmsManager : Node3D
             _stateL.Item.MeshInstance.Transform * _stateL.Item.MeshInstance.Mesh.GetFaces()
         );
 
-        ApplyBoxShape(_stateL, box, offset);
+        box.Size += Vector3.Back * 0.1f; // Forward padding
+        box.Size = box.Size.Clamp(Vector3.Zero, new(0.75f, s_maxShapeSize.Y, s_maxShapeSize.Z));
+
+        ApplyShape(_stateL, box, offset);
         _stateR.Arm.Position = offset;
 
         //Debug.Clear();
         //Debug.CreateBox(_stateL.Spring, Colors.Green, Vector3.Zero, box.Size);
     }  
-    private void ApplyBoxShape(ArmState state, BoxShape3D box, Vector3 offset)
+    private void ApplyShape(ArmState state, Shape3D shape, Vector3 offset)
     {
-        state.Spring.Shape = box;
+        state.Spring.Shape = shape;
         state.Spring.Position = _springOffset - new Vector3(-offset.X, offset.Y, -offset.Z); // Rotating offset 180 degrees (to match SpringArm3D)
         state.Arm.Position = offset;
         state.Item.Position = offset;
@@ -347,8 +354,8 @@ public partial class ArmsManager : Node3D
             {
                 state1.EqpState = ArmState.EquipState.Equipped;
 
-                if (state1.Item.TwoHanded) { AssignNewBoxShapeTwoHanded(); }
-                else                       { AssignNewBoxShape(state1); }
+                if (state1.Item.TwoHanded) { AssignNewShapeTwoHanded(); }
+                else                       { AssignNewShape(state1); }
             }
         }
     }

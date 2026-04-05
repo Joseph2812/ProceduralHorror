@@ -17,5 +17,5 @@ mono_crash.*.json
 # Visual Studio Code ignores
 .vscode/
 
-*.csproj.old
+*.csproj.old*
 .builds/

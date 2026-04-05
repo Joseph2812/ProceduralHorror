@@ -6,21 +6,15 @@ namespace Scripts;
  
 public partial class Console : Panel
 {
-    public struct CommandData
+    /// <summary>
+    /// Assign an action that takes in the command string as an argument, with an optional description (add to the main command).
+    /// </summary>
+    /// <param name="actionToUse">Action to take when command is run. string[] = Command.</param>
+    /// <param name="description">Description to show when help is run.</param>
+    public readonly struct CommandData(Action<string[]> actionToUse, string description = "")
     {
-        public readonly Action<string[]> ActionToUse;
-        public readonly string Description;
-        
-        /// <summary>
-        /// Assign an action that takes in the command string as an argument, with an optional description (add to the main command).
-        /// </summary>
-        /// <param name="action">Action to take when command is run. string[] = Command.</param>
-        /// <param name="description">Description to show when help is run.</param>
-        public CommandData(Action<string[]> action, string description = "")
-        {
-            ActionToUse = action;
-            Description = description;
-        }
+        public readonly Action<string[]> ActionToUse = actionToUse;
+        public readonly string Description = description;
     }
 
     private const int HistoryLineCount = 5;
