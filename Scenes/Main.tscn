@@ -15,10 +15,6 @@
 [ext_resource type="Script" uid="uid://bp8imaawrk08n" path="res://Scripts/Player/ArmsManager.cs" id="8_ku1aq"]
 [ext_resource type="PackedScene" uid="uid://b5dwhf7evtn3x" path="res://Models/InteriorObjects/Early-test Arm_L.glb" id="11_qw4ff"]
 [ext_resource type="PackedScene" uid="uid://wgjogkw12vbc" path="res://Models/InteriorObjects/Early-test Arm_R.glb" id="12_c454h"]
-[ext_resource type="PackedScene" uid="uid://cv26pyhdxy6wq" path="res://Scenes/Items/Phone.tscn" id="12_q4whi"]
-[ext_resource type="Texture2D" uid="uid://cjx4bewkntqub" path="res://Textures/Items/Phone/ORM.png" id="15_3omg8"]
-[ext_resource type="Shader" uid="uid://dvegjon4jd7pl" path="res://Shaders/Outline.gdshader" id="15_ofddk"]
-[ext_resource type="Script" uid="uid://sgow0kqc8gy7" path="res://Scripts/Items/TwoHandedTestItem.cs" id="16_gs8rj"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
 
@@ -51,17 +47,6 @@ radius = 0.25
 [sub_resource type="SphereMesh" id="SphereMesh_ey0t1"]
 radius = 0.25
 height = 0.5
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_08yfj"]
-render_priority = 0
-shader = ExtResource("15_ofddk")
-shader_parameter/outline_width = 0.0
-shader_parameter/outline_colour = Color(1, 1, 1, 1)
-
-[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_i4wdq"]
-next_pass = SubResource("ShaderMaterial_08yfj")
-albedo_color = Color(0.443137, 0.443137, 0.443137, 1)
-orm_texture = ExtResource("15_3omg8")
 
 [node name="Main" type="Node3D" unique_id=559554968]
 
@@ -203,24 +188,3 @@ shape = SubResource("SphereShape3D_cu83u")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Sphere" unique_id=1362665692]
 mesh = SubResource("SphereMesh_ey0t1")
-
-[node name="Phone" parent="." unique_id=1513207577 instance=ExtResource("12_q4whi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45381, 3.10299, -1.05887)
-continuous_cd = true
-
-[node name="Phone2" parent="." unique_id=2126733346 instance=ExtResource("12_q4whi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.52059, 3.10301, -1.059)
-continuous_cd = true
-
-[node name="Phone3_TwoHanded" parent="." unique_id=743587954 instance=ExtResource("12_q4whi")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.62059, 3.10301, -1.059)
-continuous_cd = true
-script = ExtResource("16_gs8rj")
-
-[node name="Phone_Obj" parent="Phone3_TwoHanded" index="1"]
-surface_material_override/0 = SubResource("ORMMaterial3D_i4wdq")
-
-[node name="AnimationPlayer" parent="Phone3_TwoHanded" index="2"]
-autoplay = &"Default"
-
-[editable path="Phone3_TwoHanded"]

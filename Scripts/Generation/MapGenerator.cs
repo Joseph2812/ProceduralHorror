@@ -144,7 +144,7 @@ public partial class MapGenerator : GridMap
             new
             (
                 new(OnConsoleCmd_Reload),
-                $"[color=#aaa]<seed?>[/color]. Reloads game with optional seed."
+                "[color=#aaa]<seed?>[/color]. Reloads game with an optional seed. By default it uses the current seed."
             )
         );
 

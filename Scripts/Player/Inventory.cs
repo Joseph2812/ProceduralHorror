@@ -88,6 +88,8 @@ public partial class Inventory : Node3D
     private static readonly StringName s_hotkeyAlt1Name = "hotkey_alt_1", s_hotkeyAlt2Name = "hotkey_alt_2", s_hotkeyAlt3Name = "hotkey_alt_3", s_hotkeyAlt4Name = "hotkey_alt_4";
 
     private static readonly Vector2I s_gridSize = new(6, 4);
+    private static readonly Vector3 s_gridOneUp = Vector3.Up * GridSpace;
+    private static readonly Vector3 s_gridOneRight = Vector3.Right * GridSpace;
 
     /// <summary>
     /// Applied to the grid MeshInstance to centre it on the screen.
@@ -169,6 +171,15 @@ public partial class Inventory : Node3D
         AddChild(_selectorMeshInst);
 
         CreateGrid();
+        Console.Inst.AddCommand
+        (
+            "add-item",
+            new
+            (
+                OnCommand_AddItem,
+                "[color=#aaa]<itemName>, <amount?>[/color]. Add an item to your inventory. By default it adds one."
+            )
+        );
 
         _armsManager.ItemArmChanged += OnArmsManager_EquippedStateChanged;
     }
@@ -236,8 +247,16 @@ public partial class Inventory : Node3D
         (Vector2I, float, HashSet<Vector2I>)? gridPos_rotZ_occupiedPosS = FindValidPositioning(item.ClearancePositions);
         if (!gridPos_rotZ_occupiedPosS.HasValue) { return false; }
 
-        (Vector2I gridPos, float rotZ, HashSet<Vector2I> occupiedPosS) = gridPos_rotZ_occupiedPosS.Value;
+        item.GetParent()?.RemoveChild(item);
+        _armsManager.AddChild(item);
+        item.Visible = false;
+        item.Freeze = true;
 
+        item.AddCollisionExceptionWith(Player.Inst); // Temporarily prevents being pushed when adding items using the add-item command
+        item.CallDeferred(PhysicsBody3D.MethodName.RemoveCollisionExceptionWith, Player.Inst);
+        item.CollisionShape.SetDeferred(CollisionShape3D.PropertyName.Disabled, true);
+
+        (Vector2I gridPos, float rotZ, HashSet<Vector2I> occupiedPosS) = gridPos_rotZ_occupiedPosS.Value;
         GridData data = new
         (
             item,
@@ -249,10 +268,6 @@ public partial class Inventory : Node3D
         _itemToGridData.Add(item, data);
 
         data.SetGridPosition(gridPos);
-
-        item.GetParent()?.RemoveChild(item);
-        _armsManager.AddChild(item);
-
         RegisterGridDataSpace(data, occupiedPosS);
 
         return true;
@@ -343,11 +358,7 @@ public partial class Inventory : Node3D
     private ArrayMesh CreateSelectorMesh(Vector2I[] clearancePosS)
     {
         SurfaceTool st = new();
-
         st.Begin(Mesh.PrimitiveType.Triangles);
-
-        Vector3 spaceUp = Vector3.Up * GridSpace;
-        Vector3 spaceRight = Vector3.Right * GridSpace;
 
         foreach (Vector2I pos in clearancePosS)
         {
@@ -358,8 +369,8 @@ public partial class Inventory : Node3D
                 0f
             );
 
-            Vector3 topLeftPos = bottomLeftPos + spaceUp;
-            Vector3 bottomRightPos = bottomLeftPos + spaceRight;
+            Vector3 topLeftPos = bottomLeftPos + s_gridOneUp;
+            Vector3 bottomRightPos = bottomLeftPos + s_gridOneRight;
 
             // Bottom-Left Triangle //
             st.AddVertex(bottomLeftPos);
@@ -367,7 +378,7 @@ public partial class Inventory : Node3D
             st.AddVertex(bottomRightPos);
 
             // Top-Right Triangle //
-            st.AddVertex(topLeftPos + spaceRight);
+            st.AddVertex(topLeftPos + s_gridOneRight);
             st.AddVertex(bottomRightPos);
             st.AddVertex(topLeftPos);
         }
@@ -637,5 +648,44 @@ public partial class Inventory : Node3D
             default:
                 throw new ArgumentException("Invalid arm.");
         }
+    }
+
+    private void OnCommand_AddItem(string[] commandSplit)
+    {
+        // Check Arguments //
+        if (commandSplit.Length < 2)
+        {
+            Console.Inst.AppendLine($"An item name must be specified.");
+            return;
+        }
+
+        string itemName = commandSplit[1];
+        string itemPath = $"res://Scenes/Items/{itemName}.tscn";
+        if (!FileAccess.FileExists(itemPath))
+        {
+            Console.Inst.AppendLine($"No item exists with the name: \"{itemName}\".");
+            return;
+        }
+
+        if (!(commandSplit.Length > 2 && int.TryParse(commandSplit[2], out int amount))) { amount = 1; }
+        if (amount <= 0) { return; }
+
+        // Add Items //
+        PackedScene itemScene = ResourceLoader.Load<PackedScene>(itemPath);
+        int itemsAdded = 0;
+        for (int i = 0; i < amount; i++)
+        {
+            Item item = itemScene.Instantiate<Item>();
+            if (!TryAddItem(item))
+            {
+                item.QueueFree();
+                break;
+            }
+            itemsAdded++;
+        }
+
+        if      (itemsAdded == 0) { Console.Inst.AppendLine($"No viable space was found for the \"{itemName}\"."); }
+        else if (itemsAdded == 1) { Console.Inst.AppendLine($"Successfully added \"{itemName}\" to your inventory!"); }
+        else                      { Console.Inst.AppendLine($"Successfully added {itemsAdded} \"{itemName}\"s to your inventory!"); }
     }
 }
