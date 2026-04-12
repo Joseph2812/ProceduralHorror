@@ -126,7 +126,7 @@ public partial class MapGenerator : GridMap
 
         // Initialise //
         MeshLibrary = _itemManager.MeshLibrary;
-        _interiorNodeParent = new Node3D { Name = InteriorObjectParentName };
+        _interiorNodeParent = new Node3D { Name = InteriorNodeParentName };
         AddChild(_interiorNodeParent);
 
         Console.Inst.AddCommand
@@ -270,7 +270,7 @@ public partial class MapGenerator : GridMap
 
             Clear();
             _interiorNodeParent.QueueFree();
-            _interiorNodeParent = new Node3D { Name = InteriorObjectParentName };
+            _interiorNodeParent = new Node3D { Name = InteriorNodeParentName };
             AddChild(_interiorNodeParent);
 
             return false;

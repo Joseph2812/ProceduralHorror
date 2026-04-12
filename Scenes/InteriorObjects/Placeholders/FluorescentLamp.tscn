@@ -24,14 +24,14 @@ ao_texture = ExtResource("3_vfr1g")
 heightmap_scale = 2.406
 heightmap_texture = ExtResource("5_8amae")
 
-[node name="FluorescentLamp" type="Node3D"]
+[node name="FluorescentLamp" type="Node3D" unique_id=1509861848]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(-2.66639e-09, 0, -0.061, 0, 0.061, 0, 0.061, 0, -2.66639e-09, 0.5, 0.9, 0.5)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=19136871]
+transform = Transform3D(-2.66639e-09, 0, -0.061, 0, 0.061, 0, 0.061, 0, -2.66639e-09, 2.5, 0.9, 0.5)
 mesh = ExtResource("1_k7htq")
 surface_material_override/0 = SubResource("StandardMaterial3D_kaqdw")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="MeshInstance3D"]
+[node name="OmniLight3D" type="OmniLight3D" parent="MeshInstance3D" unique_id=1856076205]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.502, 0)
 light_energy = 0.75
 light_size = 1.0

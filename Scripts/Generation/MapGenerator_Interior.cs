@@ -8,8 +8,8 @@ namespace Scripts.Generation;
 
 public partial class MapGenerator : GridMap
 {
-    private const string InteriorObjectParentName = "InteriorNodes";
-    private const int PlaceAttemptsMultiplier = 3;
+    private const string InteriorNodeParentName = "InteriorNodes";
+    private const int PlaceAttemptsMultiplier = 100;
 
     private Dictionary<Vector3I, bool> _emptyPosS; // (Position, IsSemiEmpty=true | IsFullyEmpty=false)
     private List<(Vector3I, int, int)> _potentialPos_floorIdx_heightLvl_S;
@@ -239,18 +239,19 @@ public partial class MapGenerator : GridMap
         (int, int, int) minProx_oppositeProx_minIdx = (cellProximities[0], cellProximities[GetOppositeIndex(0)], 0);
         for (int i = 1; i < cellProximities.Length; i++)
         {
-            int prox = cellProximities[i];
             int oppositeI = GetOppositeIndex(i);
+            int prox = cellProximities[i];
+            int proxOpposite = cellProximities[oppositeI];
 
             if
             (
                 prox < minProx_oppositeProx_minIdx.Item1 ||
-                (                                                                                              // Prioritise when proximity is equal:
-                    prox == minProx_oppositeProx_minIdx.Item1 && i <= 3 &&                                     // Orthogonal direction
-                    cellProximities[oppositeI] > 0 && _emptyPosS.ContainsKey(floorPos + All3x3Dirs[oppositeI]) // Against wall with opening
+                (                                                                                // Prioritise when proximity is equal:
+                    prox == minProx_oppositeProx_minIdx.Item1 && i <= 3 &&                       // Orthogonal direction
+                    proxOpposite > 0 && _emptyPosS.ContainsKey(floorPos + All3x3Dirs[oppositeI]) // Against wall with opening
                 )
             )
-            { minProx_oppositeProx_minIdx = (prox, cellProximities[oppositeI], i); }
+            { minProx_oppositeProx_minIdx = (prox, proxOpposite, i); }
         }
 
         (int minProx, int oppositeProx, int minIdx) = minProx_oppositeProx_minIdx;
@@ -286,7 +287,8 @@ public partial class MapGenerator : GridMap
             case All3x3Dir.Back:
                 return Mathf.Pi;
 
-            default: return 0f;
+            default:
+                return 0f;
         }
     }
 
@@ -343,7 +345,7 @@ public partial class MapGenerator : GridMap
     /// <returns>Probability represented as a float between 0 and 1 (inclusive).</returns>
     private float GetProximityProbability(float weight, float normalisedProx)
     {
-        float normalisedProxPow2 = normalisedProx * normalisedProx;
-        return (weight * normalisedProxPow2) + ( (1f - weight) * (1f - normalisedProxPow2) );
+        const float Tightness = 16f;
+        return -Tightness * Mathf.Pow(normalisedProx - weight, 2f) + 1f;
     }
 }
