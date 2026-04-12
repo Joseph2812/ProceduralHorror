@@ -66,8 +66,8 @@ public partial class FreeCameraController : Camera3D
     private void OnConsoleCmd_FreeCamera(string[] _)
     {
         Current = true;
-        GlobalPosition = Player.CameraController.Inst.GlobalPosition;
-        GlobalRotation = Player.CameraController.Inst.GlobalRotation;
+        Position = Player.CameraController.Inst.GlobalPosition;
+        Rotation = Player.CameraController.Inst.GlobalRotation;
 
         Console.Inst.AppendLine("Switched to free camera.");
     }

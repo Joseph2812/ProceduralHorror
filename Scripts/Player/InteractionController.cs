@@ -93,20 +93,20 @@ public partial class InteractionController : Node
         {
             Vector3 camPos = CameraController.Inst.GlobalPosition;
             Vector3 rbPos = _activeRigidbody.GlobalPosition;
-            Vector3 targetPos = camPos - (CameraController.Inst.GlobalTransform.Basis.Z * _targetReach);
-            Vector3 camToRb = rbPos - camPos;
+            Vector3 targetPos = camPos + (-CameraController.Inst.GlobalBasis.Z * _targetReach);
 
-            // Rotate to act on local axis. Produces smoother movement (especially when changing _targetReach)
-            Basis camToRbBasis = Basis.LookingAt(camToRb, Vector3.Up);
-            Vector3 rotatedRbToTarget = (targetPos - rbPos) * camToRbBasis;
+            Vector3 rbToTarget = targetPos - rbPos;
             _activeRigidbody.ApplyCentralForce
             (
-                 _pidX.GetNextValue((float)delta, rotatedRbToTarget.X) * camToRbBasis.X +
-                 _pidY.GetNextValue((float)delta, rotatedRbToTarget.Y) * camToRbBasis.Y +
-                 _pidZ.GetNextValue((float)delta, rotatedRbToTarget.Z) * camToRbBasis.Z
+                new
+                (
+                    _pidX.GetNextValue((float)delta, rbToTarget.X),
+                    _pidY.GetNextValue((float)delta, rbToTarget.Y),
+                    _pidZ.GetNextValue((float)delta, rbToTarget.Z)
+                )
             );
 
-            if (camToRb.LengthSquared() >= GrabDropSqrThresholdZ) { ReleaseGrab(); }
+            if ((rbPos - camPos).LengthSquared() >= GrabDropSqrThresholdZ) { ReleaseGrab(); }
         }
         else if (_interactQueued && !(TryInteract(colliderObj) || TryPickupItem(colliderObj)) && _activeInteractable != null)
         {
@@ -157,6 +157,7 @@ public partial class InteractionController : Node
 
     private void ReleaseGrab()
     {
+        _activeRigidbody.RemoveCollisionExceptionWith(Player.Inst);
         _activeRigidbody.Sleeping = false;
         _activeRigidbody = null;
     }
@@ -192,11 +193,13 @@ public partial class InteractionController : Node
         if (colliderObj is RigidBody3D rb)
         {
             _activeRigidbody = rb;
+            _activeRigidbody.AddCollisionExceptionWith(Player.Inst);
+
             _pidX.Reset();
             _pidY.Reset();
             _pidZ.Reset();
 
-            _targetReach = CameraController.Inst.GlobalPosition.DistanceTo(rb.GlobalPosition);
+            _targetReach = Mathf.Clamp(CameraController.Inst.GlobalPosition.DistanceTo(rb.GlobalPosition), ReachMinimum, ReachMaximum);
 
             return true;
         }

@@ -87,10 +87,10 @@ public partial class MapGenerator : GridMap
                         forwardEmpty: cellProximities[(int)All3x3Dir.Forward] > 0,
                         rightEmpty  : cellProximities[(int)All3x3Dir.Right]   > 0,
                         backEmpty   : cellProximities[(int)All3x3Dir.Back]    > 0,
-                        nwEmpty     : cellProximities[(int)All3x3Dir.FL]      > 0,
-                        neEmpty     : cellProximities[(int)All3x3Dir.FR]      > 0,
-                        seEmpty     : cellProximities[(int)All3x3Dir.BR]      > 0,
-                        swEmpty     : cellProximities[(int)All3x3Dir.BL]      > 0
+                        flEmpty     : cellProximities[(int)All3x3Dir.FL]      > 0,
+                        frEmpty     : cellProximities[(int)All3x3Dir.FR]      > 0,
+                        brEmpty     : cellProximities[(int)All3x3Dir.BR]      > 0,
+                        blEmpty     : cellProximities[(int)All3x3Dir.BL]      > 0
                     )
                 )
                 { continue; }
@@ -217,7 +217,7 @@ public partial class MapGenerator : GridMap
         }
     }
 
-    private bool IsPlacementValidWithGridMap(bool leftEmpty, bool forwardEmpty, bool rightEmpty, bool backEmpty, bool nwEmpty, bool neEmpty, bool seEmpty, bool swEmpty)
+    private bool IsPlacementValidWithGridMap(bool leftEmpty, bool forwardEmpty, bool rightEmpty, bool backEmpty, bool flEmpty, bool frEmpty, bool brEmpty, bool blEmpty)
     {
         return
         !(
@@ -226,10 +226,10 @@ public partial class MapGenerator : GridMap
             ( (!forwardEmpty && !backEmpty)  && (leftEmpty    && rightEmpty) ) || // EnclosedZ & OpenX
 
             // Checks In Front For 2 Walls And Middle Gap, In Each Orientation //
-            (leftEmpty    && !swEmpty && !nwEmpty) || // CW Rotation 0
-            (forwardEmpty && !nwEmpty && !neEmpty) || // CW Rotation 90
-            (rightEmpty   && !neEmpty && !seEmpty) || // CW Rotation 180
-            (backEmpty    && !seEmpty && !swEmpty)    // CW Rotation 270
+            (leftEmpty    && !blEmpty && !flEmpty) || // CW Rotation 0
+            (forwardEmpty && !flEmpty && !frEmpty) || // CW Rotation 90
+            (rightEmpty   && !frEmpty && !brEmpty) || // CW Rotation 180
+            (backEmpty    && !brEmpty && !blEmpty)    // CW Rotation 270
         );
     }
 

@@ -32,6 +32,7 @@ public partial class MovementController : Node
     private static readonly StringName s_crouchName = "crouch";
     private static readonly NodePath s_positionXPath = "position:x", s_positionYPath = "position:y", s_rotationZPath = "rotation:z";
 
+    private Vector3 _moveInput;
     private float _staminaTimeLeft = StaminaMaxTime;
     private bool _sprintHeld;
 
@@ -81,6 +82,11 @@ public partial class MovementController : Node
     {
         base._Process(delta);
 
+        _moveInput = (
+            (Input.GetAxis(s_moveLeftName, s_moveRightName) * Player.Inst.Transform.Basis.X) +
+            (Input.GetAxis(s_moveForwardName, s_moveBackName) * Player.Inst.Transform.Basis.Z)
+        ).LimitLength();
+        
         Player.Inst.RotateY(Input.GetAxis(s_lookRightName, s_lookLeftName) * CameraController.JoystickSensitivity * (float)delta);
 
         _distanceTravelled += Player.Inst.Velocity.Length() * (float)delta;
@@ -92,9 +98,7 @@ public partial class MovementController : Node
     {
         base._PhysicsProcess(delta);
 
-        Vector3 input = GetGlobalMoveInput();
-        bool sprinting = _sprintHeld && Player.Inst.GlobalTransform.Basis.Z.Dot(-input) >= (1f / Mathf.Sqrt2) - Mathf.Epsilon;
-
+        bool sprinting = _sprintHeld && Player.Inst.GlobalTransform.Basis.Z.Dot(-_moveInput) >= (1f / Mathf.Sqrt2) - Mathf.Epsilon;
         Player.Inst.Velocity = Vector3.Down * DownwardSpeed;
         if (sprinting)
         {
@@ -108,7 +112,7 @@ public partial class MovementController : Node
             if (CanMove())
             {
                 float sprintSpeed = GetSprintSpeed();
-                Player.Inst.Velocity += input * (_crouching ? sprintSpeed * CrouchSpeedMultiplier : sprintSpeed);
+                Player.Inst.Velocity += _moveInput * (_crouching ? sprintSpeed * CrouchSpeedMultiplier : sprintSpeed);
             }
         }
         else
@@ -118,13 +122,13 @@ public partial class MovementController : Node
 
             if (CanMove())
             {
-                Player.Inst.Velocity += input * (_crouching ? WalkSpeed * CrouchSpeedMultiplier : WalkSpeed);
+                Player.Inst.Velocity += _moveInput * (_crouching ? WalkSpeed * CrouchSpeedMultiplier : WalkSpeed);
             }
         }
         Player.Inst.MoveAndSlide();
 
         // FOR DEBUGGING
-        GetNode<Label>("/root/Main/UI/DebugLabel").Text = $"Input: {input}, Velocity: {Player.Inst.Velocity}, Sprinting: {sprinting}, Stamina: {_staminaTimeLeft}";        
+        GetNode<Label>("/root/Main/UI/DebugLabel").Text = $"MoveInput: {_moveInput}, Velocity: {Player.Inst.Velocity}, Sprinting: {sprinting}, Stamina: {_staminaTimeLeft}";        
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -138,15 +142,6 @@ public partial class MovementController : Node
         else if (@event.IsActionPressed(s_sprintName))  { _sprintHeld = true; }
         else if (@event.IsActionReleased(s_sprintName)) { _sprintHeld = false; }
         else if (@event.IsActionPressed(s_crouchName))  { ToggleCrouch(); }
-    }
-
-    private Vector3 GetGlobalMoveInput()
-    {
-        return
-        (
-            (Input.GetAxis(s_moveLeftName, s_moveRightName) * Player.Inst.Transform.Basis.X) +
-            (Input.GetAxis(s_moveForwardName, s_moveBackName) * Player.Inst.Transform.Basis.Z)
-        ).LimitLength();
     }
 
     private bool CanMove() => CameraController.Inst.Current && !Console.Inst.IsOpen && !_interacting && !_inventory.Visible;

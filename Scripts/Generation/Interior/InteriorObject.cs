@@ -225,7 +225,7 @@ public partial class InteriorObject : Resource
             IsClearanceFullyContainedInEmptyPosS(emptyPosS, clearancePosS)                                                         &&
             (semiClearancePosS.Count == 0 || semiClearancePosS.IsSubsetOf(emptyPosS.Keys))                                         &&
             _neighbourConditions.IsSatisfied(MapGenerator.Inst.GetNeighbours(position, MapGenerator.Inst.All3x3x3Dirs), rotationY) &&
-            IsNotMaxCountAndIncrement(),
+            IsNotMaxCountThenIncrement(),
 
             clearancePosS,
             semiClearancePosS
@@ -280,7 +280,7 @@ public partial class InteriorObject : Resource
     /// <summary>
     /// Check whether the max count of this instance has been reached, if not increment by 1.
     /// </summary>
-    private bool IsNotMaxCountAndIncrement()
+    private bool IsNotMaxCountThenIncrement()
     {
         if (MaximumCountBtwRooms == 0) { return true; }
 
