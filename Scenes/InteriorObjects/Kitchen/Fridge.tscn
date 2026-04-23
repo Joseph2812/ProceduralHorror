@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bbq878q6xc8ik"]
+
+[ext_resource type="PackedScene" uid="uid://cvaf3rph7f8xd" path="res://Models/InteriorObjects/Kitchen/Fridge.glb" id="1_f6j1a"]
+[ext_resource type="Texture2D" uid="uid://dnev5xe2c18t1" path="res://Textures/InteriorObjects/Kitchen/Fridge/Albedo.png" id="2_g5ec7"]
+[ext_resource type="Texture2D" uid="uid://bhwfoaawp5340" path="res://Textures/InteriorObjects/Kitchen/Fridge/ORM.png" id="3_kxkda"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_28two"]
+albedo_texture = ExtResource("2_g5ec7")
+orm_texture = ExtResource("3_kxkda")
+
+[node name="Fridge" unique_id=147444152 instance=ExtResource("1_f6j1a")]
+
+[node name="Cube" parent="." index="0" unique_id=1211116909]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, 0.5)
+surface_material_override/0 = SubResource("ORMMaterial3D_28two")

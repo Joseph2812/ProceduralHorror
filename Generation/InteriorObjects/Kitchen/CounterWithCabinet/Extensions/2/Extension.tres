@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="InteriorObjectExtension" format=3 uid="uid://dw3t7of7nihft"]
+
+[ext_resource type="Script" uid="uid://c6o8gq3h2vt2v" path="res://Scripts/Generation/Interior/Extension/PlacementData.cs" id="1_71bfp"]
+[ext_resource type="Script" uid="uid://wm27dlwmqxby" path="res://Scripts/Generation/Interior/Extension/InteriorObjectExtension.cs" id="2_udokg"]
+
+[sub_resource type="Resource" id="Resource_71bfp"]
+script = ExtResource("1_71bfp")
+Position = Vector3i(0, 1, 0)
+
+[resource]
+script = ExtResource("2_udokg")
+PlacementData = [SubResource("Resource_71bfp")]

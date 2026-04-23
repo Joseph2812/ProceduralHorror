@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="InteriorObjectWithWeight" load_steps=2 format=3 uid="uid://b2fppyy02tcvb"]
+[gd_resource type="Resource" script_class="InteriorObjectWithWeight" format=3 uid="uid://dgd785crvida1"]
 
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_g6nqs"]
+[ext_resource type="Script" uid="uid://cuvgghw1jqrhf" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_g6nqs"]
 
 [resource]
 script = ExtResource("1_g6nqs")
-InteriorObjectPath = "res://Generation/InteriorObjects/Kitchen/FluorescentLamp/InteriorObject.tres"
-WeightOfPlacement = 1
+InteriorObjectPath = "uid://bfv8rhq7ahbt5"
+metadata/_custom_type_script = "uid://cuvgghw1jqrhf"

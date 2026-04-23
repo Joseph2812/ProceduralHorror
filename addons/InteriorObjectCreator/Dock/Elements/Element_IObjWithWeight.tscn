@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b44uba3yukl4v"]
 
-[node name="Element_IObjWithWeight" type="VBoxContainer"]
+[node name="Element_IObjWithWeight" type="VBoxContainer" unique_id=948042933]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -8,33 +8,33 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 
-[node name="Name" type="HBoxContainer" parent="."]
+[node name="Name" type="HBoxContainer" parent="." unique_id=1513810697]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Name"]
+[node name="Label" type="Label" parent="Name" unique_id=918457527]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Name"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="Name"]
+[node name="LineEdit" type="LineEdit" parent="Name" unique_id=1014837409]
 layout_mode = 2
 size_flags_horizontal = 3
-placeholder_text = "Containing folder"
+placeholder_text = "Path \"Folders/.../Name\""
 
-[node name="WeightOfPlacement" type="HBoxContainer" parent="."]
+[node name="WeightOfPlacement" type="HBoxContainer" parent="." unique_id=205723163]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="WeightOfPlacement"]
+[node name="Label" type="Label" parent="WeightOfPlacement" unique_id=1029807956]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Weight Of Placement"
 clip_text = true
 
-[node name="LineEdit" type="LineEdit" parent="WeightOfPlacement"]
+[node name="LineEdit" type="LineEdit" parent="WeightOfPlacement" unique_id=1960365508]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "[0, IntMax], Default = 1"
 
-[node name="HSeparator" type="HSeparator" parent="."]
+[node name="HSeparator" type="HSeparator" parent="." unique_id=1848863917]
 layout_mode = 2

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://balfl6dkep7vp"]
+
+[ext_resource type="PackedScene" uid="uid://tykhmp7ua2jp" path="res://Models/InteriorObjects/Kitchen/CanOpener.glb" id="1_4lrim"]
+[ext_resource type="Texture2D" uid="uid://c5t840ggkd3kl" path="res://Textures/InteriorObjects/Kitchen/CanOpener/Albedo.png" id="2_fr1xr"]
+[ext_resource type="Texture2D" uid="uid://d0nm8ytx8lbwd" path="res://Textures/InteriorObjects/Kitchen/CanOpener/ORM.png" id="3_3tenp"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_t4hl6"]
+albedo_texture = ExtResource("2_fr1xr")
+orm_texture = ExtResource("3_3tenp")
+
+[node name="CanOpener" unique_id=1186204539 instance=ExtResource("1_4lrim")]
+
+[node name="Cylinder" parent="." index="0" unique_id=158297303]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.018326662, 0.54484725)
+surface_material_override/0 = SubResource("ORMMaterial3D_t4hl6")

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dohucn8mgyrnb"]
+
+[ext_resource type="PackedScene" uid="uid://b031rft0adjej" path="res://Models/InteriorObjects/Kitchen/Sink.glb" id="1_1v8k2"]
+[ext_resource type="Texture2D" uid="uid://4utxckc7m6jo" path="res://Textures/InteriorObjects/Kitchen/Sink/Albedo.png" id="2_w2ho8"]
+[ext_resource type="Texture2D" uid="uid://dqb6ru1nrxiyt" path="res://Textures/InteriorObjects/Kitchen/Sink/ORM.png" id="3_og7mf"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_n8htc"]
+albedo_texture = ExtResource("2_w2ho8")
+orm_texture = ExtResource("3_og7mf")
+
+[node name="Sink" unique_id=244756548 instance=ExtResource("1_1v8k2")]
+
+[node name="Cube" parent="." index="0" unique_id=1171592875]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+surface_material_override/0 = SubResource("ORMMaterial3D_n8htc")

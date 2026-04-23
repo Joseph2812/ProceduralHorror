@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://b87d4tm6h8udr"]
+
+[ext_resource type="PackedScene" uid="uid://bbof4kg1be11d" path="res://Models/InteriorObjects/Kitchen/Microwave.glb" id="1_187mv"]
+[ext_resource type="Texture2D" uid="uid://cqtu3y3d4nctn" path="res://Textures/InteriorObjects/Kitchen/Microwave/Albedo.png" id="2_1li1o"]
+[ext_resource type="Texture2D" uid="uid://cjis1t3k1582d" path="res://Textures/InteriorObjects/Kitchen/Microwave/ORM.png" id="3_yxfe2"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_vc6a3"]
+albedo_texture = ExtResource("2_1li1o")
+orm_texture = ExtResource("3_yxfe2")
+
+[node name="Microwave" unique_id=1515569240 instance=ExtResource("1_187mv")]
+
+[node name="Cube" parent="." index="0" unique_id=1683475190]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.18660381, 0.5)
+surface_material_override/0 = SubResource("ORMMaterial3D_vc6a3")

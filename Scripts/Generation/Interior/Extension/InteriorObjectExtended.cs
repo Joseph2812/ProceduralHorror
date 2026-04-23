@@ -5,8 +5,7 @@ using System.Text;
 
 namespace Scripts.Generation.Interior.Extension;
 
-[GlobalClass]
-[Tool]
+[GlobalClass, Tool]
 public partial class InteriorObjectExtended : InteriorObject
 {
     private InteriorObjectExtension[] _extensions;
@@ -48,7 +47,7 @@ public partial class InteriorObjectExtended : InteriorObject
                 float nextRotationY = rotationY + data.RotationY;
 
                 // Select Random InteriorObject For Placement //
-                InteriorObject randomObj = extension.InteriorObjectWithWeight_S.GetRandomElementByWeight(x => x.WeightOfPlacement).InteriorObject;
+                InteriorObject randomObj = extension.InteriorObjectWithWeightS.GetRandomElementByWeight(x => x.WeightOfPlacement).InteriorObject;
 
                 if (!MapGenerator.Inst.TryCreateInteriorNode(randomObj, nextPos, nextRotationY)) { continue; }
                 if (randomObj is InteriorObjectExtended extendedObj) { extendedObj.CreateExtensionsRecursively(nextPos, nextRotationY); }

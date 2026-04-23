@@ -114,8 +114,8 @@ public partial class MapGenerator : GridMap
             (Vector3I potentialPos, int floorIdx, int heightLvl) = _potentialPos_floorIdx_heightLvl_S[randomIdx];
 
             // Place Random Node Based On Minimum Normalised Proximity //
-            (float minNormalisedProx, int minIdx, int totalDist) = GetMinimumNormalisedProximityWithIndex(potentialPos, allCellProximities[floorIdx]);
-            PlaceRandomInteriorNode(potentialPos, heightLvl, maxHeightLvl, minNormalisedProx, GetRotationYFromIndex(minIdx), totalDist);
+            (float minNormalisedProx, int idx, int totalDist) = GetMinimumNormalisedProximityWithIndex(potentialPos, allCellProximities[floorIdx]);
+            PlaceRandomInteriorNode(potentialPos, heightLvl, maxHeightLvl, minNormalisedProx, GetRotationYFromIndex(idx), totalDist);
         }
     }
 
@@ -233,33 +233,32 @@ public partial class MapGenerator : GridMap
         );
     }
 
-    /// <returns>(NormalisedProximity, MinIndex, TotalDistance). TotalDistance = Shortest distance along a direction, excluding the placement cell itself (e.g. LeftProx + RightProx).</returns>
+    /// <returns>(NormalisedProximity, Index, TotalDistance). TotalDistance = Shortest distance along a direction, excluding the placement cell itself (e.g. LeftProx + RightProx).</returns>
     private (float, int, int) GetMinimumNormalisedProximityWithIndex(Vector3I floorPos, int[] cellProximities)
     {
-        (int, int, int) minProx_oppositeProx_minIdx = (cellProximities[0], cellProximities[GetOppositeIndex(0)], 0);
+        (int, int, int) minProx_oppositeProx_idx = (cellProximities[0], cellProximities[GetOppositeIndex(0)], 0);
         for (int i = 1; i < cellProximities.Length; i++)
         {
             int oppositeI = GetOppositeIndex(i);
             int prox = cellProximities[i];
             int proxOpposite = cellProximities[oppositeI];
-
             if
             (
-                prox < minProx_oppositeProx_minIdx.Item1 ||
+                prox < minProx_oppositeProx_idx.Item1 ||
                 (                                                                                // Prioritise when proximity is equal:
-                    prox == minProx_oppositeProx_minIdx.Item1 && i <= 3 &&                       // Orthogonal direction
+                    prox == minProx_oppositeProx_idx.Item1 && i <= 3 &&                          // Orthogonal direction
                     proxOpposite > 0 && _emptyPosS.ContainsKey(floorPos + All3x3Dirs[oppositeI]) // Against wall with opening
                 )
             )
-            { minProx_oppositeProx_minIdx = (prox, proxOpposite, i); }
+            { minProx_oppositeProx_idx = (prox, proxOpposite, i); }
         }
 
-        (int minProx, int oppositeProx, int minIdx) = minProx_oppositeProx_minIdx;
+        (int minProx, int oppositeProx, int idx) = minProx_oppositeProx_idx;
         int totalDist = minProx + oppositeProx;
         return
         (
             (totalDist == 0) ? 0 : minProx / (totalDist * 0.5f),
-            minIdx,
+            idx,
             totalDist
         );
     }

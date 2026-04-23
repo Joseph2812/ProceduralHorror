@@ -1,19 +1,12 @@
-[gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://ds422q07jhkfg"]
+[gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://cu8ggewee1581"]
 
-[ext_resource type="PackedScene" uid="uid://bvrk5v7ug6hf1" path="res://Scenes/InteriorObjects/Placeholders/Oven.tscn" id="1_lf0dr"]
-[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_r0rhn"]
+[ext_resource type="PackedScene" uid="uid://jkicofqtrctx" path="res://Scenes/InteriorObjects/Kitchen/Oven.tscn" id="1_hs0nm"]
+[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_hjybp"]
 
 [resource]
-script = ExtResource("2_r0rhn")
-Scene = ExtResource("1_lf0dr")
-WeightToCentre = 0.0
+script = ExtResource("2_hjybp")
+Scene = ExtResource("1_hs0nm")
 Exact = true
-OnlyCeiling = false
-MinimumHeight = 1
 MaximumHeight = 1
-_maximumCountBtwRooms = 0
-_neighbourConditionsText = "forward1"
-_clearancePositions = PackedVector3Array(0, 1, 0)
-_semiClearancePositions = PackedVector3Array(0, 0, 1, 0, 1, 1)
-_minimumRotationalYOffset = 0.0
-_maximumRotationalYOffset = 0.0
+NeighbourConditionsText = "forward1"
+SemiClearancePositions = Array[Vector3i]([Vector3i(0, 0, 1)])

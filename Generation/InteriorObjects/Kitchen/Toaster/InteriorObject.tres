@@ -1,19 +1,10 @@
-[gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://dm3fg6and1yuc"]
+[gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://cqqnxerqdp15l"]
 
-[ext_resource type="PackedScene" uid="uid://c0rohvrg3f3sq" path="res://Scenes/InteriorObjects/Placeholders/Toaster.tscn" id="1_m54t8"]
-[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_rmt07"]
+[ext_resource type="PackedScene" uid="uid://dhyfm76i8hcbf" path="res://Scenes/InteriorObjects/Kitchen/Toaster.tscn" id="1_n64gi"]
+[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_gelin"]
 
 [resource]
-script = ExtResource("2_rmt07")
-Scene = ExtResource("1_m54t8")
-WeightToCentre = 0.0
-Exact = false
-OnlyCeiling = false
-MinimumHeight = 1
-MaximumHeight = 2147483646
-_maximumCountBtwRooms = 0
-_neighbourConditionsText = ""
-_clearancePositions = PackedVector3Array()
-_semiClearancePositions = PackedVector3Array()
-_minimumRotationalYOffset = 0.0
-_maximumRotationalYOffset = 0.0
+script = ExtResource("2_gelin")
+Scene = ExtResource("1_n64gi")
+MinimumRotationalYOffset = -0.17453292
+MaximumRotationalYOffset = 0.17453292

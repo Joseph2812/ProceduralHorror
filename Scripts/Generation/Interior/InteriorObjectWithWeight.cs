@@ -3,12 +3,11 @@ using System;
 
 namespace Scripts.Generation.Interior;
 
-[GlobalClass]
-[Tool]
+[GlobalClass, Tool]
 public partial class InteriorObjectWithWeight : Resource
 {
     /// <summary>
-    /// Use <see cref="InteriorObject"/> when this object is loaded.
+    /// Stores path as a UID. Use <see cref="InteriorObject"/> when this object is loaded.
     /// </summary>
     [Export(PropertyHint.File, "*.tres")]
     public string InteriorObjectPath { get; set; }

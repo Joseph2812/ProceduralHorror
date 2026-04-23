@@ -70,13 +70,16 @@ public class Extension
             success &= parsed;
 
             // Set Properties //
-            Scripts.Generation.Interior.InteriorObjectWithWeight iObjWithWeight = new();
-
-            iObjWithWeight.InteriorObjectPath = $"{Creator.InteriorObjectDirectory}{iObjWithWeightRef.Name.Text}/{Creator.InteriorObjectFileName}";
-            if (!FileAccess.FileExists(iObjWithWeight.InteriorObjectPath))
+            string path = $"{Creator.InteriorObjectDirectory}{iObjWithWeightRef.Name.Text}/{Creator.InteriorObjectFileName}";
+            if (!FileAccess.FileExists(path))
             {
-                throw new Exception($"\"{iObjWithWeight.InteriorObjectPath}\" of {nameof(iObjWithWeight.InteriorObjectPath)} is not a valid path.");
+                throw new Exception($"\"{path}\" of {nameof(path)} is not a valid path.");
             }
+
+            Scripts.Generation.Interior.InteriorObjectWithWeight iObjWithWeight = new()
+            {
+                InteriorObjectPath = ResourceUid.IdToText(ResourceLoader.GetResourceUid(path))
+            };
             if (parsed) { iObjWithWeight.WeightOfPlacement = weightOfPlacement; }
             //
 

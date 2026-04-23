@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Room" format=3 uid="uid://cog8r41rnwpvd"]
+[gd_resource type="Resource" script_class="Room" format=3 uid="uid://yj5wnululjej"]
 
 [ext_resource type="Script" uid="uid://bhm15lhjl6wx4" path="res://Scripts/Generation/Room.cs" id="1_q8nsi"]
 
@@ -8,10 +8,12 @@ FloorId = 5
 WallId = 6
 CeilingId = 7
 ChanceOfEmptyCell = 0.0
-MinimumOuterWidth = 2
-MaximumOuterWidth = 4
-MaximumLength = 9
-MaximumExtrusionIterations = 2
+MaximumOuterWidth = 3
+MinimumLength = 5
+MaximumLength = 10
+MinimumExtrusionIterations = 2
+MaximumExtrusionIterations = 3
 MinimumHeight = 4
 MaximumHeight = 5
-MaximumDoorways = 4
+MaximumDoorways = 3
+metadata/_custom_type_script = "uid://bhm15lhjl6wx4"

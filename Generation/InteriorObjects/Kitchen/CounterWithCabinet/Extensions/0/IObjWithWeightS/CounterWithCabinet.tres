@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="InteriorObjectWithWeight" load_steps=2 format=3 uid="uid://cun6q3meapf8p"]
+[gd_resource type="Resource" script_class="InteriorObjectWithWeight" format=3 uid="uid://dk14fb4suk5p4"]
 
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_hic5p"]
+[ext_resource type="Script" uid="uid://cuvgghw1jqrhf" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_hic5p"]
 
 [resource]
 script = ExtResource("1_hic5p")
-InteriorObjectPath = "res://Generation/InteriorObjects/Kitchen/CounterWithCabinet/InteriorObject.tres"
-WeightOfPlacement = 1
+InteriorObjectPath = "uid://bvvacui8m5qtd"
+WeightOfPlacement = 5

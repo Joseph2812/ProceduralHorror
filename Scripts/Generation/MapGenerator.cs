@@ -86,7 +86,8 @@ public partial class MapGenerator : GridMap
     private const int MaximumExtrusionRetries = 50;
 
     private const string ConsoleSeedArgs = "\"gen\"|\"enemy\"|\"item\"";
-    private static ulong Seed = 16005123932967406760; // Holds seed for reload
+    private static ulong Seed; // Holds seed for reload
+    private static bool SetSeed;
 
     public static MapGenerator Inst { get; private set; }
 
@@ -110,7 +111,7 @@ public partial class MapGenerator : GridMap
         new Vector3I(-1, 0, 1)   // Back Left
     };
     public Vector3I[] All3x3Dirs { get; private set; } // Orthogonal + Diagonal
-    public Vector3I[] All3x3x3Dirs { get; private set; } // _all3x3Dirs x3 along y
+    public Vector3I[] All3x3x3Dirs { get; private set; } // All3x3Dirs x3 along y
     //
 
     private ItemManager _itemManager = new();
@@ -144,7 +145,7 @@ public partial class MapGenerator : GridMap
             new
             (
                 new(OnConsoleCmd_Reload),
-                "[color=#aaa]<seed?>[/color]. Reloads game with an optional seed. By default it uses the current seed."
+                "[color=#aaa]<seed?>[/color]. Reloads game with an optional seed. By default it uses a random seed. Use \"~\" to reuse the current seed."
             )
         );
 
@@ -161,7 +162,11 @@ public partial class MapGenerator : GridMap
         for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i + (All3x3Dirs.Length * 2)] = All3x3Dirs[i] + Vector3I.Up; }
         //
 
-        Rng.Seed = Seed;
+        if (SetSeed)
+        {
+            Rng.Seed = Seed;
+            SetSeed = false;
+        }
 
         bool success = false;
         while (!success) { success = await StartGeneration(); }
@@ -181,6 +186,7 @@ public partial class MapGenerator : GridMap
 
         GC.Collect();
 
+        if (_cancelSrc.IsCancellationRequested) { return; }
         GenerationFinished?.Invoke();
     }
 
@@ -639,9 +645,15 @@ public partial class MapGenerator : GridMap
     {
         if (commandSplit.Length > 1)
         {
-            if (ulong.TryParse(commandSplit[1], System.Globalization.NumberStyles.Any, null, out ulong result))
+            if (commandSplit[1] == "~")
+            {
+                Seed = Rng.Seed;
+                SetSeed = true;
+            }
+            else if (ulong.TryParse(commandSplit[1], System.Globalization.NumberStyles.Any, null, out ulong result))
             {
                 Seed = result;
+                SetSeed = true;
             }
             else
             {

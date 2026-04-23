@@ -1,19 +1,11 @@
 [gd_resource type="Resource" script_class="InteriorObjectExtended" format=3 uid="uid://btv5ggxk8sqog"]
 
-[ext_resource type="PackedScene" uid="uid://csu0w7mfscrvq" path="res://Scenes/InteriorObjects/Desk.tscn" id="1_4cc0j"]
+[ext_resource type="PackedScene" uid="uid://csu0w7mfscrvq" path="res://Scenes/InteriorObjects/LivingRoom/Desk.tscn" id="1_4cc0j"]
 [ext_resource type="Script" uid="uid://cxn2yd7e8unyl" path="res://Scripts/Generation/Interior/Extension/InteriorObjectExtended.cs" id="1_s0b5b"]
 
 [resource]
 script = ExtResource("1_s0b5b")
 Scene = ExtResource("1_4cc0j")
-WeightToMiddle = 0.0
-Exact = false
-MinimumHeight = 1
+WeightToMiddle = 0.5
 MaximumHeight = 1
-RelativeTo = 0
-MaximumCountBtwRooms = 0
-NeighbourConditionsText = ""
-ClearancePositions = PackedVector3Array(1, 0, 0)
-SemiClearancePositions = PackedVector3Array()
-MinimumRotationalYOffset = 0.0
-MaximumRotationalYOffset = 0.0
+ClearancePositions = Array[Vector3i]([Vector3i(1, 0, 0)])

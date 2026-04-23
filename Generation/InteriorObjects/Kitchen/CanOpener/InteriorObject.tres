@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://dk8255l1vr5fs"]
+
+[ext_resource type="PackedScene" uid="uid://balfl6dkep7vp" path="res://Scenes/InteriorObjects/Kitchen/CanOpener.tscn" id="1_as6lf"]
+[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_3672a"]
+
+[resource]
+script = ExtResource("2_3672a")
+Scene = ExtResource("1_as6lf")
+MinimumRotationalYOffset = -3.1415927
+MaximumRotationalYOffset = 3.1415927

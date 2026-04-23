@@ -1,19 +1,12 @@
 [gd_resource type="Resource" script_class="InteriorObjectExtended" format=3 uid="uid://bvvacui8m5qtd"]
 
-[ext_resource type="PackedScene" uid="uid://g58b7v0a7dv0" path="res://Scenes/InteriorObjects/CounterWithCabinet.tscn" id="1_2thqq"]
+[ext_resource type="PackedScene" uid="uid://g58b7v0a7dv0" path="res://Scenes/InteriorObjects/Kitchen/CounterWithCabinet.tscn" id="1_2thqq"]
 [ext_resource type="Script" uid="uid://cxn2yd7e8unyl" path="res://Scripts/Generation/Interior/Extension/InteriorObjectExtended.cs" id="2_qut8u"]
 
 [resource]
 script = ExtResource("2_qut8u")
 Scene = ExtResource("1_2thqq")
-WeightToMiddle = 0.0
 Exact = true
-MinimumHeight = 1
 MaximumHeight = 1
-RelativeTo = 0
-MaximumCountBtwRooms = 0
-NeighbourConditionsText = "forward0"
-ClearancePositions = PackedVector3Array()
-SemiClearancePositions = PackedVector3Array()
-MinimumRotationalYOffset = 0.0
-MaximumRotationalYOffset = 0.0
+NeighbourConditionsText = "forward1"
+SemiClearancePositions = Array[Vector3i]([Vector3i(0, 0, 1)])

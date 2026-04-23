@@ -3,8 +3,7 @@ using System;
 
 namespace Scripts.Generation.Interior.Extension;
 
-[GlobalClass]
-[Tool]
+[GlobalClass, Tool]
 public partial class PlacementData : Resource
 {
     /// <summary>

@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="InteriorObjectWithWeight" format=3 uid="uid://t6y55i5686q"]
+[gd_resource type="Resource" script_class="InteriorObjectWithWeight" format=3 uid="uid://mc8afc5yn1ln"]
 
-[ext_resource type="Script" uid="uid://cuvgghw1jqrhf" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_i0cll"]
+[ext_resource type="Script" uid="uid://cuvgghw1jqrhf" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_hv05p"]
 
 [resource]
-script = ExtResource("1_i0cll")
-InteriorObjectPath = "uid://ds422q07jhkfg"
-WeightOfPlacement = 5
+script = ExtResource("1_hv05p")
+InteriorObjectPath = "uid://c85tg1g1qm6uj"
+metadata/_custom_type_script = "uid://cuvgghw1jqrhf"

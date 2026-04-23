@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="InteriorObjectWithWeight" load_steps=2 format=3 uid="uid://ce3n2o7snhdt4"]
+[gd_resource type="Resource" script_class="InteriorObjectWithWeight" format=3 uid="uid://3mpqwam7f4h"]
 
-[ext_resource type="Script" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_1vmga"]
+[ext_resource type="Script" uid="uid://cuvgghw1jqrhf" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_1vmga"]
 
 [resource]
 script = ExtResource("1_1vmga")
-InteriorObjectPath = "res://Generation/InteriorObjects/LivingRoom/Sofa/InteriorObject.tres"
-WeightOfPlacement = 1
+InteriorObjectPath = "uid://c44d7m8ku65a5"
+metadata/_custom_type_script = "uid://cuvgghw1jqrhf"

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://sswdthwbqitb"]
+
+[ext_resource type="PackedScene" uid="uid://dq3pnd0qx4awp" path="res://Scenes/InteriorObjects/Kitchen/Cupboard.tscn" id="1_3wefh"]
+[ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_1cq7g"]
+
+[resource]
+script = ExtResource("2_1cq7g")
+Scene = ExtResource("1_3wefh")
+MaximumHeight = 1
+NeighbourConditionsText = "forward1"
+SemiClearancePositions = Array[Vector3i]([Vector3i(0, 0, 1)])

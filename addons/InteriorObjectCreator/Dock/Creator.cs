@@ -18,8 +18,6 @@ public partial class Creator : VBoxContainer
     private const string ExtensionsDirName = "Extensions";
     private const string IObjWithWeightSDirName = "IObjWithWeightS";
 
-    public static bool HandlingResources { get; private set; }
-
     private PackedScene _vector3Element;
     private PackedScene _extensionElement;
     private PackedScene _placementDataElement;
@@ -46,10 +44,8 @@ public partial class Creator : VBoxContainer
     //
 
     private ExtensionReferences _extReferences;
-    private readonly Dictionary<Node, UiElements.Vector3> _nodeToClearancePositions = new();
-    private readonly Dictionary<Node, UiElements.Vector3> _nodeToSemiClearancePositions = new();
-
-    private StringName _dropType = "files_and_dirs";
+    private readonly Dictionary<Node, UiElements.Vector3> _nodeToClearancePositions = [];
+    private readonly Dictionary<Node, UiElements.Vector3> _nodeToSemiClearancePositions = [];
 
     public override void _Ready()
     {
@@ -62,14 +58,14 @@ public partial class Creator : VBoxContainer
 
         // UI Elements //
         Node iObjStart = GetNode<Node>("TabContainer/InteriorObject/VBoxContainer");
-        _name      = iObjStart.GetNode<LineEdit>("Name/LineEdit");
-        _scenePath = iObjStart.GetNode<LineEdit>("ScenePath/LineEdit");
+        _name          = iObjStart.GetNode<LineEdit>("Name/LineEdit");
+        _scenePath     = iObjStart.GetNode<LineEdit>("ScenePath/LineEdit");
 
         Node probability = iObjStart.GetNode<Node>("Probability/VBoxContainer");
-        _weightToMiddle = probability.GetNode<LineEdit>("WeightToMiddle/LineEdit");
-        _exact          = probability.GetNode<CheckBox>("Exact/CheckBox");
+        _weightToMiddle  = probability.GetNode<LineEdit>("WeightToMiddle/LineEdit");
+        _exact           = probability.GetNode<CheckBox>("Exact/CheckBox");
 
-        Node constraints = iObjStart.GetNode<Node>("Constraints/VBoxContainer");
+        Node constraints         = iObjStart.GetNode<Node>("Constraints/VBoxContainer");
         _minimumHeight           = constraints.GetNode<LineEdit>("MinimumHeight/LineEdit");
         _maximumHeight           = constraints.GetNode<LineEdit>("MaximumHeight/LineEdit");
         _relativeTo              = constraints.GetNode<OptionButton>("RelativeTo/OptionButton");
@@ -78,7 +74,7 @@ public partial class Creator : VBoxContainer
         _clearancePositions      = constraints.GetNode<UiList>("ClearancePositions/UiList");
         _semiClearancePositions  = constraints.GetNode<UiList>("SemiClearancePositions/UiList");
 
-        Node rotation = iObjStart.GetNode<Node>("Rotation/VBoxContainer");
+        Node rotation             = iObjStart.GetNode<Node>("Rotation/VBoxContainer");
         _minimumRotationalYOffset = rotation.GetNode<LineEdit>("MinimumRotationalYOffset/LineEdit");
         _maximumRotationalYOffset = rotation.GetNode<LineEdit>("MaximumRotationalYOffset/LineEdit");
         //
@@ -92,27 +88,25 @@ public partial class Creator : VBoxContainer
         _semiClearancePositions.Deletion += OnSemiClearancePositions_Deletion;
     }
 
+    // Accepts root folder of InteriorObject
     public override bool _CanDropData(Vector2 atPosition, Variant data)
     {
         Godot.Collections.Dictionary dict;
         if (data.VariantType == Variant.Type.Dictionary) { dict = data.AsGodotDictionary(); }
         else                                             { return false; }
-        
         return
         (
             dict.ContainsKey("files") &&
-            Godot.FileAccess.FileExists(data.AsGodotDictionary()["files"].AsStringArray()[0] + InteriorObjectFileName)
+            Godot.FileAccess.FileExists(dict["files"].AsStringArray()[0] + InteriorObjectFileName)
         );
     }
 
     public override void _DropData(Vector2 atPosition, Variant data)
     {
         Godot.Collections.Dictionary dict = data.AsGodotDictionary();      
-        if (dict["type"].AsStringName() == _dropType)
+        if (dict["type"].AsStringName() == "files_and_dirs")
         {
             string objDir = dict["files"].AsStringArray()[0];
-
-            HandlingResources = true;
             try
             {
                 InteriorObject iObj = GD.Load<InteriorObject>(objDir + InteriorObjectFileName);
@@ -123,7 +117,6 @@ public partial class Creator : VBoxContainer
             {
                 GD.PushError($"Failed to load data in \"{objDir}\". Exception: {e.Message}");
             }
-            HandlingResources = false;
         }
     }
    
@@ -137,7 +130,7 @@ public partial class Creator : VBoxContainer
     {
         int intResult;
         float floatResult;
-        Vector3[] positions;
+        Godot.Collections.Array<Vector3I> positions;
 
         // Scene //
         iObj.Scene = GD.Load<PackedScene>(_scenePath.Text);
@@ -219,7 +212,6 @@ public partial class Creator : VBoxContainer
 
             // Extension //
             InteriorObjectExtension iObjExtension = new();
-
             if (float.TryParse(extensionRef.ChanceToSkipAPosition.Text, out float result))
             {
                 iObjExtension.ChanceToSkipAPosition = result;
@@ -232,18 +224,18 @@ public partial class Creator : VBoxContainer
             SaveResource(iObjExtension, $"{dir.GetCurrentDir()}/{extensionDir}/{ExtensionFileName}");
 
             // InteriorObjectWithWeight Directory Inside Extension //
-            if (!extensionRef.GetIObjWithWeightS(out InteriorObjectWithWeight[] iObjWithWeightS)) { PrintParseWarning(nameof(iObjExtension.InteriorObjectWithWeight_S)); }
+            if (!extensionRef.GetIObjWithWeightS(out InteriorObjectWithWeight[] iObjWithWeightS)) { PrintParseWarning(nameof(iObjExtension.InteriorObjectWithWeightS)); }
 
             foreach (InteriorObjectWithWeight iObjWithWt in iObjWithWeightS)
             {
-                SaveResource(iObjWithWt, $"{dir.GetCurrentDir()}/{iObjWithWeightDir}/{Directory.GetParent(iObjWithWt.InteriorObjectPath).Name}.tres");
+                SaveResource(iObjWithWt, $"{dir.GetCurrentDir()}/{iObjWithWeightDir}/{Directory.GetParent(ResourceUid.UidToPath(iObjWithWt.InteriorObjectPath)).Name}.tres");
             }
         }
     }
 
     private void LoadInteriorObject(InteriorObject iObj, string objDir)
     {
-        _name.Text = GetPathRelativeToInteriorObjectsDir(objDir);
+        _name.Text = GetPathRelativeToIObjsDir(objDir)[..^1]; // Remove ending slash too
         _scenePath.Text = iObj.Scene.ResourcePath;
 
         _weightToMiddle.Text = iObj.WeightToMiddle.ToString();
@@ -296,10 +288,10 @@ public partial class Creator : VBoxContainer
         }
     }
 
-    private void SetVector3UiList(UiList uiList, Dictionary<Node, UiElements.Vector3> dict, Vector3[] positions)
+    private void SetVector3UiList(UiList uiList, Dictionary<Node, UiElements.Vector3> dict, Godot.Collections.Array<Vector3I> positions)
     {
         uiList.DeleteAll();
-        foreach (Vector3 pos in positions)
+        foreach (Vector3I pos in positions)
         {
             Node node = _vector3Element.Instantiate();
             uiList.Add(node, true);
@@ -334,36 +326,33 @@ public partial class Creator : VBoxContainer
             extensionRef.IObjWithWeightList.Add(node, true);
 
             UiElements.InteriorObjectWithWeight element = extensionRef.GetIObjWithWeightRef(node);
-            element.Name.Text = GetPathRelativeToInteriorObjectsDir(Directory.GetParent(iObjWt.InteriorObjectPath).FullName);
+            element.Name.Text = GetPathRelativeToIObjsDir(ResourceUid.UidToPath(iObjWt.InteriorObjectPath).Replace("/InteriorObject.tres", ""));
             element.WeightOfPlacement.Text = iObjWt.WeightOfPlacement.ToString();
         }
     }
 
-    private string GetPathRelativeToInteriorObjectsDir(string fullPath)
+    private string GetPathRelativeToIObjsDir(string fullPath)
     {
         int idx = fullPath.Find("InteriorObjects") + 16;
         return fullPath[idx..];
     }
 
-    private bool GetPositionArray(Dictionary<Node, UiElements.Vector3> dict, out Vector3[] positions)
+    private bool GetPositionArray(Dictionary<Node, UiElements.Vector3> dict, out Godot.Collections.Array<Vector3I> positions)
     {
-        positions = new Vector3[dict.Count];
-
-        int i = 0;
+        positions = [];
         bool success = true;
-
         foreach (KeyValuePair<Node, UiElements.Vector3> kv in dict)
         {
-            success &= float.TryParse(kv.Value.X.Text, out float x);
-            success &= float.TryParse(kv.Value.Y.Text, out float y);
-            success &= float.TryParse(kv.Value.Z.Text, out float z);
+            success &= int.TryParse(kv.Value.X.Text, out int x);
+            success &= int.TryParse(kv.Value.Y.Text, out int y);
+            success &= int.TryParse(kv.Value.Z.Text, out int z);
 
-            positions[i++] = new Vector3(x, y, z);
+            positions.Add(new Vector3I(x, y, z));
         }
         return success;
     }
 
-    private void PrintParseWarning(string name) { GD.PushWarning($"Couldn't parse \"{name}\" input(s). Leaving as default. Ignore if this is intended."); }
+    private void PrintParseWarning(string name) { GD.PushWarning($"Couldn't parse \"{name}\" input(s). Leaving only failed as default. Ignore if this is intended."); }
 
     private void OnCreate_Pressed()
     {
@@ -381,7 +370,7 @@ public partial class Creator : VBoxContainer
         dir.ChangeDir(_name.Text);
 
         // Get Valid Extensions //
-        List<UiElements.Extension> validExtensions = new();
+        List<UiElements.Extension> validExtensions = [];
 
         IEnumerator<KeyValuePair<Node, UiElements.Extension>> extensions = _extReferences.GetNodeToExtensionS();
         while (extensions.MoveNext())
@@ -394,7 +383,6 @@ public partial class Creator : VBoxContainer
         }
 
         // Create & Save Resources //
-        HandlingResources = true;
         try
         {
             if (validExtensions.Count == 0) { SetupInteriorObject(dir, new()); }
@@ -408,7 +396,9 @@ public partial class Creator : VBoxContainer
         {
             GD.PushError($"Failed to setup {nameof(InteriorObject)} files. Exception: {e.Message}");
         }
-        HandlingResources = false;
+        
+        EditorFileSystem fs = EditorInterface.Singleton.GetResourceFilesystem();
+        if (!fs.IsScanning()) { fs.Scan(); }
     }
 
     private void OnClearancePositions_Creation(Node node) { _nodeToClearancePositions.Add(node, new(node)); }

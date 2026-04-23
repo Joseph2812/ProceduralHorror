@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="InteriorObjectWithWeight" format=3 uid="uid://c5elkeum2tsu8"]
+
+[ext_resource type="Script" uid="uid://cuvgghw1jqrhf" path="res://Scripts/Generation/Interior/InteriorObjectWithWeight.cs" id="1_75egk"]
+
+[resource]
+script = ExtResource("1_75egk")
+InteriorObjectPath = "uid://dk8255l1vr5fs"

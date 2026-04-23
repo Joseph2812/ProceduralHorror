@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dhyfm76i8hcbf"]
+
+[ext_resource type="PackedScene" uid="uid://bqwylh05nim1p" path="res://Models/InteriorObjects/Kitchen/Toaster.glb" id="1_1dobf"]
+[ext_resource type="Texture2D" uid="uid://c4xh46ca1ggcd" path="res://Textures/InteriorObjects/Kitchen/Toaster/Albedo.png" id="2_io0wf"]
+[ext_resource type="Texture2D" uid="uid://clklnn54uxhn7" path="res://Textures/InteriorObjects/Kitchen/Toaster/ORM.png" id="3_0x1w7"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_admp1"]
+albedo_texture = ExtResource("2_io0wf")
+orm_texture = ExtResource("3_0x1w7")
+
+[node name="Toaster" unique_id=1654208496 instance=ExtResource("1_1dobf")]
+
+[node name="Cube" parent="." index="0" unique_id=289665353]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.1406795, 0.5)
+surface_material_override/0 = SubResource("ORMMaterial3D_admp1")

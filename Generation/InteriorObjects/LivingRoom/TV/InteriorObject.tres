@@ -1,19 +1,8 @@
 [gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://bwa33krk3307e"]
 
-[ext_resource type="PackedScene" uid="uid://cy5p8sdnduwi6" path="res://Scenes/InteriorObjects/TV.tscn" id="1_apqyu"]
+[ext_resource type="PackedScene" uid="uid://cy5p8sdnduwi6" path="res://Scenes/InteriorObjects/LivingRoom/TV.tscn" id="1_apqyu"]
 [ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="1_po158"]
 
 [resource]
 script = ExtResource("1_po158")
 Scene = ExtResource("1_apqyu")
-WeightToMiddle = 0.0
-Exact = false
-MinimumHeight = 1
-MaximumHeight = 2147483646
-RelativeTo = 0
-MaximumCountBtwRooms = 0
-NeighbourConditionsText = ""
-ClearancePositions = PackedVector3Array(-1, 0, 0, 1, 0, 0, -1, 1, 0, 0, 1, 0, 1, 1, 0)
-SemiClearancePositions = PackedVector3Array()
-MinimumRotationalYOffset = 0.0
-MaximumRotationalYOffset = 0.0

@@ -18,7 +18,7 @@ public class RoomManager
     public int MaximumRoomCount { get; private set; } = 30; // Max where generation will stop
     public Room SelectedRoom { get; private set; }
 
-    private Room[] _rooms;
+    private readonly Room[] _rooms;
 
     public RoomManager()
     {

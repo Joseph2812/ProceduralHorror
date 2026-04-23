@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 namespace Scripts.Generation.Interior;
 
-[GlobalClass]
-[Tool]
+// Must be a tool to be loaded in the editor by InteriorObjectCreator (applies to all custom resources used by it)
+[GlobalClass, Tool]
 public partial class InteriorObject : Resource
 {
     public enum Relative
@@ -16,27 +16,36 @@ public partial class InteriorObject : Resource
         Ceiling
     }
 
+    [Export]
     public PackedScene Scene { get; set; }
+
+    [ExportGroup("Probability")]
 
     /// <summary>
     /// Likelihood of <see cref="Scene"/> appearing in a cell depending on its proxmity to the middle, from 0 (edge) to 1 (middle).
     /// </summary>
+    [Export(PropertyHint.Range, "0,1")]
     public float WeightToMiddle { get; set; }
 
     /// <summary>
     /// If true, <see cref="Scene"/> will have a chance to appear in a cell only if <see cref="WeightToMiddle"/> is equal to normalised distance.<para/>
     /// Mainly only useful for <see cref="WeightToMiddle"/> = 0 or 1, as inbetween values aren't guaranteed to appear among the cells.
     /// </summary>
+    [Export]
     public bool Exact { get; set; }
+
+    [ExportGroup("Constraints")]
 
     /// <summary>
     /// Minimum height <see cref="Scene"/> needs to be at/above for it to be placed.
     /// </summary>
+    [Export(PropertyHint.Range, "-2147483646,2147483646")]
     public int MinimumHeight { get; set; } = 1;
 
     /// <summary>
     /// Maximum height <see cref="Scene"/> needs to be at/below for it to be placed.
     /// </summary>
+    [Export(PropertyHint.Range, "-2147483646,2147483646")]
     public int MaximumHeight { get; set; } = int.MaxValue - 1;
 
     /// <summary>
@@ -45,6 +54,7 @@ public partial class InteriorObject : Resource
     /// 1 <![CDATA[->]]> (<see cref="int.MaxValue"/> - 1): <see cref="Relative.Floor"/> and <see cref="Relative.Ceiling"/><br/>
     /// -(<see cref="int.MaxValue"/> - 1) <![CDATA[<- 0 ->]]> (<see cref="int.MaxValue"/> - 1): <see cref="Relative.Middle"/>
     /// </summary>
+    [Export]
     public Relative RelativeTo { get; set; }
 
     /// <summary>
@@ -52,26 +62,34 @@ public partial class InteriorObject : Resource
     /// Use to set limits across all the rooms.<br/>
     /// 0 = There is no maximum count restriction.
     /// </summary>
+    [Export(PropertyHint.Range, "0,2147483647")]
     public int MaximumCountBtwRooms { get; set; }
 
     /// <summary>
     /// String that represents a boolean expression. Should only be passed to <see cref="_neighbourConditions"/> to parse.
     /// </summary>
+    [Export(PropertyHint.MultilineText)]
     public string NeighbourConditionsText { get; set; } = string.Empty;
 
     /// <summary>
     /// Used to mark what relative positions it will take up when placed. (0, 0, 0) will already be added for any <see cref="Scene"/>.<para/>
-    /// Godot doesn't support exporting Vector3I[] :(
     /// </summary>
-    public Vector3[] ClearancePositions { get; set; } = Array.Empty<Vector3>();
+    [Export]
+    public Godot.Collections.Array<Vector3I> ClearancePositions { get; set; } = [];
 
     /// <summary>
     /// Used to mark what relative positions it would want clear, but doesn't take up that space itself.
     /// </summary>
-    public Vector3[] SemiClearancePositions { get; set; } = Array.Empty<Vector3>();
+    [Export]
+    public Godot.Collections.Array<Vector3I> SemiClearancePositions { get; set; } = [];
+
+    [ExportGroup("Rotation")]
 
     // Random offset that should be added to the proximity-based rotation. (Difference of 360 makes it completely random)
+    [Export(PropertyHint.Range, "-360,360,radians")]
     public float MinimumRotationalYOffset { get; set; }
+    
+    [Export(PropertyHint.Range, "-360,360,radians")]
     public float MaximumRotationalYOffset { get; set; }
 
     private int _currentCountBtwRooms;
@@ -83,122 +101,12 @@ public partial class InteriorObject : Resource
     /// </summary>
     protected virtual void LoadDependencies() { _neighbourConditions.ParseIntoTree(NeighbourConditionsText); }
 
-    ~InteriorObject() { RoomManager.LoadedIObjDependencies.Remove(this); }
-
-    public override bool _PropertyCanRevert(StringName property) => true;
-    public override Variant _PropertyGetRevert(StringName property)
+    public override void _Notification(int what)
     {
-        switch (property)
-        {
-            case nameof(Scene)                   : return default;
-            case nameof(WeightToMiddle)          : return 0f;
-            case nameof(Exact)                   : return false;
-            case nameof(MinimumHeight)           : return 1;
-            case nameof(MaximumHeight)           : return int.MaxValue - 1;
-            case nameof(RelativeTo)              : return 0;
-            case nameof(MaximumCountBtwRooms)    : return 0;
-            case nameof(NeighbourConditionsText) : return string.Empty;
-            case nameof(ClearancePositions)      : return Array.Empty<Vector3>();
-            case nameof(SemiClearancePositions)  : return Array.Empty<Vector3>();
-            case nameof(MinimumRotationalYOffset): return 0f;
-            case nameof(MaximumRotationalYOffset): return 0f;
-            default                              : return base._PropertyGetRevert(property);
-        }
-    }
+        base._Notification(what);
 
-    public override Godot.Collections.Array<Godot.Collections.Dictionary> _GetPropertyList()
-    {
-        return new
-        (
-            new Godot.Collections.Dictionary[]
-            {
-                CommonMethod.GetCategory(nameof(InteriorObject)),
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(Scene) },
-                    { "type"       , (int)Variant.Type.Object },
-                    { "hint"       , (int)PropertyHint.TypeString },
-                    { "hint_string", $"{(int)Variant.Type.Object}/{(int)PropertyHint.ResourceType}:{nameof(PackedScene)}" }
-                },
-
-                CommonMethod.GetGroup("Probability"),
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(WeightToMiddle) },
-                    { "type"       , (int)Variant.Type.Float },
-                    { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", "0,1" }
-                },
-                new Godot.Collections.Dictionary
-                {
-                    { "name", nameof(Exact) },
-                    { "type", (int)Variant.Type.Bool }
-                },
-
-                CommonMethod.GetGroup("Constraints"),
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(MinimumHeight) },
-                    { "type"       , (int)Variant.Type.Int },
-                    { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", $"{-(int.MaxValue - 1)},{int.MaxValue - 1}"}
-                },
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(MaximumHeight) },
-                    { "type"       , (int)Variant.Type.Int },
-                    { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", $"{-(int.MaxValue - 1)},{int.MaxValue - 1}"}
-                },
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(RelativeTo) },
-                    { "type"       , (int)Variant.Type.Int },
-                    { "hint"       , (int)PropertyHint.Enum },
-                    { "hint_string", Enum.GetNames<Relative>().Join(",") }
-                },
-
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(MaximumCountBtwRooms) },
-                    { "type"       , (int)Variant.Type.Int },
-                    { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", $"0,{int.MaxValue}" }
-                },
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(NeighbourConditionsText) },
-                    { "type"       , (int)Variant.Type.String },
-                    { "hint"       , (int)PropertyHint.MultilineText },
-                },
-                new Godot.Collections.Dictionary
-                {
-                    { "name", nameof(ClearancePositions) },
-                    { "type", (int)Variant.Type.PackedVector3Array }
-                },
-                new Godot.Collections.Dictionary
-                {
-                    { "name", nameof(SemiClearancePositions) },
-                    { "type", (int)Variant.Type.PackedVector3Array }
-                },
-
-                CommonMethod.GetGroup("Rotation"),
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(MinimumRotationalYOffset) },
-                    { "type"       , (int)Variant.Type.Float },
-                    { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", "-360,360,radians" }
-                },
-                new Godot.Collections.Dictionary
-                {
-                    { "name"       , nameof(MaximumRotationalYOffset) },
-                    { "type"       , (int)Variant.Type.Float },
-                    { "hint"       , (int)PropertyHint.Range },
-                    { "hint_string", "-360,360,radians" }
-                }
-            }
-        );
+        if (what != NotificationPredelete) { return; }
+        RoomManager.LoadedIObjDependencies.Remove(this);
     }
 
     public void CheckDependencies()
@@ -253,7 +161,7 @@ public partial class InteriorObject : Resource
     /// <returns><see cref="HashSet{Vector3I}"/> of positions that mark its requirement for placement.</returns>
     private HashSet<Vector3I> GetClearancePositions(Vector3I originPos, float rotationY)
     {
-        HashSet<Vector3I> clearancePosS = new() { originPos };
+        HashSet<Vector3I> clearancePosS = [originPos];
         foreach (Vector3I relativePos in ClearancePositions)
         {
             clearancePosS.Add(originPos + relativePos.RotatedY(rotationY));
@@ -269,7 +177,7 @@ public partial class InteriorObject : Resource
     /// <returns><see cref="HashSet{Vector3I}"/> of positions that mark its requirement for placement.</returns>
     private HashSet<Vector3I> GetSemiClearancePositions(Vector3I originPos, float rotationY)
     {
-        HashSet<Vector3I> semiClearancePosS = new();
+        HashSet<Vector3I> semiClearancePosS = [];
         foreach (Vector3I relativePos in SemiClearancePositions)
         {
             semiClearancePosS.Add(originPos + relativePos.RotatedY(rotationY));
