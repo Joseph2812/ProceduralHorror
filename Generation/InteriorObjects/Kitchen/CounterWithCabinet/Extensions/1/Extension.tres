@@ -9,4 +9,5 @@ Position = Vector3i(0, 2, 0)
 
 [resource]
 script = ExtResource("2_oyvr7")
+ChanceToSkipAPosition = 0.6
 PlacementData = [SubResource("Resource_5gpni")]

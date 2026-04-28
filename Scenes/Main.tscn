@@ -180,7 +180,7 @@ visible = false
 script = ExtResource("7_pvyt2")
 
 [node name="Sphere" type="RigidBody3D" parent="." unique_id=967200797]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 2, -0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 1)
 script = ExtResource("7_gpdo7")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Sphere" unique_id=2068835971]

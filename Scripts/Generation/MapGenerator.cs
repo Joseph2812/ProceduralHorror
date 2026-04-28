@@ -162,6 +162,8 @@ public partial class MapGenerator : GridMap
         for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i + (All3x3Dirs.Length * 2)] = All3x3Dirs[i] + Vector3I.Up; }
         //
 
+        CreateStartingArea();
+
         if (SetSeed)
         {
             Rng.Seed = Seed;
@@ -214,6 +216,26 @@ public partial class MapGenerator : GridMap
             neighbours[i] = new NeighbourInfo(pos, dir, GetCellItem(pos));
         }
         return neighbours;
+    }
+
+    private void CreateStartingArea()
+    {
+        for (int y = 0; y <= 3; y++)
+        {
+            for (int z = 0; z <= 2; z++)
+            {
+                for (int x = -1; x <= 1; x++)
+                {
+                    if 
+                    (
+                        ((x > -1 && x < 1) && (y > 0 && y < 3) && (z > 0 && z < 2)) ||
+                        (x == 0 && y != 0 && y != 3 && z == 0)
+                    )
+                    { continue; }
+                    SetCellItem(new(x, y, z), (int)ItemManager.Id.Blue);
+                }
+            }
+        }
     }
 
     private async Task<bool> StartGeneration()

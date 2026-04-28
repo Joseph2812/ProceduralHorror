@@ -9,4 +9,5 @@ Position = Vector3i(0, 1, 0)
 
 [resource]
 script = ExtResource("2_udokg")
+ChanceToSkipAPosition = 0.5
 PlacementData = [SubResource("Resource_71bfp")]

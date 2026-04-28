@@ -5,4 +5,5 @@
 [resource]
 script = ExtResource("1_g6nqs")
 InteriorObjectPath = "uid://bfv8rhq7ahbt5"
+WeightOfPlacement = 2
 metadata/_custom_type_script = "uid://cuvgghw1jqrhf"
