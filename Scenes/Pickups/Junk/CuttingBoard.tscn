@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://b3l58t24r0uca"]
+
+[ext_resource type="PackedScene" uid="uid://b868787s5yjb0" path="res://Models/Pickups/Junk/CuttingBoard.glb" id="1_78tvp"]
+[ext_resource type="Script" uid="uid://c2mf0ys14l1jb" path="res://Scripts/Pickups/Junk.cs" id="2_gawm8"]
+[ext_resource type="Texture2D" uid="uid://bfst8ir2givrc" path="res://Textures/InteriorObjects/Kitchen/CuttingBoard/Albedo.png" id="3_cqerk"]
+[ext_resource type="Texture2D" uid="uid://cwo715ph1d7if" path="res://Textures/InteriorObjects/Kitchen/CuttingBoard/ORM.png" id="4_ey4nj"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_5cfjp"]
+albedo_texture = ExtResource("3_cqerk")
+orm_texture = ExtResource("4_ey4nj")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cutoj"]
+size = Vector3(0.8539429, 0.02368164, 0.6640625)
+
+[node name="CuttingBoard" unique_id=639313097 instance=ExtResource("1_78tvp")]
+script = ExtResource("2_gawm8")
+
+[node name="Cube" parent="." index="0" unique_id=318109493]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.010988027, 0.5)
+surface_material_override/0 = SubResource("ORMMaterial3D_5cfjp")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="1" unique_id=1071475612]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.50064087, 0.010639995, 0.49804688)
+shape = SubResource("BoxShape3D_cutoj")

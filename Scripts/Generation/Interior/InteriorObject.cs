@@ -117,11 +117,6 @@ public partial class InteriorObject : Resource
         LoadDependencies();
     }
 
-    /// <summary>
-    /// Proximity determined rotationY with random offset. (Offset will not affect clearance positions, so make sure the object still fits in its assigned space)
-    /// </summary>
-    public float GetRotationWithOffset(float rotationY) => rotationY + MapGenerator.Inst.Rng.RandfRange(MinimumRotationalYOffset, MaximumRotationalYOffset);
-
     /// <returns>(Whether it can be placed, Clearance Positions, Semi-Clearance Positions)</returns>
     public (bool, HashSet<Vector3I>, HashSet<Vector3I>) CanBePlaced(Vector3I position, float rotationY, Dictionary<Vector3I, bool> emptyPosS)
     {

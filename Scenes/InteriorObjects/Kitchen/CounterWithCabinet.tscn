@@ -8,14 +8,20 @@
 albedo_texture = ExtResource("2_v70v0")
 orm_texture = ExtResource("3_8vn2r")
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_y7kiw"]
+
 [node name="CounterWithCabinet" unique_id=1979101891 instance=ExtResource("1_8tu1o")]
 
-[node name="Counter" parent="." index="0" unique_id=270313926]
+[node name="Counter" parent="." index="0" unique_id=2078301550]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
 surface_material_override/0 = SubResource("ORMMaterial3D_v70v0")
 
-[node name="Door_Linked1" parent="Counter" index="0" unique_id=1206476528]
+[node name="Door_Linked1" parent="Counter" index="0" unique_id=1713346525]
 surface_material_override/0 = SubResource("ORMMaterial3D_v70v0")
 
-[node name="Door_Linked2" parent="Counter" index="1" unique_id=720528428]
+[node name="Door_Linked2" parent="Counter" index="1" unique_id=1791010500]
 surface_material_override/0 = SubResource("ORMMaterial3D_v70v0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="1" unique_id=1405832217]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.5, 0.5)
+shape = SubResource("BoxShape3D_y7kiw")

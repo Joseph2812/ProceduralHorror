@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Scripts.Items;
+namespace Scripts.Pickups.Items;
 
 public partial class Phone : Item
 {
@@ -17,8 +17,6 @@ public partial class Phone : Item
     protected override StringName IdleNameR => s_idleNameR;
     protected override StringName UnequipNameL => s_unequipNameL;
     protected override StringName UnequipNameR => s_unequipNameR;
-
-    protected override string MeshInstPath => "Phone_Obj";
 
     public override void _Ready()
     {

@@ -4,16 +4,16 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://b868787s5yjb0"
-path="res://.godot/imported/CuttingBoard.glb-8a1147576e61e3154b90fe863fbb8109.scn"
+path="res://.godot/imported/CuttingBoard.glb-f8e336e4a1fb36d16093ea1e18d299de.scn"
 
 [deps]
 
-source_file="res://Models/InteriorObjects/Kitchen/CuttingBoard.glb"
-dest_files=["res://.godot/imported/CuttingBoard.glb-8a1147576e61e3154b90fe863fbb8109.scn"]
+source_file="res://Models/Pickups/Junk/CuttingBoard.glb"
+dest_files=["res://.godot/imported/CuttingBoard.glb-f8e336e4a1fb36d16093ea1e18d299de.scn"]
 
 [params]
 
-nodes/root_type=""
+nodes/root_type="RigidBody3D"
 nodes/root_name=""
 nodes/root_script=null
 nodes/apply_root_scale=true

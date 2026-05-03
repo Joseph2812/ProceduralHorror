@@ -1,5 +1,5 @@
 using Godot;
-using Scripts.Items;
+using Scripts.Pickups;
 using System;
 
 namespace Scripts.Player;

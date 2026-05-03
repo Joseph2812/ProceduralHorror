@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using Scripts.Items;
+using Scripts.Pickups;
 
 namespace Scripts.Player;
 

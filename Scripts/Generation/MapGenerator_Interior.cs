@@ -15,7 +15,7 @@ public partial class MapGenerator : GridMap
     private List<(Vector3I, int, int)> _potentialPos_floorIdx_heightLvl_S;
 
     private Node _interiorNodeParent;
-    private readonly Vector3 _interiorNodeOffset = new Vector3(0.5f, 0f, 0.5f);
+    private readonly Vector3 _interiorNodeOffset = new(0.5f, 0f, 0.5f);
 
     /// <summary>
     /// Creates a <see cref="Node3D"/> from the <see cref="InteriorObject"/>, if it meets the conditions required.
@@ -31,13 +31,20 @@ public partial class MapGenerator : GridMap
 
         // Create Node //
         Node3D node = iObj.Scene.Instantiate<Node3D>();
-        Node3D childNode = node.GetChild<Node3D>(0);
-
         _interiorNodeParent.AddChild(node);
-
-        childNode.Position -= _interiorNodeOffset;
         node.Position = position + _interiorNodeOffset;
-        node.Rotation = iObj.GetRotationWithOffset(rotationY) * Vector3.Up;
+        node.Rotation = rotationY * Vector3.Up;
+
+        int count = node.GetChildCount();
+        Vector3 rotOffsetY = Rng.RandfRange(iObj.MinimumRotationalYOffset, iObj.MaximumRotationalYOffset) * Vector3.Up;
+        for (int i = 0; i < count; i++)
+        {
+            if (node.GetChild(i) is Node3D n)
+            {
+                n.Position -= _interiorNodeOffset;
+                n.Rotation += rotOffsetY;
+            }
+        }
 
         foreach (Vector3I pos in semiClearancePosS) { _emptyPosS[pos] = true; } // Set new & existing to semi-empty
         foreach (Vector3I pos in clearancePosS)     { _emptyPosS.Remove(pos); } // Remove fully occupied

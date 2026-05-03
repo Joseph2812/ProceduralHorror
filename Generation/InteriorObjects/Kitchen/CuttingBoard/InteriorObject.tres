@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="InteriorObject" format=3 uid="uid://dhrfaioyl0wb"]
 
-[ext_resource type="PackedScene" uid="uid://b3l58t24r0uca" path="res://Scenes/InteriorObjects/Kitchen/CuttingBoard.tscn" id="1_ttjag"]
+[ext_resource type="PackedScene" uid="uid://b3l58t24r0uca" path="res://Scenes/Pickups/Junk/CuttingBoard.tscn" id="1_ttjag"]
 [ext_resource type="Script" uid="uid://cqttf3exydr8a" path="res://Scripts/Generation/Interior/InteriorObject.cs" id="2_yt1w3"]
 
 [resource]

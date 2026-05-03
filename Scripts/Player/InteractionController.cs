@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using Scripts.Items;
+using Scripts.Pickups;
 
 namespace Scripts.Player;
 
@@ -164,7 +164,7 @@ public partial class InteractionController : Node
 
     private bool TryPickupItem(GodotObject colliderObj)
     {
-        if (colliderObj is Item item) { return _inventory.TryAddItem(item); }
+        if (colliderObj is Pickup pickup) { return _inventory.TryAddPickup(pickup); }
         return false;
     }
 

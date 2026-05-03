@@ -1,16 +1,16 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using Scripts.Items;
+using Scripts.Pickups;
 using Scripts.Extensions;
 
 namespace Scripts.Player;
 
 public partial class Inventory : Node3D
 {
-    private partial class GridData(Item item, Node3D pivot, ArrayMesh selectionMesh, Label3D equippedLabel, Label3D hotkeyLabel) : GodotObject
+    private partial class GridData(Pickup pickup, Node3D pivot, ArrayMesh selectionMesh, Label3D equippedLabel, Label3D hotkeyLabel) : GodotObject
     {
-        public readonly Item Item = item;
+        public readonly Pickup Pickup = pickup;
         public readonly Node3D Pivot = pivot;
         public readonly ArrayMesh SelectionMesh = selectionMesh;
         public readonly Label3D EquippedLabel = equippedLabel;
@@ -38,9 +38,9 @@ public partial class Inventory : Node3D
             HotkeyLabel.QueueFree();
         }
 
-        public HashSet<Vector2I> GetOccupiedPositions() => GetOccupiedPositions(Item.ClearancePositions, GridPosition, Pivot.Rotation.Z);
-        public HashSet<Vector2I> GetOccupiedPositions(Vector2I testGridPos) => GetOccupiedPositions(Item.ClearancePositions, testGridPos, Pivot.Rotation.Z);
-        public HashSet<Vector2I> GetOccupiedPositions(float testRotZ) => GetOccupiedPositions(Item.ClearancePositions, GridPosition, testRotZ);
+        public HashSet<Vector2I> GetOccupiedPositions() => GetOccupiedPositions(Pickup.ClearancePositions, GridPosition, Pivot.Rotation.Z);
+        public HashSet<Vector2I> GetOccupiedPositions(Vector2I testGridPos) => GetOccupiedPositions(Pickup.ClearancePositions, testGridPos, Pivot.Rotation.Z);
+        public HashSet<Vector2I> GetOccupiedPositions(float testRotZ) => GetOccupiedPositions(Pickup.ClearancePositions, GridPosition, testRotZ);
 
         public void SetGridPosition(Vector2I gridPos)
         {
@@ -108,7 +108,7 @@ public partial class Inventory : Node3D
 
     private GridData[] _assignedGridData = new GridData[HotkeyCount];
 
-    private readonly Dictionary<Item, GridData> _itemToGridData = new();
+    private readonly Dictionary<Pickup, GridData> _pickupToGridData = new();
     private readonly Dictionary<Vector2I, GridData> _gridPosToGridData = new();
     private readonly HashSet<Vector2I> _emptyPosS = new();
 
@@ -173,11 +173,11 @@ public partial class Inventory : Node3D
         CreateGrid();
         Console.Inst.AddCommand
         (
-            "add-item",
+            "give",
             new
             (
-                OnCommand_AddItem,
-                "[color=#aaa]<itemName>, <amount?>[/color]. Add an item to your inventory. By default it adds one."
+                OnCommand_Give,
+                "[color=#aaa]<pickupName>, <amount?>[/color]. Add an pickup to your inventory. By default it adds one."
             )
         );
 
@@ -203,10 +203,10 @@ public partial class Inventory : Node3D
         else if (@event.IsActionPressed(s_hotkey2Name, exactMatch: true)) { UseHotkey(1); }
         else if (@event.IsActionPressed(s_hotkey3Name, exactMatch: true)) { UseHotkey(2); }
         else if (@event.IsActionPressed(s_hotkey4Name, exactMatch: true)) { UseHotkey(3); }
-        else if (@event.IsActionPressed(s_hotkeyAlt1Name) && !Visible && _assignedGridData[0] != null) { EquipAlt(_assignedGridData[0].Item); }
-        else if (@event.IsActionPressed(s_hotkeyAlt2Name) && !Visible && _assignedGridData[1] != null) { EquipAlt(_assignedGridData[1].Item); }
-        else if (@event.IsActionPressed(s_hotkeyAlt3Name) && !Visible && _assignedGridData[2] != null) { EquipAlt(_assignedGridData[2].Item); }
-        else if (@event.IsActionPressed(s_hotkeyAlt4Name) && !Visible && _assignedGridData[3] != null) { EquipAlt(_assignedGridData[3].Item); }
+        else if (@event.IsActionPressed(s_hotkeyAlt1Name)) { UseHotkeyAlt(0); }
+        else if (@event.IsActionPressed(s_hotkeyAlt2Name)) { UseHotkeyAlt(1); }
+        else if (@event.IsActionPressed(s_hotkeyAlt3Name)) { UseHotkeyAlt(2); }
+        else if (@event.IsActionPressed(s_hotkeyAlt4Name)) { UseHotkeyAlt(3); }
 
         if (!Visible) { return; }
 
@@ -217,17 +217,17 @@ public partial class Inventory : Node3D
         else if (@event.IsActionPressed(s_downName))  { MoveSelection(Vector2I.Up); }
         else if (@event.IsActionPressed(s_useName, exactMatch: true))
         {
-            if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
-            Equip(data.Item);
+            if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data) || data.Pickup is not Item item) { return; }
+            Equip(item);
         }
         else if (@event.IsActionPressed(s_useAltName))
         {
-            if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
-            EquipAlt(data.Item);
+            if (_selectedGridData != null || !_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data) || data.Pickup is not Item item) { return; }
+            EquipAlt(item);
         }
         else if (@event.IsActionPressed(s_dropName))
         {
-            if (_selectedGridData == null) { RemoveItem(_gridPosToGridData[_selectorGridPos]); }
+            if (_selectedGridData == null) { RemovePickup(_gridPosToGridData[_selectorGridPos]); }
             else                           { CancelMove(); }       
         }
         else if (@event.IsActionPressed(s_moveName))   { ToggleMove(); }
@@ -239,51 +239,51 @@ public partial class Inventory : Node3D
         base._Notification(what);
         if (what != NotificationPredelete) { return; }
 
-        foreach (GridData data in _itemToGridData.Values) { data.Free(); }
+        foreach (GridData data in _pickupToGridData.Values) { data.Free(); }
     }
 
-    public bool TryAddItem(Item item)
+    public bool TryAddPickup(Pickup pickup)
     {
-        (Vector2I, float, HashSet<Vector2I>)? gridPos_rotZ_occupiedPosS = FindValidPositioning(item.ClearancePositions);
+        (Vector2I, float, HashSet<Vector2I>)? gridPos_rotZ_occupiedPosS = FindValidPositioning(pickup.ClearancePositions);
         if (!gridPos_rotZ_occupiedPosS.HasValue) { return false; }
 
-        item.GetParent()?.RemoveChild(item);
-        _armsManager.AddChild(item);
-        item.Visible = false;
-        item.Freeze = true;
+        pickup.GetParent()?.RemoveChild(pickup);
+        _armsManager.AddChild(pickup);
+        pickup.Visible = false;
+        pickup.Freeze = true;
 
-        item.AddCollisionExceptionWith(Player.Inst); // Temporarily prevents being pushed when adding items using the add-item command
-        item.CallDeferred(PhysicsBody3D.MethodName.RemoveCollisionExceptionWith, Player.Inst);
-        item.CollisionShape.SetDeferred(CollisionShape3D.PropertyName.Disabled, true);
+        pickup.AddCollisionExceptionWith(Player.Inst); // Temporarily prevents being pushed when adding pickups using the add-pickup command
+        pickup.CallDeferred(PhysicsBody3D.MethodName.RemoveCollisionExceptionWith, Player.Inst);
+        pickup.CollisionShape.SetDeferred(CollisionShape3D.PropertyName.Disabled, true);
 
         (Vector2I gridPos, float rotZ, HashSet<Vector2I> occupiedPosS) = gridPos_rotZ_occupiedPosS.Value;
         GridData data = new
         (
-            item,
-            CreateItemMeshInstanceOnPivot(item, rotZ), 
-            CreateSelectorMesh(item.ClearancePositions), 
+            pickup,
+            CreatePickupMeshInstanceOnPivot(pickup, rotZ), 
+            CreateSelectorMesh(pickup.ClearancePositions), 
             CreateLabel(),
             CreateLabel()
         );
-        _itemToGridData.Add(item, data);
+        _pickupToGridData.Add(pickup, data);
 
         data.SetGridPosition(gridPos);
         RegisterGridDataSpace(data, occupiedPosS);
 
         return true;
     }
-    public void RemoveItem(Item item) { RemoveItem(_itemToGridData[item]); }
-    private void RemoveItem(GridData gridData)
+    public void RemovePickup(Pickup pickup) { RemovePickup(_pickupToGridData[pickup]); }
+    private void RemovePickup(GridData gridData)
     {
-        _itemToGridData.Remove(gridData.Item);
+        _pickupToGridData.Remove(gridData.Pickup);
 
-        _armsManager.RemoveChild(gridData.Item);
-        s_sceneRoot.AddChild(gridData.Item);
+        _armsManager.RemoveChild(gridData.Pickup);
+        s_sceneRoot.AddChild(gridData.Pickup);
 
         DeregisterGridDataSpace(gridData.GetOccupiedPositions());
 
-        // TODO: Drop item physically on ground
-        ItemRemoved?.Invoke(gridData.Item);
+        // TODO: Drop pickup physically on ground
+        if (gridData.Pickup is Item item) { ItemRemoved?.Invoke(item); }
 
         gridData.Free();
     }
@@ -326,18 +326,18 @@ public partial class Inventory : Node3D
         AddChild(meshInst);
     }
     /// <summary>
-    /// Creates new <see cref="Node3D"/> with <see cref="MeshInstance3D"/> as a child (preserves offset), to use for moving and displaying an item in the grid.<para/>
+    /// Creates new <see cref="Node3D"/> with <see cref="MeshInstance3D"/> as a child (preserves offset), to use for moving and displaying an pickup in the grid.<para/>
     /// NOTE: Both mesh and material are duplicated for unique modification.
     /// </summary>
     /// <returns><see cref="Node3D"/> with a <see cref="MeshInstance3D"/> child, where the parent node will act as a pivot.</returns>
-    private Node3D CreateItemMeshInstanceOnPivot(Item item, float rotationZ)
+    private Node3D CreatePickupMeshInstanceOnPivot(Pickup pickup, float rotationZ)
     {
         MeshInstance3D meshInst = new()
         {
-            Mesh = (Mesh)item.MeshInstance.Mesh.Duplicate(),
-            MaterialOverride = (Material)item.Material.Duplicate(),
-            Position = item.InventoryOffset,
-            Rotation = item.InventoryRotation,
+            Mesh = (Mesh)pickup.MeshInstance.Mesh.Duplicate(),
+            MaterialOverride = (Material)pickup.Material.Duplicate(),
+            Position = pickup.InventoryOffset,
+            Rotation = pickup.InventoryRotation,
             Scale = Vector3.One * 0.8f
         };
 
@@ -404,13 +404,21 @@ public partial class Inventory : Node3D
 
     private void UseHotkey(int idx)
     {
-        if (Visible)                             { Assign(idx); }
-        else if (_assignedGridData[idx] != null) { Equip(_assignedGridData[idx].Item); }
+        GridData gridData = _assignedGridData[idx];
+
+        if (Visible)               { Assign(idx); }
+        else if (gridData != null) { Equip((Item)gridData.Pickup); }
+    }
+    private void UseHotkeyAlt(int idx)
+    {
+        GridData gridData = _assignedGridData[idx];
+        if (!Visible && gridData != null) { EquipAlt((Item)gridData.Pickup); }
     }
 
     private void Assign(int idx)
     {
         if (!_gridPosToGridData.TryGetValue(_selectorGridPos, out GridData data)) { return; }
+        if (data.Pickup is not Item) { return; }
 
         // Remove Old Assignment For GridData If It Exists //
         for (int i = 0; i < _assignedGridData.Length; i++)
@@ -620,7 +628,7 @@ public partial class Inventory : Node3D
 
     private void OnArmsManager_EquippedStateChanged(Item item, ArmsManager.Arm arm)
     {
-        GridData data = _itemToGridData[item];
+        GridData data = _pickupToGridData[item];
         switch (arm)
         {
             case ArmsManager.Arm.None:
@@ -650,42 +658,46 @@ public partial class Inventory : Node3D
         }
     }
 
-    private void OnCommand_AddItem(string[] commandSplit)
+    private void OnCommand_Give(string[] commandSplit)
     {
         // Check Arguments //
         if (commandSplit.Length < 2)
         {
-            Console.Inst.AppendLine($"An item name must be specified.");
+            Console.Inst.AppendLine($"An pickup name must be specified.");
             return;
         }
 
-        string itemName = commandSplit[1];
-        string itemPath = $"res://Scenes/Items/{itemName}.tscn";
-        if (!FileAccess.FileExists(itemPath))
+        string pickupName = commandSplit[1];
+        string pickupPath = $"res://Scenes/Pickups/Items/{pickupName}.tscn";
+        if (!FileAccess.FileExists(pickupPath))
         {
-            Console.Inst.AppendLine($"No item exists with the name: \"{itemName}\".");
-            return;
+            pickupPath = $"res://Scenes/Pickups/Junk/{pickupName}.tscn";
+            if (!FileAccess.FileExists(pickupPath))
+            {
+                Console.Inst.AppendLine($"No pickup exists with the name: \"{pickupName}\".");
+                return;
+            }
         }
 
         if (!(commandSplit.Length > 2 && int.TryParse(commandSplit[2], out int amount))) { amount = 1; }
         if (amount <= 0) { return; }
 
-        // Add Items //
-        PackedScene itemScene = ResourceLoader.Load<PackedScene>(itemPath);
-        int itemsAdded = 0;
+        // Add Pickups //
+        PackedScene pickupScene = ResourceLoader.Load<PackedScene>(pickupPath);
+        int pickupsAdded = 0;
         for (int i = 0; i < amount; i++)
         {
-            Item item = itemScene.Instantiate<Item>();
-            if (!TryAddItem(item))
+            Pickup pickup = pickupScene.Instantiate<Pickup>();
+            if (!TryAddPickup(pickup))
             {
-                item.QueueFree();
+                pickup.QueueFree();
                 break;
             }
-            itemsAdded++;
+            pickupsAdded++;
         }
 
-        if      (itemsAdded == 0) { Console.Inst.AppendLine($"No viable space was found for the \"{itemName}\"."); }
-        else if (itemsAdded == 1) { Console.Inst.AppendLine($"Successfully added \"{itemName}\" to your inventory!"); }
-        else                      { Console.Inst.AppendLine($"Successfully added {itemsAdded} \"{itemName}\"s to your inventory!"); }
+        if      (pickupsAdded == 0) { Console.Inst.AppendLine($"No viable space was found for the \"{pickupName}\"."); }
+        else if (pickupsAdded == 1) { Console.Inst.AppendLine($"Successfully added \"{pickupName}\" to your inventory!"); }
+        else                      { Console.Inst.AppendLine($"Successfully added {pickupsAdded} \"{pickupName}\"s to your inventory!"); }
     }
 }

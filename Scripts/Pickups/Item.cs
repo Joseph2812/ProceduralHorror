@@ -2,12 +2,10 @@ using Godot;
 using Scripts.Player;
 using System;
 
-namespace Scripts.Items;
+namespace Scripts.Pickups;
 
-public abstract partial class Item : RigidBody3D
+public abstract partial class Item : Pickup
 {
-    private static readonly Vector2I[] s_defaultClearancePositions = new Vector2I[] { Vector2I.Zero };
-
     public abstract bool TwoHanded { get; }
 
     protected abstract StringName EquipNameL { get; }
@@ -16,27 +14,6 @@ public abstract partial class Item : RigidBody3D
     protected abstract StringName IdleNameR { get; }
     protected abstract StringName UnequipNameL { get; }
     protected abstract StringName UnequipNameR { get; }
-
-    protected abstract string MeshInstPath { get; }
-
-    /// <summary>
-    /// Visual offset applied to the <see cref="MeshInstance3D"/> in <see cref="Inventory"/> when placing it on the grid.
-    /// </summary>
-    public virtual Vector3 InventoryOffset => Vector3.Zero;
-
-    /// <summary>
-    /// Visual rotation applied to the <see cref="MeshInstance3D"/> in <see cref="Inventory"/> when placing it on the grid.
-    /// </summary>
-    public virtual Vector3 InventoryRotation => Vector3.Zero;
-
-    /// <summary>
-    /// Local grid coordinates used by <see cref="Inventory"/> to indicate the positions it takes up.
-    /// </summary>
-    public virtual Vector2I[] ClearancePositions => s_defaultClearancePositions;
-
-    public MeshInstance3D MeshInstance { get; set; }
-    public BaseMaterial3D Material { get; private set; }
-    public CollisionShape3D CollisionShape { get; private set; }
 
     protected bool Equipped { get; private set; }
     protected AnimationPlayer OtherAnim { get; set; }
@@ -62,13 +39,8 @@ public abstract partial class Item : RigidBody3D
     public override void _Ready()
     {
         base._Ready();
-
-        MeshInstance = GetNode<MeshInstance3D>(MeshInstPath);
-        Material = (BaseMaterial3D)MeshInstance.GetActiveMaterial(0);
-        CollisionShape = GetNode<CollisionShape3D>("CollisionShape3D");
-
+        
         _itemAnim = GetNode<AnimationPlayer>("AnimationPlayer");
-
         _itemAnim.AnimationFinished += OnItemAnim_AnimationFinished;
     }
 
