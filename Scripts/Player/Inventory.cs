@@ -8,19 +8,21 @@ namespace Scripts.Player;
 
 public partial class Inventory : Node3D
 {
-    private partial class GridData(Pickup pickup, Node3D pivot, ArrayMesh selectionMesh, Label3D equippedLabel, Label3D hotkeyLabel) : GodotObject
+    private partial class GridData(Pickup pickup, Node3D pivot, MeshInstance3D meshInst, Material material, ArrayMesh selectionMesh, Label3D equippedLabel, Label3D hotkeyLabel) : GodotObject
     {
         public readonly Pickup Pickup = pickup;
         public readonly Node3D Pivot = pivot;
+        public readonly MeshInstance3D MeshInstance = meshInst;
+        public readonly Material Material = material;
         public readonly ArrayMesh SelectionMesh = selectionMesh;
         public readonly Label3D EquippedLabel = equippedLabel;
         public readonly Label3D HotkeyLabel = hotkeyLabel;
 
         public Vector2I GridPosition { get; private set; }
 
-        public static HashSet<Vector2I> GetOccupiedPositions(Vector2I[] clearancePosS, Vector2I gridPos, float rotationZ)
+        public static HashSet<Vector2I> GetOccupiedPositions(Godot.Collections.Array<Vector2I> clearancePosS, Vector2I gridPos, float rotationZ)
         {
-            HashSet<Vector2I> positions = new(clearancePosS.Length);
+            HashSet<Vector2I> positions = new(clearancePosS.Count);
             foreach (Vector2I pos in clearancePosS)
             {
                 positions.Add(gridPos + pos.RotatedZ(rotationZ));
@@ -108,9 +110,9 @@ public partial class Inventory : Node3D
 
     private GridData[] _assignedGridData = new GridData[HotkeyCount];
 
-    private readonly Dictionary<Pickup, GridData> _pickupToGridData = new();
-    private readonly Dictionary<Vector2I, GridData> _gridPosToGridData = new();
-    private readonly HashSet<Vector2I> _emptyPosS = new();
+    private readonly Dictionary<Pickup, GridData> _pickupToGridData = [];
+    private readonly Dictionary<Vector2I, GridData> _gridPosToGridData = [];
+    private readonly HashSet<Vector2I> _emptyPosS = [];
 
     private GridData _selectedGridData;
     private ArmsManager _armsManager;
@@ -164,10 +166,10 @@ public partial class Inventory : Node3D
         {
             Name             = "Selector",
             Position         = GetCentrePosFromGridPos(Vector2I.Zero),
-            MaterialOverride = _selectorMaterial,
             Mesh             = s_selectorMesh,
             CastShadow       = GeometryInstance3D.ShadowCastingSetting.Off
         };
+        s_selectorMesh.SurfaceSetMaterial(0, _selectorMaterial);
         AddChild(_selectorMeshInst);
 
         CreateGrid();
@@ -257,10 +259,14 @@ public partial class Inventory : Node3D
         pickup.CollisionShape.SetDeferred(CollisionShape3D.PropertyName.Disabled, true);
 
         (Vector2I gridPos, float rotZ, HashSet<Vector2I> occupiedPosS) = gridPos_rotZ_occupiedPosS.Value;
+        (Node3D pivot, MeshInstance3D meshInst) = CreatePickupMeshInstanceOnPivot(pickup, rotZ);
+
         GridData data = new
         (
             pickup,
-            CreatePickupMeshInstanceOnPivot(pickup, rotZ), 
+            pivot,
+            meshInst,
+            meshInst.GetActiveMaterial(0),
             CreateSelectorMesh(pickup.ClearancePositions), 
             CreateLabel(),
             CreateLabel()
@@ -318,30 +324,35 @@ public partial class Inventory : Node3D
                     AlbedoColor = Colors.Green,
                     ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
                     NoDepthTest = true,
-                    RenderPriority = 2
+                    RenderPriority = 0
                 }
             },
             CastShadow = GeometryInstance3D.ShadowCastingSetting.Off
         };
         AddChild(meshInst);
     }
+
     /// <summary>
     /// Creates new <see cref="Node3D"/> with <see cref="MeshInstance3D"/> as a child (preserves offset), to use for moving and displaying an pickup in the grid.<para/>
     /// NOTE: Both mesh and material are duplicated for unique modification.
     /// </summary>
     /// <returns><see cref="Node3D"/> with a <see cref="MeshInstance3D"/> child, where the parent node will act as a pivot.</returns>
-    private Node3D CreatePickupMeshInstanceOnPivot(Pickup pickup, float rotationZ)
+    private (Node3D, MeshInstance3D) CreatePickupMeshInstanceOnPivot(Pickup pickup, float rotationZ)
     {
+        Vector2I invSize = pickup.GetInventorySize();
+        float largestInvSide = Mathf.Max(invSize.X, invSize.Y);
+
+        const float Padding = 0.02f;
         MeshInstance3D meshInst = new()
         {
             Mesh = (Mesh)pickup.MeshInstance.Mesh.Duplicate(),
             MaterialOverride = (Material)pickup.Material.Duplicate(),
-            Position = pickup.InventoryOffset,
+            Position = new Vector3(invSize.X - 1, invSize.Y - 1, 0f) * (GridThickness + GridSpace) * 0.5f,
             Rotation = pickup.InventoryRotation,
-            Scale = Vector3.One * 0.8f
+            Scale = ((GridSpace + (GridSpace + GridThickness) * (largestInvSide - 1f) - Padding) * Vector3.One) / pickup.MeshInstance.Mesh.GetAabb().GetLongestAxisSize()
         };
 
-        BaseMaterial3D mat = (BaseMaterial3D)meshInst.MaterialOverride;
+        BaseMaterial3D mat = (BaseMaterial3D)meshInst.GetActiveMaterial(0);
         mat.NextPass = null;
         mat.NoDepthTest = true;
         mat.RenderPriority = 1;
@@ -353,9 +364,10 @@ public partial class Inventory : Node3D
         pivot.AddChild(meshInst);
         //
 
-        return pivot;
+        return (pivot, meshInst);
     }
-    private ArrayMesh CreateSelectorMesh(Vector2I[] clearancePosS)
+
+    private ArrayMesh CreateSelectorMesh(Godot.Collections.Array<Vector2I> clearancePosS)
     {
         SurfaceTool st = new();
         st.Begin(Mesh.PrimitiveType.Triangles);
@@ -442,15 +454,14 @@ public partial class Inventory : Node3D
     }
     private string GetHotkeyString(int idx)
     {
-        switch (idx)
+        return idx switch
         {
-            case 0: return "1";
-            case 1: return "2";
-            case 2: return "3";
-            case 3: return "4";
-            default:
-                throw new ArgumentException($"Index: {idx}, is not a hotkey.");
-        }
+            0 => "1",
+            1 => "2",
+            2 => "3",
+            3 => "4",
+            _ => throw new ArgumentException($"Index: {idx}, is not a hotkey."),
+        };
     }
 
     private void Equip(Item item)
@@ -496,6 +507,7 @@ public partial class Inventory : Node3D
 
             HashSet<Vector2I> occupiedPositions = _selectedGridData.GetOccupiedPositions();
             DeregisterGridDataSpace(occupiedPositions);
+            _selectedGridData.Material.RenderPriority = 2; // Render on top of everything (Except text)
 
             SetSelectorGridPosition(data.GridPosition);
             _selectorMeshInst.Rotation = data.Pivot.Rotation;
@@ -511,6 +523,7 @@ public partial class Inventory : Node3D
             if (!occupiedPositions.IsSubsetOf(_emptyPosS)) { return; }
 
             RegisterGridDataSpace(_selectedGridData, occupiedPositions);
+            _selectedGridData.Material.RenderPriority = 1;
             _selectedGridData = null;
 
             _selectorMeshInst.Mesh = s_selectorMesh;
@@ -599,7 +612,7 @@ public partial class Inventory : Node3D
     private bool WithinBounds(Vector2I gridPos) => (gridPos.X >= 0 && gridPos.X < s_gridSize.X) && (gridPos.Y >= 0 && gridPos.Y < s_gridSize.Y);
 
     /// <returns>(GridPosition, RotationZ, OccupiedPositions)</returns>
-    private (Vector2I, float, HashSet<Vector2I>)? FindValidPositioning(Vector2I[] clearancePosS)
+    private (Vector2I, float, HashSet<Vector2I>)? FindValidPositioning(Godot.Collections.Array<Vector2I> clearancePosS)
     {
         for (int y = 0; y < s_gridSize.Y; y++)
         {

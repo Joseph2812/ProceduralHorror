@@ -15,8 +15,8 @@ public abstract partial class Item : Pickup
     protected abstract StringName UnequipNameL { get; }
     protected abstract StringName UnequipNameR { get; }
 
-    protected bool Equipped { get; private set; }
     protected AnimationPlayer OtherAnim { get; set; }
+    protected bool Equipped { get; private set; }
 
     private AnimationPlayer _itemAnim;
     private ArmsManager.Arm _currentArm;

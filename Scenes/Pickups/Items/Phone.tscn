@@ -4,19 +4,11 @@
 [ext_resource type="Script" uid="uid://efog2owuk8vw" path="res://Scripts/Pickups/Items/Phone.cs" id="2_p0ks1"]
 [ext_resource type="Texture2D" uid="uid://b4a6xcfcf7n8m" path="res://Textures/Items/Phone/Albedo.png" id="2_q1d43"]
 [ext_resource type="Texture2D" uid="uid://cjx4bewkntqub" path="res://Textures/Items/Phone/ORM.png" id="3_rtloi"]
-[ext_resource type="Shader" uid="uid://dvegjon4jd7pl" path="res://Shaders/Outline.gdshader" id="4_a4h8h"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_mg5uv"]
 size = Vector3(0.0777896, 0.164119, 0.0120389)
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_5ghf0"]
-render_priority = 0
-shader = ExtResource("4_a4h8h")
-shader_parameter/outline_width = 0.0
-shader_parameter/outline_colour = Color(1, 1, 1, 1)
-
 [sub_resource type="ORMMaterial3D" id="ORMMaterial3D_o1goy"]
-next_pass = SubResource("ShaderMaterial_5ghf0")
 albedo_texture = ExtResource("2_q1d43")
 orm_texture = ExtResource("3_rtloi")
 
@@ -126,15 +118,14 @@ _data = {
 &"Unequip_Phone_R": SubResource("Animation_i2crs")
 }
 
-[node name="Phone" unique_id=379283135 node_paths=PackedStringArray("MeshInstance") instance=ExtResource("1_g5t4l")]
+[node name="Phone" unique_id=379283135 instance=ExtResource("1_g5t4l")]
 script = ExtResource("2_p0ks1")
-MeshInstance = NodePath("Phone_Obj")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="0" unique_id=359120707]
 shape = SubResource("BoxShape3D_mg5uv")
 
 [node name="Phone_Obj" parent="." index="1" unique_id=396581141]
-transform = Transform3D(0.796886, -0.154597, -0.584014, 0.255986, 0.962038, 0.094627, 0.547215, -0.224906, 0.806209, 0.198055, 0.184981, -0.495595)
+transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 0.99999976, 0, 0, 0)
 surface_material_override/0 = SubResource("ORMMaterial3D_o1goy")
 
 [node name="AnimationPlayer" parent="." index="2" unique_id=1476021893]

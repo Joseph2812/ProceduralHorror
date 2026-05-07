@@ -8,41 +8,57 @@ namespace Scripts.Pickups;
 /// </summary>
 public abstract partial class Pickup : RigidBody3D
 {
-    private static readonly Vector2I[] s_defaultClearancePositions = [Vector2I.Zero];
+    /// <summary>
+    /// Visual rotation applied to the <see cref="MeshInstance3D"/> in <see cref="Inventory"/> when placing it on the grid.
+    /// </summary>
+    [Export(PropertyHint.Range, "-360,360,radians")]
+    public Vector3 InventoryRotation { get; private set; }
+
+    /// <summary>
+    /// Local grid coordinates used by <see cref="Inventory"/> to indicate the positions it takes up, starting from the bottom left.<para/>
+    /// NOTE: Make sure this matches up with the visual rotation applied by <see cref="InventoryRotation"/>.
+    /// </summary>
+    [Export] public Godot.Collections.Array<Vector2I> ClearancePositions { get; private set; } = [Vector2I.Zero];
 
     public MeshInstance3D MeshInstance { get; private set; }
     public BaseMaterial3D Material { get; private set; }
     public CollisionShape3D CollisionShape { get; private set; }
 
-    /// <summary>
-    /// Visual offset applied to the <see cref="MeshInstance3D"/> in <see cref="Inventory"/> when placing it on the grid.
-    /// </summary>
-    public Vector3 InventoryOffset { get; protected set; } = Vector3.Zero;
-
-    /// <summary>
-    /// Visual rotation applied to the <see cref="MeshInstance3D"/> in <see cref="Inventory"/> when placing it on the grid.
-    /// </summary>
-    public Vector3 InventoryRotation { get; protected set; } = Vector3.Zero;
-
-    /// <summary>
-    /// Local grid coordinates used by <see cref="Inventory"/> to indicate the positions it takes up.
-    /// </summary>
-    public Vector2I[] ClearancePositions { get; protected set; } = s_defaultClearancePositions;
-
     public override void _Ready()
     {
         base._Ready();
 
-        Godot.Collections.Array<Node> children = GetChildren();
-        foreach (Node n in children)
+        int count = GetChildCount();
+        for (int i = 0; i < count; i++)
         {
-            if (n is MeshInstance3D mesh)
+            if (GetChild(i) is MeshInstance3D mesh)
             {
                 MeshInstance = mesh;
                 break;
             }
         }
+
         Material = (BaseMaterial3D)MeshInstance.GetActiveMaterial(0);
+        Material.NextPass = new ShaderMaterial() { Shader = GD.Load<Shader>("Shaders/Outline.gdshader") };
         CollisionShape = GetNode<CollisionShape3D>("CollisionShape3D");
+    }
+
+    /// <summary>
+    /// Gets a box that encloses the <see cref="ClearancePositions"/> in terms of inventory slots.
+    /// </summary>
+    public Vector2I GetInventorySize()
+    {
+        int minX = int.MaxValue, minY = int.MaxValue;
+        int maxX = 0, maxY = 0;
+
+        foreach (Vector2I pos in ClearancePositions)
+        {
+            if (pos.X < minX) { minX = pos.X; }
+            if (pos.Y < minY) { minY = pos.Y; }
+            
+            if (pos.X > maxX) { maxX = pos.X; }
+            if (pos.Y > maxY) { maxY = pos.Y; }
+        }
+        return new(maxX - minX + 1, maxY - minY + 1);
     }
 }

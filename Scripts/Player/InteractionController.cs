@@ -66,13 +66,13 @@ public partial class InteractionController : Node
         if (rayResult.Count > 0)
         {
             colliderObj = rayResult[s_colliderName].AsGodotObject();
-            if (colliderObj is Item item)
+            if (colliderObj is Pickup pickup)
             {
-                if (_lastOutlinedMat != item.Material.NextPass)
+                if (_lastOutlinedMat != pickup.Material.NextPass)
                 {
                     _lastOutlinedMat?.SetShaderParameter(s_outlineWidthName, 0f);
 
-                    _lastOutlinedMat = (ShaderMaterial)item.Material.NextPass;
+                    _lastOutlinedMat = (ShaderMaterial)pickup.Material.NextPass;
                     _lastOutlinedMat.SetShaderParameter(s_outlineWidthName, OutlineWidth);
                 }     
             }
@@ -108,7 +108,7 @@ public partial class InteractionController : Node
 
             if ((rbPos - camPos).LengthSquared() >= GrabDropSqrThresholdZ) { ReleaseGrab(); }
         }
-        else if (_interactQueued && !(TryInteract(colliderObj) || TryPickupItem(colliderObj)) && _activeInteractable != null)
+        else if (_interactQueued && !(TryInteract(colliderObj) || TryAddPickup(colliderObj)) && _activeInteractable != null)
         {
             _activeInteractable.Exit();
             _activeInteractable = null;
@@ -162,7 +162,7 @@ public partial class InteractionController : Node
         _activeRigidbody = null;
     }
 
-    private bool TryPickupItem(GodotObject colliderObj)
+    private bool TryAddPickup(GodotObject colliderObj)
     {
         if (colliderObj is Pickup pickup) { return _inventory.TryAddPickup(pickup); }
         return false;
