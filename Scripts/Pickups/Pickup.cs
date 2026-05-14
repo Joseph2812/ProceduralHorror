@@ -39,7 +39,7 @@ public abstract partial class Pickup : RigidBody3D
         }
 
         Material = (BaseMaterial3D)MeshInstance.GetActiveMaterial(0);
-        Material.NextPass = new ShaderMaterial() { Shader = GD.Load<Shader>("Shaders/Outline.gdshader") };
+        Material.NextPass = GD.Load<Material>("Materials/Outline.tres");
         CollisionShape = GetNode<CollisionShape3D>("CollisionShape3D");
     }
 

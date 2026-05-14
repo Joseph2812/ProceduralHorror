@@ -6,14 +6,13 @@ namespace Scripts.Player;
 
 public partial class InteractionController : Node
 {
-    private const float ReachMinimum = 0.7f;
-    private const float ReachMaximum = 1.2f;
+    private const float ReachMinimum = 1f;
+    private const float ReachMaximum = 1.5f;
     private const float ReachStep = 0.1f;
 
     private const float PGain = 150f, DGain = 25f, MaxGrabForce = 250f;
     private const float GrabDropMargin = 0.5f;
-    private const float GrabDropSqrThresholdZ = (ReachMaximum + GrabDropMargin) * (ReachMaximum + GrabDropMargin);
-
+    
     private const float OutlineWidth = 2f;
 
     private static readonly StringName s_interactName = "interact", s_grabName = "grab";
@@ -37,7 +36,7 @@ public partial class InteractionController : Node
     private RigidBody3D _activeRigidbody;
     private float _targetReach;
 
-    private ShaderMaterial _lastOutlinedMat;
+    private GeometryInstance3D _lastOutlinedGeometry;
     private bool _interactQueued;
     private bool _grabQueued;
 
@@ -68,24 +67,24 @@ public partial class InteractionController : Node
             colliderObj = rayResult[s_colliderName].AsGodotObject();
             if (colliderObj is Pickup pickup)
             {
-                if (_lastOutlinedMat != pickup.Material.NextPass)
+                if (_lastOutlinedGeometry != pickup.MeshInstance)
                 {
-                    _lastOutlinedMat?.SetShaderParameter(s_outlineWidthName, 0f);
+                    _lastOutlinedGeometry?.SetInstanceShaderParameter(s_outlineWidthName, 0f);
 
-                    _lastOutlinedMat = (ShaderMaterial)pickup.Material.NextPass;
-                    _lastOutlinedMat.SetShaderParameter(s_outlineWidthName, OutlineWidth);
+                    _lastOutlinedGeometry = pickup.MeshInstance;
+                    _lastOutlinedGeometry.SetInstanceShaderParameter(s_outlineWidthName, OutlineWidth);
                 }     
             }
-            else if (_lastOutlinedMat != null)
+            else if (_lastOutlinedGeometry != null)
             {
-                _lastOutlinedMat.SetShaderParameter(s_outlineWidthName, 0f);
-                _lastOutlinedMat = null;
+                _lastOutlinedGeometry.SetInstanceShaderParameter(s_outlineWidthName, 0f);
+                _lastOutlinedGeometry = null;
             }
         }
-        else if (_lastOutlinedMat != null)
+        else if (_lastOutlinedGeometry != null)
         {
-            _lastOutlinedMat.SetShaderParameter(s_outlineWidthName, 0f);
-            _lastOutlinedMat = null;
+            _lastOutlinedGeometry.SetInstanceShaderParameter(s_outlineWidthName, 0f);
+            _lastOutlinedGeometry = null;
         }
 
         // Try Grabbing/Interacting //
@@ -106,6 +105,7 @@ public partial class InteractionController : Node
                 )
             );
 
+            const float GrabDropSqrThresholdZ = (ReachMaximum + GrabDropMargin) * (ReachMaximum + GrabDropMargin);
             if ((rbPos - camPos).LengthSquared() >= GrabDropSqrThresholdZ) { ReleaseGrab(); }
         }
         else if (_interactQueued && !(TryInteract(colliderObj) || TryAddPickup(colliderObj)) && _activeInteractable != null)

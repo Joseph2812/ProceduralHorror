@@ -167,9 +167,9 @@ public partial class Inventory : Node3D
             Name             = "Selector",
             Position         = GetCentrePosFromGridPos(Vector2I.Zero),
             Mesh             = s_selectorMesh,
+            MaterialOverride = _selectorMaterial,
             CastShadow       = GeometryInstance3D.ShadowCastingSetting.Off
         };
-        s_selectorMesh.SurfaceSetMaterial(0, _selectorMaterial);
         AddChild(_selectorMeshInst);
 
         CreateGrid();
@@ -711,6 +711,6 @@ public partial class Inventory : Node3D
 
         if      (pickupsAdded == 0) { Console.Inst.AppendLine($"No viable space was found for the \"{pickupName}\"."); }
         else if (pickupsAdded == 1) { Console.Inst.AppendLine($"Successfully added \"{pickupName}\" to your inventory!"); }
-        else                      { Console.Inst.AppendLine($"Successfully added {pickupsAdded} \"{pickupName}\"s to your inventory!"); }
+        else                        { Console.Inst.AppendLine($"Successfully added {pickupsAdded} \"{pickupName}\"s to your inventory!"); }
     }
 }
