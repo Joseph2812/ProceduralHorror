@@ -46,7 +46,7 @@ enabled=PackedStringArray("res://addons/InteriorObjectCreator/plugin.cfg")
 
 folder_colors={
 "res://Generation/": "red",
-"res://Materials/": "green",
+"res://Materials/": "teal",
 "res://Models/": "blue",
 "res://Scenes/": "purple",
 "res://Scripts/": "pink",

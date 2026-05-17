@@ -62,7 +62,7 @@ public partial class InteractionController : Node
         Godot.Collections.Dictionary rayResult = RaycastFromCamera();
         GodotObject colliderObj = null;
 
-        if (rayResult.Count > 0)
+        if (rayResult.Count > 0 && _activeRigidbody == null)
         {
             colliderObj = rayResult[s_colliderName].AsGodotObject();
             if (colliderObj is Pickup pickup)

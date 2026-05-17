@@ -13,8 +13,9 @@
 [ext_resource type="Script" uid="uid://cnuicqjcqk5xw" path="res://Scripts/Player/Inventory.cs" id="7_pvyt2"]
 [ext_resource type="Script" uid="uid://c7cmp2nu4oppx" path="res://Scripts/Player/ArmsController.cs" id="8_dphlw"]
 [ext_resource type="Script" uid="uid://bp8imaawrk08n" path="res://Scripts/Player/ArmsManager.cs" id="8_ku1aq"]
-[ext_resource type="PackedScene" uid="uid://b5dwhf7evtn3x" path="res://Models/InteriorObjects/Early-test Arm_L.glb" id="11_qw4ff"]
-[ext_resource type="PackedScene" uid="uid://wgjogkw12vbc" path="res://Models/InteriorObjects/Early-test Arm_R.glb" id="12_c454h"]
+[ext_resource type="PackedScene" uid="uid://b5dwhf7evtn3x" path="res://Models/Early-test Arm_L.glb" id="11_qw4ff"]
+[ext_resource type="PackedScene" uid="uid://wgjogkw12vbc" path="res://Models/Early-test Arm_R.glb" id="12_c454h"]
+[ext_resource type="PackedScene" uid="uid://bxed6dcm7nylu" path="res://Scenes/Elevator.tscn" id="16_erwvk"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8ys5x"]
 
@@ -152,7 +153,7 @@ placeholder_text = "Enter a command... (type \"help\" for the list)"
 keep_editing_on_text_submit = true
 
 [node name="Player" type="CharacterBody3D" parent="." unique_id=121312456]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, 0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, 4)
 axis_lock_linear_y = true
 axis_lock_angular_x = true
 axis_lock_angular_z = true
@@ -181,10 +182,10 @@ script = ExtResource("8_ku1aq")
 [node name="ArmsController" type="Node" parent="Player/Camera3D/ArmsManager" unique_id=757909531]
 script = ExtResource("8_dphlw")
 
-[node name="Arm_L" parent="Player/Camera3D/ArmsManager" unique_id=1171228774 instance=ExtResource("11_qw4ff")]
+[node name="Arm_L" parent="Player/Camera3D/ArmsManager" unique_id=1879386653 instance=ExtResource("11_qw4ff")]
 visible = false
 
-[node name="Arm_R" parent="Player/Camera3D/ArmsManager" unique_id=238642346 instance=ExtResource("12_c454h")]
+[node name="Arm_R" parent="Player/Camera3D/ArmsManager" unique_id=1730925421 instance=ExtResource("12_c454h")]
 visible = false
 
 [node name="SpringArm3D_L" type="SpringArm3D" parent="Player/Camera3D/ArmsManager" unique_id=2005745736]
@@ -205,7 +206,7 @@ visible = false
 script = ExtResource("7_pvyt2")
 
 [node name="Sphere" type="RigidBody3D" parent="." unique_id=967200797]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.306, 5.095)
 script = ExtResource("7_gpdo7")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Sphere" unique_id=2068835971]
@@ -213,3 +214,6 @@ shape = SubResource("SphereShape3D_cu83u")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Sphere" unique_id=1362665692]
 mesh = SubResource("SphereMesh_ey0t1")
+
+[node name="Elevator" parent="." unique_id=947310939 instance=ExtResource("16_erwvk")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0.5, 1, 5)

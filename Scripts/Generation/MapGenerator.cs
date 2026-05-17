@@ -82,7 +82,7 @@ public partial class MapGenerator : GridMap
         BL2
     }
 
-    private const int MillisecondsBtwSteps = 50; // Slows down generation by adding this delay between steps
+    private const int MillisecondsBtwSteps = 0; // Slows down generation by adding this delay between steps
     private const int MaximumExtrusionRetries = 50;
 
     private const string ConsoleSeedArgs = "\"gen\"|\"enemy\"|\"item\"";
@@ -162,8 +162,6 @@ public partial class MapGenerator : GridMap
         for (int i = 0; i < All3x3Dirs.Length; i++) { All3x3x3Dirs[i + (All3x3Dirs.Length * 2)] = All3x3Dirs[i] + Vector3I.Up; }
         //
 
-        CreateStartingArea();
-
         if (SetSeed)
         {
             Rng.Seed = Seed;
@@ -218,28 +216,10 @@ public partial class MapGenerator : GridMap
         return neighbours;
     }
 
-    private void CreateStartingArea()
-    {
-        for (int y = 0; y <= 3; y++)
-        {
-            for (int z = 0; z <= 2; z++)
-            {
-                for (int x = -1; x <= 1; x++)
-                {
-                    if 
-                    (
-                        ((x > -1 && x < 1) && (y > 0 && y < 3) && (z > 0 && z < 2)) ||
-                        (x == 0 && y != 0 && y != 3 && z == 0)
-                    )
-                    { continue; }
-                    SetCellItem(new(x, y, z), (int)ItemManager.Id.Blue);
-                }
-            }
-        }
-    }
-
     private async Task<bool> StartGeneration()
     {
+        CreateElevatorArea();
+
         HashSet<Vector3I> prevDoorPosS = new() { Vector3I.Zero };
         HashSet<Vector3I> allDoorPosS = new();
         int roomCount = 0;
@@ -324,6 +304,30 @@ public partial class MapGenerator : GridMap
             }
         }
         return true;
+    }
+
+    private void CreateElevatorArea()
+    {
+        const int Width = 12;
+        const int Height = 6;
+        const int Depth = 10;
+
+        for (int y = 0; y <= Height; y++)
+        {
+            for (int z = 0; z <= Depth; z++)
+            {
+                for (int x = -(Width / 2); x <= (Width / 2); x++)
+                {
+                    if 
+                    (
+                        ((x > -(Width / 2) && x < (Width / 2)) && (z > 0 && z < Depth)) ||
+                        (x == 0 && y > 0 && y < 3 && z == 0)
+                    )
+                    { continue; }
+                    SetCellItem(new(x, y, z), (int)ItemManager.Id.Blue);
+                }
+            }
+        }
     }
 
     /// <returns><see cref="HashSet{Vector3I}"/> of floor positions.</returns>
