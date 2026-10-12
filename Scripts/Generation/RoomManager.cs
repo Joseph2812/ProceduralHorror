@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using Scripts.Extensions;
 using Scripts.Generation.Interior;
 using System.Text;
@@ -42,5 +41,10 @@ public class RoomManager
 
     public void SelectRandomRoom() { SelectedRoom = _rooms[MapGenerator.Inst.Rng.RandiRange(0, _rooms.Length - 1)]; }
 
-    public InteriorObject GetRandomInteriorObject() => SelectedRoom.InteriorObjectWithWeightS.GetRandomElementByWeight(x => x.WeightOfPlacement).InteriorObject;
+    public InteriorObjectWithWeight GetRandomInteriorObjectWithWeight()
+    {
+        return SelectedRoom.InteriorObjectWithWeightS.GetRandomElementByWeight(x => x.WeightOfPlacement);
+    }
+
+    public InteriorObject GetRandomInteriorObject() => GetRandomInteriorObjectWithWeight().InteriorObject;
 }

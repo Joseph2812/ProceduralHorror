@@ -11,7 +11,11 @@ public partial class MapGenerator : GridMap
     private const string InteriorNodeParentName = "InteriorNodes";
     private const int PlaceAttemptsMultiplier = 100;
 
+    // Each neighbor of the same type reduces placement probability by this factor (0–1)
+    private const float NeighborSameTypePenalty = 0.5f;
+
     private Dictionary<Vector3I, bool> _emptyPosS; // (Position, IsSemiEmpty=true | IsFullyEmpty=false)
+    private Dictionary<Vector3I, InteriorObject> _posToIObj; // Contains references to every IObj for each clearance position so far 
     private List<(Vector3I, int, int)> _potentialPos_floorIdx_heightLvl_S;
 
     private Node _interiorNodeParent;
@@ -73,6 +77,7 @@ public partial class MapGenerator : GridMap
         // Get All Empty Positions Projected From The Floor //
         int cellCount = _floorPosS.Count * (height - 1);
         _emptyPosS = new(cellCount);
+        _posToIObj = [];
         _potentialPos_floorIdx_heightLvl_S = new(cellCount);
 
         for (int heightLvl = 1; heightLvl < height; heightLvl++)
@@ -301,6 +306,24 @@ public partial class MapGenerator : GridMap
     private void PlaceRandomInteriorNode(Vector3I pos, int heightLvl, int maxHeightLvl, float minNormalisedProx, float rotationY, int totalDist)
     {
         InteriorObject iObj = _roomManager.GetRandomInteriorObject();
+        HashSet<Vector3I> clearancePosS = iObj.GetGlobalClearancePositions(pos, rotationY);
+
+        // Adjacency Penalty: reduce probability for each same-type neighbor //
+        int sameTypeNeighborCount = 0;
+        foreach (Vector3I clearancePos in clearancePosS)
+        {
+            foreach (Vector3I dir in All3x3x3Dirs)
+            {
+                Vector3I neighborPos = pos + dir;
+                if (_posToIObj.TryGetValue(neighborPos, out InteriorObject placed))
+                {
+                    if (placed == iObj) { sameTypeNeighborCount++; }
+                }
+            }
+        }
+
+        float adjacencyProbability = Mathf.Pow(1f - NeighborSameTypePenalty, sameTypeNeighborCount);
+        if (Rng.Randf() >= adjacencyProbability) { return; }
 
         // Height Constraint Check //
         bool satisfiedHeightConstraint = false;
@@ -321,7 +344,7 @@ public partial class MapGenerator : GridMap
                 break;
         }
 
-        // All Pre-placement Checks //
+        // Final Pre-placement Checks //
         if
         (
             !(
@@ -335,6 +358,9 @@ public partial class MapGenerator : GridMap
             )
         )
         { return; }
+
+        // Record placement for adjacency tracking
+        foreach (Vector3I p in clearancePosS) { _posToIObj[p] = iObj; }
 
         // Extend With Potential Extensions //
         if (iObj is InteriorObjectExtended extendedIObj)

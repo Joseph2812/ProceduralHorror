@@ -5,9 +5,9 @@
 [resource]
 script = ExtResource("1_0fp2f")
 WallId = 1
-ChanceOfEmptyCell = 0.0
-MaximumOuterWidth = 3
+MinimumOuterWidth = 3
+MaximumOuterWidth = 5
 MaximumLength = 10
-MaximumExtrusionIterations = 2
+MaximumExtrusionIterations = 3
 MaximumHeight = 5
-MaximumDoorways = 5
+MaximumDoorways = 4

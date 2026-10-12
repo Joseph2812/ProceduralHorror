@@ -120,8 +120,8 @@ public partial class InteriorObject : Resource
     /// <returns>(Whether it can be placed, Clearance Positions, Semi-Clearance Positions)</returns>
     public (bool, HashSet<Vector3I>, HashSet<Vector3I>) CanBePlaced(Vector3I position, float rotationY, Dictionary<Vector3I, bool> emptyPosS)
     {
-        HashSet<Vector3I> clearancePosS = GetClearancePositions(position, rotationY);
-        HashSet<Vector3I> semiClearancePosS = GetSemiClearancePositions(position, rotationY);
+        HashSet<Vector3I> clearancePosS = GetGlobalClearancePositions(position, rotationY);
+        HashSet<Vector3I> semiClearancePosS = GetGlobalSemiClearancePositions(position, rotationY);
 
         return
         (
@@ -135,26 +135,13 @@ public partial class InteriorObject : Resource
         );
     }
 
-    private bool IsClearanceFullyContainedInEmptyPosS(Dictionary<Vector3I, bool> emptyPosS, HashSet<Vector3I> clearancePosS)
-    {
-        foreach (Vector3I pos in clearancePosS)
-        {
-            // Clearance is only valid in fully empty cells
-            if (!emptyPosS.TryGetValue(pos, out bool isSemiEmpty) || isSemiEmpty)
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
     /// <summary>
     /// Gets the positions that <see cref="Scene"/> would take up for being placed at <paramref name="originPos"/> with a <paramref name="rotationY"/> in radians.
     /// </summary>
     /// <param name="originPos">Position it will be placed at.</param>
     /// <param name="rotationY">Rotation applied around the global y-axis in radians.</param>
     /// <returns><see cref="HashSet{Vector3I}"/> of positions that mark its requirement for placement.</returns>
-    private HashSet<Vector3I> GetClearancePositions(Vector3I originPos, float rotationY)
+    public HashSet<Vector3I> GetGlobalClearancePositions(Vector3I originPos, float rotationY)
     {
         HashSet<Vector3I> clearancePosS = [originPos];
         foreach (Vector3I relativePos in ClearancePositions)
@@ -170,7 +157,7 @@ public partial class InteriorObject : Resource
     /// <param name="originPos">Position it will be placed at.</param>
     /// <param name="rotationY">Rotation applied around the global y-axis in radians.</param>
     /// <returns><see cref="HashSet{Vector3I}"/> of positions that mark its requirement for placement.</returns>
-    private HashSet<Vector3I> GetSemiClearancePositions(Vector3I originPos, float rotationY)
+    public HashSet<Vector3I> GetGlobalSemiClearancePositions(Vector3I originPos, float rotationY)
     {
         HashSet<Vector3I> semiClearancePosS = [];
         foreach (Vector3I relativePos in SemiClearancePositions)
@@ -178,6 +165,19 @@ public partial class InteriorObject : Resource
             semiClearancePosS.Add(originPos + relativePos.RotatedY(rotationY));
         }
         return semiClearancePosS;
+    }
+
+    private bool IsClearanceFullyContainedInEmptyPosS(Dictionary<Vector3I, bool> emptyPosS, HashSet<Vector3I> clearancePosS)
+    {
+        foreach (Vector3I pos in clearancePosS)
+        {
+            // Clearance is only valid in fully empty cells
+            if (!emptyPosS.TryGetValue(pos, out bool isSemiEmpty) || isSemiEmpty)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     /// <summary>
