@@ -12,7 +12,7 @@ public partial class MapGenerator : GridMap
     private const int PlaceAttemptsMultiplier = 100;
 
     // Each neighbor of the same type reduces placement probability by this factor (0–1)
-    private const float NeighborSameTypePenalty = 0.5f;
+    private const float NeighborSameTypePenalty = 0.3f;
 
     private Dictionary<Vector3I, bool> _emptyPosS; // (Position, IsSemiEmpty=true | IsFullyEmpty=false)
     private Dictionary<Vector3I, InteriorObject> _posToIObj; // Contains references to every IObj for each clearance position so far 
@@ -306,15 +306,22 @@ public partial class MapGenerator : GridMap
     private void PlaceRandomInteriorNode(Vector3I pos, int heightLvl, int maxHeightLvl, float minNormalisedProx, float rotationY, int totalDist)
     {
         InteriorObject iObj = _roomManager.GetRandomInteriorObject();
-        HashSet<Vector3I> clearancePosS = iObj.GetGlobalClearancePositions(pos, rotationY);
+        HashSet<Vector3I> globalClearancePosS = iObj.GetGlobalClearancePositions(pos, rotationY);
+
+        // Count Cooling: reduce probability as current count approaches maximum //
+        if (iObj.MaximumCountBtwRooms > 0)
+        {
+            float countCoolingProbability = 1f - (iObj.CurrentCountBtwRooms / (float)iObj.MaximumCountBtwRooms);
+            if (Rng.Randf() > countCoolingProbability) { return; }
+        }
 
         // Adjacency Penalty: reduce probability for each same-type neighbor //
         int sameTypeNeighborCount = 0;
-        foreach (Vector3I clearancePos in clearancePosS)
+        foreach (Vector3I clearancePos in globalClearancePosS)
         {
             foreach (Vector3I dir in All3x3x3Dirs)
             {
-                Vector3I neighborPos = pos + dir;
+                Vector3I neighborPos = clearancePos + dir;
                 if (_posToIObj.TryGetValue(neighborPos, out InteriorObject placed))
                 {
                     if (placed == iObj) { sameTypeNeighborCount++; }
@@ -323,7 +330,7 @@ public partial class MapGenerator : GridMap
         }
 
         float adjacencyProbability = Mathf.Pow(1f - NeighborSameTypePenalty, sameTypeNeighborCount);
-        if (Rng.Randf() >= adjacencyProbability) { return; }
+        if (Rng.Randf() > adjacencyProbability) { return; }
 
         // Height Constraint Check //
         bool satisfiedHeightConstraint = false;
@@ -360,7 +367,7 @@ public partial class MapGenerator : GridMap
         { return; }
 
         // Record placement for adjacency tracking
-        foreach (Vector3I p in clearancePosS) { _posToIObj[p] = iObj; }
+        foreach (Vector3I p in globalClearancePosS) { _posToIObj[p] = iObj; }
 
         // Extend With Potential Extensions //
         if (iObj is InteriorObjectExtended extendedIObj)

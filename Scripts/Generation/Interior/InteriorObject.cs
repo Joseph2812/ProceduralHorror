@@ -92,7 +92,8 @@ public partial class InteriorObject : Resource
     [Export(PropertyHint.Range, "-360,360,radians")]
     public float MaximumRotationalYOffset { get; set; }
 
-    private int _currentCountBtwRooms;
+    public int CurrentCountBtwRooms { get; private set; }
+    
     private readonly NeighbourConditions _neighbourConditions = new();
 
     /// <summary>
@@ -187,10 +188,10 @@ public partial class InteriorObject : Resource
     {
         if (MaximumCountBtwRooms == 0) { return true; }
 
-        if (_currentCountBtwRooms >= MaximumCountBtwRooms) { return false; }
+        if (CurrentCountBtwRooms >= MaximumCountBtwRooms) { return false; }
         else
         {
-            _currentCountBtwRooms++;
+            CurrentCountBtwRooms++;
             return true;
         }
     }
