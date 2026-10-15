@@ -8,3 +8,4 @@ script = ExtResource("2_ip4ee")
 Scene = ExtResource("1_f2pa6")
 Exact = true
 MaximumHeight = 1
+SemiClearancePositions = Array[Vector3i]([Vector3i(0, 0, 1)])

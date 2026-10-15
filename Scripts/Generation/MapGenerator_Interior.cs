@@ -14,8 +14,9 @@ public partial class MapGenerator : GridMap
     // Each neighbor of the same type reduces placement probability by this factor (0–1)
     private const float NeighborSameTypePenalty = 0.3f;
 
+    private HashSet<Vector3I> _doorPosS;
     private Dictionary<Vector3I, bool> _emptyPosS; // (Position, IsSemiEmpty=true | IsFullyEmpty=false)
-    private Dictionary<Vector3I, InteriorObject> _posToIObj; // Contains references to every IObj for each clearance position so far 
+    private Dictionary<Vector3I, InteriorObject> _posToIObj; // Contains references to every IObj for each clearance position taken up so far 
     private List<(Vector3I, int, int)> _potentialPos_floorIdx_heightLvl_S;
 
     private Node _interiorNodeParent;
@@ -31,7 +32,7 @@ public partial class MapGenerator : GridMap
     public bool TryCreateInteriorNode(InteriorObject iObj, Vector3I position, float rotationY)
     {
         (bool canPlace, HashSet<Vector3I> clearancePosS, HashSet<Vector3I> semiClearancePosS) = iObj.CanBePlaced(position, rotationY, _emptyPosS);
-        if (!canPlace) { return false; }
+        if (!canPlace || !IsAllReachable(clearancePosS)) { return false; }
 
         // Create Node //
         Node3D node = iObj.Scene.Instantiate<Node3D>();
@@ -61,6 +62,8 @@ public partial class MapGenerator : GridMap
 
     private void GenerateInterior(HashSet<Vector3I> doorPosS, Vector3I originDoorAheadPos, int height)
     {
+        _doorPosS = doorPosS;
+
         // Get Proximities & Setup AStar //
         int[][] allCellProximities = new int[_floorPosS.Count][];
 
@@ -374,6 +377,61 @@ public partial class MapGenerator : GridMap
         {
             extendedIObj.CreateExtensionsRecursively(pos, rotationY);
         }
+    }
+
+    /// <summary>
+    /// Walk from doors to make sure every section of the room is reachable by comparing it with the empty positions
+    /// </summary>
+    private bool IsAllReachable(HashSet<Vector3I> clearancePosS)
+    {
+        // Temporarily occupy the clearance positions //
+        List<(Vector3I, bool)> tempPos_empty_s = [];
+        foreach (Vector3I pos in clearancePosS)
+        {
+            tempPos_empty_s.Add((pos, _emptyPosS[pos]));
+            _emptyPosS.Remove(pos);
+        }
+
+        HashSet<Vector3I> visited = [];
+        Queue<Vector3I> nextPosS = [];
+
+        // Add all door positions as starting positions (shifted up one) //
+        foreach (Vector3I doorPos in _doorPosS)
+        {
+            nextPosS.Enqueue(doorPos + Vector3I.Up);
+        }
+
+        // Intersection of floor and empty positions //
+        HashSet<Vector3I> emptyFirstRowPosS = [];
+        foreach (Vector3I pos in _floorPosS)
+        {
+            Vector3I raisedPos = pos + Vector3I.Up;
+            if (_emptyPosS.ContainsKey(raisedPos)) { emptyFirstRowPosS.Add(raisedPos); }
+        }
+
+        // Walk across every possible position in the 1st row //
+        while (nextPosS.Count > 0)
+        {
+            Vector3I pos = nextPosS.Dequeue();
+            foreach (Vector3I dir in OrthogonalDirs)
+            {
+                Vector3I neighbour = pos + dir;
+                if (emptyFirstRowPosS.Contains(neighbour) && !visited.Contains(neighbour))
+                {
+                    visited.Add(neighbour);
+                    nextPosS.Enqueue(neighbour);
+                }
+            }
+        }
+
+        // Roll back
+        foreach ((Vector3I, bool) pos_empty in tempPos_empty_s)
+        {
+            _emptyPosS[pos_empty.Item1] = pos_empty.Item2;
+        }
+
+        // If every visited position matches the total empty positions in the 1st row, they're all accessible :D
+        return visited.SetEquals(emptyFirstRowPosS); 
     }
 
     /// <summary>
