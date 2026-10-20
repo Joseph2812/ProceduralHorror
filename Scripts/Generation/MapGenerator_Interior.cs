@@ -14,13 +14,14 @@ public partial class MapGenerator : GridMap
     // Each neighbor of the same type reduces placement probability by this factor (0–1)
     private const float NeighborSameTypePenalty = 0.3f;
 
+    public readonly Vector3 InteriorNodeOffset = new(0.5f, 0f, 0.5f);
+
     private HashSet<Vector3I> _doorPosS;
     private Dictionary<Vector3I, bool> _emptyPosS; // (Position, IsSemiEmpty=true | IsFullyEmpty=false)
     private Dictionary<Vector3I, InteriorObject> _posToIObj; // Contains references to every IObj for each clearance position taken up so far 
     private List<(Vector3I, int, int)> _potentialPos_floorIdx_heightLvl_S;
 
     private Node _interiorNodeParent;
-    private readonly Vector3 _interiorNodeOffset = new(0.5f, 0f, 0.5f);
 
     /// <summary>
     /// Creates a <see cref="Node3D"/> from the <see cref="InteriorObject"/>, if it meets the conditions required.
@@ -37,7 +38,7 @@ public partial class MapGenerator : GridMap
         // Create Node //
         Node3D node = iObj.Scene.Instantiate<Node3D>();
         _interiorNodeParent.AddChild(node);
-        node.Position = position + _interiorNodeOffset;
+        node.Position = position + InteriorNodeOffset;
         node.Rotation = rotationY * Vector3.Up;
 
         int count = node.GetChildCount();
@@ -46,7 +47,7 @@ public partial class MapGenerator : GridMap
         {
             if (node.GetChild(i) is Node3D n)
             {
-                n.Position -= _interiorNodeOffset;
+                n.Position -= InteriorNodeOffset;
                 n.Rotation += rotOffsetY;
             }
         }

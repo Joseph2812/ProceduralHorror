@@ -84,10 +84,12 @@ public partial class MapGenerator : GridMap
 
     private const int MillisecondsBtwSteps = 0; // Slows down generation by adding this delay between steps
     private const int MaximumExtrusionRetries = 50;
+    private const string NavigationParentName = "Navigation";
 
     private const string ConsoleSeedArgs = "\"gen\"|\"enemy\"|\"item\"";
     private static ulong Seed; // Holds seed for reload
     private static bool SetSeed;
+    private Node _navigationParent;
 
     public static MapGenerator Inst { get; private set; }
 
@@ -127,7 +129,10 @@ public partial class MapGenerator : GridMap
 
         // Initialise //
         MeshLibrary = _itemManager.MeshLibrary;
+        _navigationParent = new Node3D { Name = NavigationParentName };
         _interiorNodeParent = new Node3D { Name = InteriorNodeParentName };
+
+        AddChild(_navigationParent);
         AddChild(_interiorNodeParent);
 
         Console.Inst.AddCommand
@@ -267,6 +272,12 @@ public partial class MapGenerator : GridMap
                 await Task.Delay(MillisecondsBtwSteps, _cancelSrc.Token);
                 if (_cancelSrc.IsCancellationRequested) { return true; }
 
+                (NavigationRegion3D floorRegion, NavigationRegion3D ceilingRegion) = NavigationBuilder.BuildRoomNavigation(_emptyPosS, _floorPosS, height);
+
+                _navigationParent.AddChild(floorRegion);
+                _navigationParent.AddChild(ceilingRegion);
+                _navigationParent.AddChild(NavigationBuilder.CreateNewLink(doorPos, startDir));
+
                 roomCount++;
             }
             prevDoorPosS = doorPosS;
@@ -275,6 +286,10 @@ public partial class MapGenerator : GridMap
         if (roomCount < _roomManager.MaximumRoomCount)
         {
             GD.Print($"Maximum room count wasn't reached. Current: {roomCount}. Retrying...");
+
+            _navigationParent.QueueFree();
+            _navigationParent = new Node3D { Name = NavigationParentName };
+            AddChild(_navigationParent);
 
             Clear();
             _interiorNodeParent.QueueFree();
