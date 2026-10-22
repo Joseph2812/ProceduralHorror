@@ -272,10 +272,11 @@ public partial class MapGenerator : GridMap
                 await Task.Delay(MillisecondsBtwSteps, _cancelSrc.Token);
                 if (_cancelSrc.IsCancellationRequested) { return true; }
 
-                (NavigationRegion3D floorRegion, NavigationRegion3D ceilingRegion) = NavigationBuilder.BuildRoomNavigation(_emptyPosS, _floorPosS, height);
-
-                _navigationParent.AddChild(floorRegion);
-                _navigationParent.AddChild(ceilingRegion);
+                NavigationRegion3D[] regions = NavigationBuilder.BuildRoomNavigation(_emptyPosS, _floorPosS, height);
+                foreach (NavigationRegion3D region in regions)
+                {
+                    _navigationParent.AddChild(region);
+                }
                 _navigationParent.AddChild(NavigationBuilder.CreateNewLink(doorPos, startDir));
 
                 roomCount++;
